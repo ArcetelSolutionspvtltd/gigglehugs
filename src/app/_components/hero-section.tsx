@@ -10,13 +10,24 @@ import {
 import Autoplay from 'embla-carousel-autoplay';
 
 import { Button } from '@/components/ui/button';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 
 const heroImages = [
-  PlaceHolderImages.find(img => img.id === 'hero-1'),
-  PlaceHolderImages.find(img => img.id === 'hero-2'),
-  PlaceHolderImages.find(img => img.id === 'sitter-1'),
-].filter(Boolean);
+  {
+    src: '/assets/bg/bg1.jpg',
+    alt: 'A child playing happily outdoors.',
+    hint: 'child playing'
+  },
+  {
+    src: '/assets/bg/bg2.jpg',
+    alt: 'A babysitter reading a book to a child.',
+    hint: 'babysitter reading'
+  },
+  {
+    src: '/assets/bg/bg3.jpg',
+    alt: 'Two children laughing together.',
+    hint: 'children laughing'
+  },
+];
 
 export function HeroSection() {
   return (
@@ -27,20 +38,18 @@ export function HeroSection() {
         opts={{ loop: true }}
       >
         <CarouselContent className="h-full">
-          {heroImages.map((image, index) =>
-            image ? (
-              <CarouselItem key={index} className="h-full">
-                <Image
-                  src={image.imageUrl}
-                  alt={image.description}
-                  fill
-                  className="object-cover"
-                  priority={index === 0}
-                  data-ai-hint={image.imageHint}
-                />
-              </CarouselItem>
-            ) : null
-          )}
+          {heroImages.map((image, index) => (
+            <CarouselItem key={index} className="h-full">
+              <Image
+                src={image.src}
+                alt={image.alt}
+                fill
+                className="object-cover"
+                priority={index === 0}
+                data-ai-hint={image.hint}
+              />
+            </CarouselItem>
+          ))}
         </CarouselContent>
       </Carousel>
 
