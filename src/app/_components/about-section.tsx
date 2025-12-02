@@ -1,6 +1,5 @@
 import Image from 'next/image';
 import { Heart, Handshake, Smile, BookHeart, HandHelping, CheckCircle } from 'lucide-react';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
 
 const values = [
@@ -12,8 +11,6 @@ const values = [
 ];
 
 export function AboutSection() {
-    const aboutImage = PlaceHolderImages.find(img => img.id === 'hero-1');
-
     return (
         <section id="about" className="py-16 sm:py-24 bg-background">
             <div className="container max-w-7xl px-4 md:px-8">
@@ -32,17 +29,15 @@ export function AboutSection() {
                         </ul>
                     </div>
                     <div className="rounded-lg overflow-hidden shadow-lg h-full">
-                        {aboutImage && (
-                            <div className="relative w-full h-full min-h-[300px] md:min-h-[400px]">
-                                <Image
-                                    src={aboutImage.imageUrl}
-                                    alt="Child playing happily"
-                                    fill
-                                    className="object-cover"
-                                    data-ai-hint={aboutImage.imageHint}
-                                />
-                            </div>
-                        )}
+                        <div className="relative w-full h-full min-h-[300px] md:min-h-[400px]">
+                            <Image
+                                src="/assets/elements/child.png"
+                                alt="Child playing happily"
+                                fill
+                                className="object-cover"
+                                data-ai-hint="child playing"
+                            />
+                        </div>
                     </div>
                 </div>
 
