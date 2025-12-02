@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Menu, Sun, X, Laugh } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
@@ -21,13 +21,12 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 max-w-7xl items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <Laugh className="h-8 w-8 text-primary" />
-          <span className="font-bold text-lg hidden sm:inline-block">GiggleHugs</span>
+      <div className="container flex h-20 max-w-7xl items-center justify-between">
+        <Link href="/" className="flex items-center">
+          <Logo />
         </Link>
         
-        <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
+        <nav className="hidden md:flex items-center gap-8 text-sm font-medium">
           {mainNavLinks.map(({ href, label }) => (
             <Link
               key={href}
@@ -52,9 +51,8 @@ export function Header() {
             </SheetTrigger>
             <SheetContent side="left" className="w-full max-w-xs pr-6">
               <div className="flex justify-between items-center mb-6">
-                <Link href="/" className="flex items-center gap-2">
-                  <Laugh className="h-8 w-8 text-primary" />
-                   <span className="font-bold text-lg">GiggleHugs</span>
+                <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>
+                  <Logo />
                 </Link>
                 <SheetTrigger asChild>
                   <Button variant="ghost" size="icon">

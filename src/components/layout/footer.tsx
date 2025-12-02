@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Heart, Sun, Smile, Twitter, Facebook, Instagram } from "lucide-react";
+import { Twitter, Facebook, Instagram } from "lucide-react";
 import { Logo } from "@/components/icons/logo";
 
 const footerLinks = [
@@ -7,7 +7,7 @@ const footerLinks = [
   { href: "/services", label: "Services" },
   { href: "/sitters", label: "Our Sitters" },
   { href: "/contact", label: "Contact Us" },
-  { href: "/admin/generate-bio", label: "Admin Tool"}
+  { href: "/admin/generate-bio", label: "Admin" }
 ];
 
 const socialLinks = [
@@ -18,16 +18,15 @@ const socialLinks = [
 
 export function Footer() {
   return (
-    <footer className="bg-secondary/50">
+    <footer className="bg-secondary/50 border-t">
       <div className="container max-w-7xl py-12 px-4 sm:px-6 lg:px-8">
         <div className="xl:grid xl:grid-cols-3 xl:gap-8">
           <div className="space-y-4 xl:col-span-1">
-             <Link href="/" className="flex items-center gap-2">
-                <Smile className="h-10 w-10 text-primary" />
-                <span className="font-bold text-2xl">GiggleHugs</span>
+             <Link href="/" className="inline-block">
+                <Logo />
             </Link>
             <p className="text-muted-foreground text-base">
-              Bringing sunshine, giggles, and safe hugs to your family.
+              Sunshine, Giggles & Safe Hugs.
             </p>
             <div className="flex space-x-6">
               {socialLinks.map(({ href, icon: Icon, label }) => (
@@ -56,7 +55,7 @@ export function Footer() {
                 <h3 className="text-sm font-semibold text-foreground tracking-wider uppercase">Contact</h3>
                 <ul className="mt-4 space-y-4">
                     <li>
-                        <p className="text-base text-muted-foreground">contact@gigglehugs.com</p>
+                        <p className="text-base text-muted-foreground">contact@gigglehugs.org</p>
                     </li>
                     <li>
                         <p className="text-base text-muted-foreground">(123) 456-7890</p>

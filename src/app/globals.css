@@ -4,65 +4,65 @@
 
 @layer base {
   :root {
-    --background: 54 43% 97%;
+    --background: 45 60% 98%;
     --foreground: 24 10% 10%;
 
-    --card: 54 50% 100%;
+    --card: 0 0% 100%;
     --card-foreground: 24 10% 10%;
 
-    --popover: 54 50% 100%;
+    --popover: 0 0% 100%;
     --popover-foreground: 24 10% 10%;
 
-    --primary: 48 96% 51%;
-    --primary-foreground: 24 10% 10%;
+    --primary: 45 96% 56%;
+    --primary-foreground: 30 15% 5%;
 
-    --secondary: 54 20% 90%;
+    --secondary: 45 40% 92%;
     --secondary-foreground: 24 10% 10%;
 
-    --muted: 54 20% 92%;
-    --muted-foreground: 24 10% 40%;
+    --muted: 45 30% 95%;
+    --muted-foreground: 24 5% 45%;
 
-    --accent: 17 100% 74%;
-    --accent-foreground: 24 10% 10%;
+    --accent: 355 90% 65%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border: 54 20% 88%;
-    --input: 54 20% 90%;
-    --ring: 48 96% 51%;
+    --border: 45 20% 88%;
+    --input: 45 30% 93%;
+    --ring: 45 96% 56%;
 
     --radius: 0.8rem;
   }
 
   .dark {
     --background: 24 10% 10%;
-    --foreground: 54 43% 97%;
+    --foreground: 45 20% 95%;
 
     --card: 24 10% 12%;
-    --card-foreground: 54 43% 97%;
+    --card-foreground: 45 20% 95%;
 
     --popover: 24 10% 10%;
-    --popover-foreground: 54 43% 97%;
+    --popover-foreground: 45 20% 95%;
 
-    --primary: 48 96% 51%;
-    --primary-foreground: 24 10% 10%;
+    --primary: 45 96% 56%;
+    --primary-foreground: 30 15% 5%;
     
     --secondary: 24 10% 20%;
-    --secondary-foreground: 54 43% 97%;
+    --secondary-foreground: 45 20% 95%;
 
     --muted: 24 10% 22%;
-    --muted-foreground: 54 20% 60%;
+    --muted-foreground: 45 15% 60%;
 
-    --accent: 17 100% 74%;
-    --accent-foreground: 24 10% 10%;
+    --accent: 355 90% 70%;
+    --accent-foreground: 0 0% 10%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
 
     --border: 24 10% 20%;
     --input: 24 10% 20%;
-    --ring: 48 96% 51%;
+    --ring: 45 96% 56%;
   }
 }
 
