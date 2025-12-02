@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Menu, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Logo } from "@/components/icons/logo";
 import { ThemeToggle } from "./theme-toggle";
 
@@ -51,6 +51,9 @@ export function Header() {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-full max-w-xs pr-6">
+              <SheetHeader className="text-left">
+                  <SheetTitle className="sr-only">Menu</SheetTitle>
+              </SheetHeader>
               <div className="flex justify-between items-center mb-6">
                 <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>
                   <Logo />
