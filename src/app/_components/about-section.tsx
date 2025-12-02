@@ -16,7 +16,7 @@ export function AboutSection() {
 
     return (
         <section id="about" className="py-16 sm:py-24 bg-background">
-            <div className="container max-w-7xl">
+            <div className="container max-w-7xl px-4 md:px-8">
                 <div className="grid md:grid-cols-2 gap-12 items-center">
                     <div className="prose lg:prose-lg max-w-none text-muted-foreground">
                         <h2 className="text-3xl font-bold text-foreground">Our Mission</h2>
