@@ -29,7 +29,7 @@ export function AboutSection() {
                         </ul>
                     </div>
                     <div className="rounded-lg overflow-hidden shadow-lg h-full">
-                        <div className="relative w-full h-full min-h-[300px] md:min-h-[400px]">
+                        <div className="relative w-full h-full min-h-[400px] md:min-h-[500px]">
                             <Image
                                 src="/assets/elements/child.png"
                                 alt="Child playing happily"
