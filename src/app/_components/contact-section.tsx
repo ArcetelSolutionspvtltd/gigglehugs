@@ -1,6 +1,4 @@
 'use client';
-import { Header } from '@/components/layout/header';
-import { Footer } from '@/components/layout/footer';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Phone, Mail, MapPin } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast"
 
-export default function ContactPage() {
+export function ContactSection() {
     const { toast } = useToast()
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -22,20 +20,15 @@ export default function ContactPage() {
     };
 
   return (
-    <div className="flex min-h-screen flex-col">
-      <Header />
-      <main className="flex-1">
-        <section className="py-16 sm:py-24 bg-background">
-          <div className="container max-w-7xl text-center">
-            <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">Get in Touch</h1>
-            <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
-              We're here to answer any questions you may have. Reach out to us and we'll respond as soon as we can.
-            </p>
-          </div>
-        </section>
+    <section id="contact" className="py-16 sm:py-24 bg-background">
+        <div className="container max-w-7xl">
+            <div className="text-center mb-16">
+                <h2 className="text-4xl sm:text-5xl font-bold tracking-tight">Get in Touch</h2>
+                <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
+                We're here to answer any questions you may have. Reach out to us and we'll respond as soon as we can.
+                </p>
+            </div>
 
-        <section className="py-16 sm:py-24 bg-primary/5">
-          <div className="container max-w-7xl">
             <div className="grid md:grid-cols-2 gap-12">
               <Card>
                 <CardHeader>
@@ -100,10 +93,7 @@ export default function ContactPage() {
                 </div>
               </div>
             </div>
-          </div>
-        </section>
-      </main>
-      <Footer />
-    </div>
+        </div>
+    </section>
   );
 }

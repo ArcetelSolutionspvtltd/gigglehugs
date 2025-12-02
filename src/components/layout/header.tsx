@@ -10,10 +10,10 @@ import { Logo } from "@/components/icons/logo";
 import { ThemeToggle } from "./theme-toggle";
 
 const mainNavLinks = [
-  { href: "/about", label: "About Us" },
-  { href: "/services", label: "Services" },
-  { href: "/sitters", label: "Our Sitters" },
-  { href: "/contact", label: "Contact" },
+  { href: "/#about", label: "About Us" },
+  { href: "/#services", label: "Services" },
+  { href: "/#sitters", label: "Our Sitters" },
+  { href: "/#contact", label: "Contact" },
 ];
 
 export function Header() {
@@ -21,7 +21,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-20 max-w-7xl items-center justify-between">
+      <div className="container flex h-20 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href="/" className="flex items-center">
           <Logo />
         </Link>
@@ -41,7 +41,7 @@ export function Header() {
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <Button asChild>
-            <Link href="/contact">Book Now</Link>
+            <Link href="/#contact">Book Now</Link>
           </Button>
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
@@ -50,7 +50,7 @@ export function Header() {
                 <span className="sr-only">Open main menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-full max-w-xs pr-6">
+            <SheetContent side="left" className="w-full max-w-xs pr-6 sm:max-w-sm">
               <SheetHeader className="text-left">
                   <SheetTitle className="sr-only">Menu</SheetTitle>
               </SheetHeader>

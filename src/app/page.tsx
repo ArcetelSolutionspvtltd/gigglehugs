@@ -2,10 +2,10 @@ import { Header } from '@/components/layout/header';
 import { Footer } from '@/components/layout/footer';
 import { HeroSection } from './_components/hero-section';
 import { AboutSection } from './_components/about-section';
-import { FeaturedServices } from './_components/featured-services';
-import { FeaturedSitters } from './_components/featured-sitters';
+import { ServicesSection } from './_components/services-section';
+import { SittersSection } from './_components/sitters-section';
 import { TestimonialsSection } from './_components/testimonials-section';
-import { CtaSection } from './_components/cta-section';
+import { ContactSection } from './_components/contact-section';
 
 export default function Home() {
   return (
@@ -14,10 +14,10 @@ export default function Home() {
       <main className="flex-1">
         <HeroSection />
         <AboutSection />
-        <FeaturedServices />
-        <FeaturedSitters />
+        <ServicesSection />
+        <SittersSection />
         <TestimonialsSection />
-        <CtaSection />
+        <ContactSection />
       </main>
       <Footer />
     </div>
