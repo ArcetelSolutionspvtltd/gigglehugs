@@ -1,7 +1,6 @@
 import Image from 'next/image';
 import { sitters } from '@/lib/data';
 import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 
 export function SittersSection() {
   return (
@@ -29,22 +28,6 @@ export function SittersSection() {
                 </div>
                 <h3 className="text-2xl font-bold">{sitter.name}</h3>
                 <p className="mt-2 text-base text-muted-foreground flex-grow">{sitter.bio}</p>
-                <div className="mt-4">
-                    <h4 className="font-semibold text-sm mb-2">Certifications:</h4>
-                    <div className="flex flex-wrap justify-center gap-2">
-                        {sitter.certifications.map((cert) => (
-                        <Badge key={cert} variant="secondary">{cert}</Badge>
-                        ))}
-                    </div>
-                </div>
-                <div className="mt-4">
-                    <h4 className="font-semibold text-sm mb-2">Comfortable with:</h4>
-                    <div className="flex flex-wrap justify-center gap-2">
-                        {sitter.ageGroups.map((group) => (
-                        <Badge key={group} variant="outline">{group}</Badge>
-                        ))}
-                    </div>
-                </div>
                 </CardContent>
             </Card>
             ))}

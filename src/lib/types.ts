@@ -4,10 +4,7 @@ import type { LucideIcon } from 'lucide-react';
 export type Sitter = {
   id: string;
   name: string;
-  age: number;
   bio: string;
-  certifications: string[];
-  ageGroups: string[];
   image: ImagePlaceholder;
 };
 

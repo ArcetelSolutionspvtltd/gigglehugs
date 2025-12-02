@@ -16,28 +16,19 @@ export const sitters: Sitter[] = [
   {
     id: 'sitter-1',
     name: 'Natsai Mudzengi',
-    age: 24,
     bio: 'A recent child psychology graduate with a passion for creative play and learning. Natsai brings a ray of sunshine and patience to every family.',
-    certifications: ['CPR Certified', 'First-Aid Trained'],
-    ageGroups: ['Infants', 'Toddlers'],
     image: getImage('sitter-1'),
   },
   {
     id: 'sitter-2',
     name: 'Ruvimbo Chigumira',
-    age: 28,
     bio: 'With over 5 years of experience, Ruvimbo is a natural with kids of all ages. She loves outdoor adventures and crafting.',
-    certifications: ['Early Childhood Education Cert.', 'First-Aid Trained'],
-    ageGroups: ['Toddlers', 'Preschoolers'],
     image: getImage('sitter-2'),
   },
   {
     id: 'sitter-3',
     name: 'Shaynese Muzah',
-    age: 26,
     bio: 'Shaynese brings endless energy and fun to babysitting. She is great at sports, games, and telling silly stories to make anyone laugh.',
-    certifications: ['CPR Certified', 'Water Safety Cert.'],
-    ageGroups: ['School-Age', 'Pre-Teens'],
     image: getImage('sitter-3'),
   }
 ];
