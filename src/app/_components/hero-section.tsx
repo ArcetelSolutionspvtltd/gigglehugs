@@ -31,23 +31,25 @@ const heroImages = [
 
 export function HeroSection() {
   return (
-    <section className="relative w-full h-[80vh] min-h-[500px] max-h-[800px] text-white overflow-hidden">
+    <section className="relative w-full h-[80vh] min-h-[500px] max-h-[800px] text-white">
       <Carousel
         className="absolute inset-0 w-full h-full"
         plugins={[Autoplay({ delay: 5000, stopOnInteraction: false })]}
         opts={{ loop: true }}
       >
-        <CarouselContent className="h-full">
+        <CarouselContent>
           {heroImages.map((image, index) => (
-            <CarouselItem key={index} className="h-full">
-              <Image
-                src={image.src}
-                alt={image.alt}
-                fill
-                className="object-cover"
-                priority={index === 0}
-                data-ai-hint={image.hint}
-              />
+            <CarouselItem key={index}>
+              <div className="relative h-[80vh] min-h-[500px] max-h-[800px]">
+                <Image
+                  src={image.src}
+                  alt={image.alt}
+                  fill
+                  className="object-cover"
+                  priority={index === 0}
+                  data-ai-hint={image.hint}
+                />
+              </div>
             </CarouselItem>
           ))}
         </CarouselContent>
