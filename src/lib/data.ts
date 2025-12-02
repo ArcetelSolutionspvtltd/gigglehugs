@@ -1,3 +1,4 @@
+
 import type { Sitter, Service, Testimonial } from '@/lib/types';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
 import { Heart, BookOpen, Music, ToyBrick, Baby, HandHelping, Star, Moon } from 'lucide-react';
@@ -14,58 +15,31 @@ const getImage = (id: string) => {
 export const sitters: Sitter[] = [
   {
     id: 'sitter-1',
-    name: 'Emily Day',
+    name: 'Natsai Mudzengi',
     age: 24,
-    bio: 'A recent child psychology graduate with a passion for creative play and learning. Emily brings a ray of sunshine and patience to every family.',
+    bio: 'A recent child psychology graduate with a passion for creative play and learning. Natsai brings a ray of sunshine and patience to every family.',
     certifications: ['CPR Certified', 'First-Aid Trained'],
     ageGroups: ['Infants', 'Toddlers'],
     image: getImage('sitter-1'),
   },
   {
     id: 'sitter-2',
-    name: 'Jessica Sunshine',
+    name: 'Ruvimbo Chigumira',
     age: 28,
-    bio: 'With over 5 years of experience, Jessica is a natural with kids of all ages. She loves outdoor adventures and crafting.',
+    bio: 'With over 5 years of experience, Ruvimbo is a natural with kids of all ages. She loves outdoor adventures and crafting.',
     certifications: ['Early Childhood Education Cert.', 'First-Aid Trained'],
     ageGroups: ['Toddlers', 'Preschoolers'],
     image: getImage('sitter-2'),
   },
   {
     id: 'sitter-3',
-    name: 'Mark Giggle',
+    name: 'Shaynese Muzah',
     age: 26,
-    bio: 'Mark brings endless energy and fun to babysitting. He is great at sports, games, and telling silly stories to make anyone laugh.',
+    bio: 'Shaynese brings endless energy and fun to babysitting. She is great at sports, games, and telling silly stories to make anyone laugh.',
     certifications: ['CPR Certified', 'Water Safety Cert.'],
     ageGroups: ['School-Age', 'Pre-Teens'],
     image: getImage('sitter-3'),
-  },
-  {
-    id: 'sitter-4',
-    name: 'Sarah Hugs',
-    age: 32,
-    bio: 'A former nanny with a decade of experience, Sarah is calm, nurturing, and an expert at handling multiple children with ease and grace.',
-    certifications: ['Advanced Childcare Cert.', 'First-Aid Trained'],
-    ageGroups: ['Infants', 'Multi-Age'],
-    image: getImage('sitter-4'),
-  },
-  {
-    id: 'sitter-5',
-    name: 'Chloe Light',
-    age: 22,
-    bio: 'Chloe is an aspiring teacher who loves incorporating educational activities into her sitting sessions. She is fluent in Spanish.',
-    certifications: ['CPR Certified'],
-    ageGroups: ['Toddlers', 'Preschoolers'],
-    image: getImage('sitter-5'),
-  },
-  {
-    id: 'sitter-6',
-    name: 'David Beam',
-    age: 29,
-    bio: 'David is a musician who enjoys sharing his love for music with children. He can play guitar and piano and loves a good sing-along.',
-    certifications: ['First-Aid Trained'],
-    ageGroups: ['School-Age', 'Pre-Teens'],
-    image: getImage('sitter-6'),
-  },
+  }
 ];
 
 export const services: Service[] = [

@@ -14,39 +14,21 @@
     },
     {
       "id": "sitter-1",
-      "description": "Portrait of a friendly looking young woman.",
-      "imageUrl": "https://images.unsplash.com/photo-1563178406-4cdc2923acbc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8d29tYW4lMjBzbWlsaW5nfGVufDB8fHx8MTc2NDcwNTg1MHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "description": "Portrait of a friendly looking young woman, Natsai.",
+      "imageUrl": "/assets/sitters/natsai.png",
       "imageHint": "woman smiling"
     },
     {
       "id": "sitter-2",
-      "description": "Portrait of a cheerful woman in her late 20s.",
-      "imageUrl": "https://images.unsplash.com/photo-1614283233556-f35b0c801ef1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHx3b21hbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc2NDcwNjIzNXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "description": "Portrait of a cheerful woman, Ruvimbo.",
+      "imageUrl": "/assets/sitters/ruvimbo.png",
       "imageHint": "woman portrait"
     },
     {
       "id": "sitter-3",
-      "description": "Portrait of a kind looking man.",
-      "imageUrl": "https://images.unsplash.com/photo-1639747280804-dd2d6b3d88ac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxtYW4lMjBzbWlsaW5nfGVufDB8fHx8MTc2NDYzODk4NHww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "man smiling"
-    },
-    {
-      "id": "sitter-4",
-      "description": "Portrait of a woman with a warm smile.",
-      "imageUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHx3b21hbiUyMGhhcHB5fGVufDB8fHx8MTc2NDcxMDg3Nnww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "woman happy"
-    },
-    {
-      "id": "sitter-5",
-      "description": "Portrait of a smiling person.",
-      "imageUrl": "https://images.unsplash.com/photo-1623605931891-d5b95ee98459?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxwZXJzb24lMjBzbWlsaW5nfGVufDB8fHx8MTc2NDcwNjIzNnww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "person smiling"
-    },
-    {
-      "id": "sitter-6",
-      "description": "Portrait of a friendly person.",
-      "imageUrl": "https://images.unsplash.com/photo-1600180758890-6b94519a8ba6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxwZXJzb24lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjQ2NzYxNTh8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "person portrait"
+      "description": "Portrait of a kind looking woman, Shaynese.",
+      "imageUrl": "/assets/sitters/shaynene.png",
+      "imageHint": "woman smiling"
     },
     {
       "id": "testimonial-1",
