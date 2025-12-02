@@ -13,22 +13,22 @@ import { Button } from '@/components/ui/button';
 
 const heroImages = [
   {
-    src: '/assets/bg/bg1.jpg',
+    src: '/assets/bg/bg-1.jpg',
     alt: 'A child playing happily outdoors.',
     hint: 'child playing'
   },
   {
-    src: '/assets/bg/bg2.jpg',
+    src: '/assets/bg/bg-2.jpg',
     alt: 'A babysitter reading a book to a child.',
     hint: 'babysitter reading'
   },
   {
-    src: '/assets/bg/bg3.jpg',
+    src: '/assets/bg/bg-3.jpg',
     alt: 'Two children laughing together.',
     hint: 'children laughing'
   },
   {
-    src: '/assets/bg/bg4.jpg',
+    src: '/assets/bg/bg-4.jpg',
     alt: 'A child drawing and being creative.',
     hint: 'child drawing'
   }
