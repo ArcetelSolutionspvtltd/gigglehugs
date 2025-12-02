@@ -15,7 +15,7 @@ export type Service = {
   id: string;
   title: string;
   description: string;
-  price: string;
+  price?: string;
   icon: LucideIcon;
 };
 

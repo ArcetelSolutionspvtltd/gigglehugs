@@ -34,7 +34,7 @@ export default function ContactPage() {
           </div>
         </section>
 
-        <section className="py-16 sm:py-24 bg-secondary/30">
+        <section className="py-16 sm:py-24 bg-primary/5">
           <div className="container max-w-7xl">
             <div className="grid md:grid-cols-2 gap-12">
               <Card>
@@ -72,7 +72,7 @@ export default function ContactPage() {
                         </div>
                         <div>
                             <h3 className="font-semibold text-lg">Email Us</h3>
-                            <p className="text-muted-foreground">contact@gigglehugs.com</p>
+                            <p className="text-muted-foreground">info@gigglehugs.org</p>
                         </div>
                     </div>
                      <div className="flex items-start gap-4">

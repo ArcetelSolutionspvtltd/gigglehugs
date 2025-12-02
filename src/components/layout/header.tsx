@@ -7,7 +7,7 @@ import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Logo } from "@/components/icons/logo";
-import { cn } from "@/lib/utils";
+import { ThemeToggle } from "./theme-toggle";
 
 const mainNavLinks = [
   { href: "/about", label: "About Us" },
@@ -39,6 +39,7 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           <Button asChild>
             <Link href="/contact">Book Now</Link>
           </Button>

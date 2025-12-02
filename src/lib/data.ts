@@ -1,6 +1,6 @@
 import type { Sitter, Service, Testimonial } from '@/lib/types';
 import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { Heart, Sun, Smile, ToyBrick, BookOpen, Music } from 'lucide-react';
+import { Heart, BookOpen, Music, ToyBrick, Baby, HandHelping, Star, Moon } from 'lucide-react';
 
 const getImage = (id: string) => {
   const image = PlaceHolderImages.find(img => img.id === id);
@@ -69,28 +69,43 @@ export const sitters: Sitter[] = [
 ];
 
 export const services: Service[] = [
-  {
-    id: 'service-1',
-    title: 'Sunshine Sitting',
-    description: 'Our standard daytime babysitting service, filled with fun, play, and attentive care.',
-    price: '$25/hr',
-    icon: Sun,
-  },
-  {
-    id: 'service-2',
-    title: 'Giggle-Time Playdates',
-    description: 'We can supervise and facilitate playdates for your child and their friends.',
-    price: '$30/hr',
-    icon: Smile,
-  },
-  {
-    id: 'service-3',
-    title: 'Date Night Hugs',
-    description: 'Enjoy your evening out knowing your little ones are in safe, caring hands.',
-    price: '$28/hr',
-    icon: Heart,
-  },
-];
+    {
+      id: 'service-1',
+      title: 'Gentle Care for Infants & Toddlers',
+      description: 'Nurturing the youngest hearts with love, patience, and safety. We treat every child as a precious gift from God.',
+      icon: Baby,
+    },
+    {
+      id: 'service-2',
+      title: 'Playful Learning & Creative Activities',
+      description: 'Age-appropriate crafts, storytime, music, and imaginative play to inspire joy, curiosity, and faith-based values.',
+      icon: ToyBrick,
+    },
+    {
+      id: 'service-3',
+      title: 'Storytime & Biblical Lessons',
+      description: 'Short Bible stories, prayers, and songs to teach kindness, honesty, and love in a fun and age-appropriate way.',
+      icon: BookOpen,
+    },
+    {
+      id: 'service-4',
+      title: 'After-School Care & Homework Help',
+      description: 'Supportive guidance that encourages diligence, learning, and positive character development.',
+      icon: BookOpen,
+    },
+    {
+      id: 'service-5',
+      title: 'Date Night or Parent Respite Care',
+      description: 'Safe, loving childcare so parents can rest, recharge, or enjoy time together, knowing their children are in God-centered hands.',
+      icon: Star,
+    },
+    {
+      id: 'service-6',
+      title: 'Special Needs & Individual Attention',
+      description: 'Compassionate care for children who need extra support, embracing patience and grace in all interactions.',
+      icon: HandHelping,
+    },
+  ];
 
 export const serviceAddons: Service[] = [
     {

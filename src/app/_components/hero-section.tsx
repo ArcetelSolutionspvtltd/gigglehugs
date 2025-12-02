@@ -27,6 +27,11 @@ const heroImages = [
     alt: 'Two children laughing together.',
     hint: 'children laughing'
   },
+  {
+    src: '/assets/bg/bg4.jpg',
+    alt: 'A child drawing and being creative.',
+    hint: 'child drawing'
+  }
 ];
 
 export function HeroSection() {
@@ -63,7 +68,7 @@ export function HeroSection() {
             Sunshine Giggles and Hugs
             </h1>
             <p className="mt-6 max-w-2xl mx-auto text-lg sm:text-xl md:text-2xl text-shadow-md" style={{textShadow: '1px 1px 6px rgba(0,0,0,0.6)'}}>
-            The welcoming, and trustworthy babysitting service that makes parents and kids happy.
+            Joyful, nurturing, and Christ-centered childcare for your little ones.
             </p>
             <div className="mt-10 flex flex-wrap justify-center gap-4">
             <Button size="lg" asChild className="transform transition-transform hover:scale-105">

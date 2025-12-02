@@ -55,7 +55,7 @@ export function Footer() {
                 <h3 className="text-sm font-semibold text-foreground tracking-wider uppercase">Contact</h3>
                 <ul className="mt-4 space-y-4">
                     <li>
-                        <p className="text-base text-muted-foreground">contact@gigglehugs.org</p>
+                        <p className="text-base text-muted-foreground">info@gigglehugs.org</p>
                     </li>
                     <li>
                         <p className="text-base text-muted-foreground">(123) 456-7890</p>
