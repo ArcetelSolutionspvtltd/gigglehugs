@@ -5,7 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { cn } from '@/lib/utils';
 
 export const metadata: Metadata = {
-  title: 'GiggleHugs | Sunshine, Giggles & Hugs',
+  title: 'GiggleHugs | Sunshine Giggles and Hugs',
   description: 'The warm, welcoming, and trustworthy babysitting service that makes parents feel happy and confident. Find the perfect sitter at gigglehugs.org.',
   metadataBase: new URL('https://gigglehugs.org'),
 };

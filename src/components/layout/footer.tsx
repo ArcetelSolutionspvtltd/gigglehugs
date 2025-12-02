@@ -26,7 +26,7 @@ export function Footer() {
                 <Logo />
             </Link>
             <p className="text-muted-foreground text-base">
-              Sunshine, Giggles & Safe Hugs.
+              Sunshine Giggles and Hugs.
             </p>
             <div className="flex space-x-6">
               {socialLinks.map(({ href, icon: Icon, label }) => (

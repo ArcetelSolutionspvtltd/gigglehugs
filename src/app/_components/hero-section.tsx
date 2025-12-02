@@ -49,7 +49,7 @@ export function HeroSection() {
       <div className="relative z-10 h-full flex flex-col items-center justify-center text-center p-4">
         <div className="max-w-4xl">
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-shadow-lg" style={{textShadow: '2px 2px 10px rgba(0,0,0,0.6)'}}>
-            Sunshine, Giggles & Safe Hugs
+            Sunshine Giggles and Hugs
             </h1>
             <p className="mt-6 max-w-2xl mx-auto text-lg sm:text-xl md:text-2xl text-shadow-md" style={{textShadow: '1px 1px 6px rgba(0,0,0,0.6)'}}>
             The welcoming, and trustworthy babysitting service that makes parents and kids happy.
