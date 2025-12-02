@@ -7,6 +7,12 @@
       "imageHint": "child playing"
     },
     {
+      "id": "hero-2",
+      "description": "A young babysitter playing with a child on the floor.",
+      "imageUrl": "https://images.unsplash.com/photo-1566073771259-6a8506099945?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxiYWJ5c2l0dGVyJTIwcGxheWluZ3xlbnwwfHx8fDE3NjQ3MTEwMDB8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "babysitter playing"
+    },
+    {
       "id": "sitter-1",
       "description": "Portrait of a friendly looking young woman.",
       "imageUrl": "https://images.unsplash.com/photo-1563178406-4cdc2923acbc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8d29tYW4lMjBzbWlsaW5nfGVufDB8fHx8MTc2NDcwNTg1MHww&ixlib=rb-4.1.0&q=80&w=1080",
