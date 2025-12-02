@@ -48,6 +48,10 @@ export default function ContactPage() {
                       <Label htmlFor="name">Your Name</Label>
                       <Input id="name" placeholder="Sunshine Giggle" required />
                     </div>
+                     <div className="space-y-2">
+                      <Label htmlFor="subject">Subject</Label>
+                      <Input id="subject" placeholder="Question about services" required />
+                    </div>
                     <div className="space-y-2">
                       <Label htmlFor="email">Your Email</Label>
                       <Input id="email" type="email" placeholder="sunshine@gigglehugs.com" required />

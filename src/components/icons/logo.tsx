@@ -1,8 +1,10 @@
-import type { SVGProps } from "react";
 import Image from "next/image";
 
-export function Logo(props: SVGProps<SVGSVGElement>) {
+export function Logo() {
   return (
-    <Image src="/assets/logo/logo.svg" alt="GiggleHugs Logo" width={150} height={30} {...props} />
+    <div className="flex items-center gap-3">
+      <Image src="/assets/logo/logo.svg" alt="GiggleHugs Logo" width={40} height={40} className="h-10 w-auto" />
+      <span className="text-2xl font-bold tracking-tight text-primary">GiggleHugs</span>
+    </div>
   );
 }
