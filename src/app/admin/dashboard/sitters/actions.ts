@@ -53,12 +53,12 @@ export async function upsertSitterAction(prevState: FormState, formData: FormDat
   if (avatarFile && avatarFile.size > 0) {
     const fileExtension = avatarFile.name.split('.').pop();
     // Create a URL-friendly filename from the sitter's name
-    const fileName = `${name.toLowerCase().replace(/\s+/g, '_')}.${fileExtension}`;
+    const fileName = `${Date.now()}_${name.toLowerCase().replace(/\s+/g, '_')}.${fileExtension}`;
     
     // Upload to 'sitters' bucket in 'avatars' folder
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('sitters')
-      .upload(`avatars/${fileName}`, avatarFile, { upsert: true }); // Use upsert to overwrite if exists
+      .upload(`avatars/${fileName}`, avatarFile, { upsert: true });
 
     if (uploadError) {
       console.error('Storage error:', uploadError);
