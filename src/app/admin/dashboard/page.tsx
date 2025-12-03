@@ -4,13 +4,11 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { createClient } from '@/lib/supabase/server';
+import { admin } from '@/lib/supabase/admin';
 import { Users, List, Star, Link2, Phone, HelpCircle } from 'lucide-react';
 import { AnimatedCounter } from './_components/animated-counter';
 
 async function getStats() {
-  const supabase = createClient();
-  
   const [
     sitters,
     services,
@@ -19,12 +17,12 @@ async function getStats() {
     contactDetails,
     faqs
   ] = await Promise.all([
-    supabase.from('sitters').select('*', { count: 'exact', head: true }),
-    supabase.from('services').select('*', { count: 'exact', head: true }),
-    supabase.from('testimonials').select('*', { count: 'exact', head: true }),
-    supabase.from('social_links').select('*', { count: 'exact', head: true }),
-    supabase.from('contact_details').select('*', { count: 'exact', head: true }),
-    supabase.from('faqs').select('*', { count: 'exact', head: true })
+    admin.from('sitters').select('*', { count: 'exact', head: true }),
+    admin.from('services').select('*', { count: 'exact', head: true }),
+    admin.from('testimonials').select('*', { count: 'exact', head: true }),
+    admin.from('social_links').select('*', { count: 'exact', head: true }),
+    admin.from('contact_details').select('*', { count: 'exact', head: true }),
+    admin.from('faqs').select('*', { count: 'exact', head: true })
   ]);
 
   return {
