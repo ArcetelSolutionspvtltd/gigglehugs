@@ -10,7 +10,7 @@ import {
   CarouselPrevious,
 } from '@/components/ui/carousel';
 import Autoplay from 'embla-carousel-autoplay';
-import { Star } from 'lucide-react';
+import { Star, User } from 'lucide-react';
 import { useRef } from 'react';
 import type { Testimonial } from '@/lib/types';
 
@@ -48,14 +48,20 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
                 <div className="p-4 h-full">
                   <Card className="h-full flex flex-col">
                     <CardContent className="p-8 flex flex-col items-center justify-center text-center flex-grow">
-                      <Image
-                        src={testimonial.avatar_url || 'https://picsum.photos/seed/placeholder/80/80'}
-                        alt={`Photo of ${testimonial.name}`}
-                        width={80}
-                        height={80}
-                        className="rounded-full mb-4 border-4 border-primary/20"
-                        data-ai-hint="family photo"
-                      />
+                      <div className="relative h-20 w-20 rounded-full overflow-hidden bg-muted flex items-center justify-center mb-4 border-4 border-primary/20">
+                        {testimonial.avatar_url ? (
+                            <Image
+                                src={testimonial.avatar_url}
+                                alt={`Photo of ${testimonial.name}`}
+                                fill
+                                sizes='80px'
+                                className="object-cover"
+                                data-ai-hint="family photo"
+                            />
+                        ): (
+                            <User className="h-10 w-10 text-muted-foreground" />
+                        )}
+                      </div>
                        <div className="flex gap-1 text-primary mb-2">
                         {[...Array(testimonial.rating ?? 5)].map((_, i) => <Star key={i} className="h-5 w-5 fill-current" />)}
                        </div>
