@@ -10,6 +10,7 @@ import {
   LogOut,
   Settings,
   HelpCircle,
+  BookOpen,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -43,6 +44,8 @@ const navItems: NavItemProps[] = [
     { href: '/admin/dashboard/faqs', iconName: 'help-circle', label: 'FAQs'},
     { href: '/admin/dashboard/contact', iconName: 'phone', label: 'Contact Details' },
     { href: '/admin/dashboard/social', iconName: 'link2', label: 'Social Links' },
+    { href: '/admin/dashboard/settings', iconName: 'settings', label: 'Settings'},
+    { href: '/admin/dashboard/guide', iconName: 'book-open', label: 'Guide'},
 ];
 
 export default async function DashboardLayout({
@@ -76,7 +79,7 @@ export default async function DashboardLayout({
               <Logo />
             </Link>
           </div>
-          <div className="flex-1">
+          <div className="flex-1 overflow-y-auto">
             <nav className="grid items-start px-2 text-sm font-medium lg:px-4">
               {navItems.map(item => <NavItem key={item.href} {...item} />)}
             </nav>
@@ -99,8 +102,18 @@ export default async function DashboardLayout({
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>Settings</DropdownMenuItem>
-              <DropdownMenuItem>Support</DropdownMenuItem>
+              <Link href="/admin/dashboard/settings">
+                <DropdownMenuItem>
+                    <Settings className="mr-2 h-4 w-4" />
+                    <span>Settings</span>
+                </DropdownMenuItem>
+              </Link>
+              <Link href="/admin/dashboard/guide">
+                <DropdownMenuItem>
+                  <HelpCircle className="mr-2 h-4 w-4" />
+                  <span>Guide</span>
+                </DropdownMenuItem>
+              </Link>
               <DropdownMenuSeparator />
                <form action={handleLogout}>
                 <button type="submit" className="w-full">

@@ -42,3 +42,15 @@ export type FAQ = {
   question: string;
   answer: string;
 }
+
+export type ColorTheme = {
+  primary: string;
+  background: string;
+  accent: string;
+}
+
+export type Setting = {
+    id: number;
+    key: string;
+    value: any;
+}

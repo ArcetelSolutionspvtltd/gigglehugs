@@ -1,7 +1,8 @@
 import { 
     Heart, BookOpen, Music, ToyBrick, Baby, HandHelping, Star, Moon, 
     type LucideIcon, Twitter, Facebook, Instagram, Linkedin, Rss, Image,
-    Smartphone, Mail, Home, List, Users, Link2, Phone, Youtube, HelpCircle
+    Smartphone, Mail, Home, List, Users, Link2, Phone, Youtube, HelpCircle,
+    Settings
 } from 'lucide-react';
 
 export const iconMap: { [key: string]: LucideIcon } = {
@@ -28,6 +29,7 @@ export const iconMap: { [key: string]: LucideIcon } = {
   users: Users,
   link2: Link2,
   'help-circle': HelpCircle,
+  settings: Settings,
   default: Image,
 };
 
