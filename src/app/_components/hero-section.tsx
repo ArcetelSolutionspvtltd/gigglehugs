@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/carousel';
 import Autoplay from 'embla-carousel-autoplay';
 import { animate, stagger } from 'motion';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 
@@ -43,7 +43,19 @@ const heroTitle = [
     { text: 'Hugs', className: 'text-primary' },
 ];
 
+const subtitles = [
+    "Joyful, nurturing, and Christ-centered childcare for your little ones.",
+    "Where little hearts are cherished and big smiles are made.",
+    "Your trusted partner in faith-based childcare.",
+    "Safe, loving care from our family to yours."
+];
+
 export function HeroSection() {
+  const [currentSubtitle, setCurrentSubtitle] = useState('');
+  const [subtitleIndex, setSubtitleIndex] = useState(0);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [charIndex, setCharIndex] = useState(0);
+
   useEffect(() => {
     animate(
       '.hero-title-word',
@@ -51,6 +63,34 @@ export function HeroSection() {
       { duration: 0.5, delay: stagger(0.1), easing: 'ease-out' }
     );
   }, []);
+
+  useEffect(() => {
+    const typeSpeed = isDeleting ? 50 : 100;
+    const currentText = subtitles[subtitleIndex];
+
+    const handleTyping = () => {
+      if (isDeleting) {
+        if (charIndex > 0) {
+          setCurrentSubtitle(currentText.substring(0, charIndex - 1));
+          setCharIndex(charIndex - 1);
+        } else {
+          setIsDeleting(false);
+          setSubtitleIndex((prevIndex) => (prevIndex + 1) % subtitles.length);
+        }
+      } else {
+        if (charIndex < currentText.length) {
+          setCurrentSubtitle(currentText.substring(0, charIndex + 1));
+          setCharIndex(charIndex + 1);
+        } else {
+          // Pause at the end of the sentence before deleting
+          setTimeout(() => setIsDeleting(true), 2000);
+        }
+      }
+    };
+
+    const typingTimeout = setTimeout(handleTyping, typeSpeed);
+    return () => clearTimeout(typingTimeout);
+  }, [charIndex, isDeleting, subtitleIndex]);
 
   return (
     <section className="relative w-full h-screen min-h-[500px] max-h-[850px] text-white">
@@ -81,15 +121,16 @@ export function HeroSection() {
 
       <div className="relative z-10 h-full flex flex-col items-center justify-center text-center p-4">
         <div className="max-w-4xl pt-20">
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-shadow-lg" style={{textShadow: '2px 2px 10px rgba(0,0,0,0.6)'}}>
+            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight text-shadow-lg" style={{textShadow: '2px 2px 10px rgba(0,0,0,0.6)'}}>
               {heroTitle.map((word, index) => (
                 <span key={index} className={`inline-block hero-title-word opacity-0 ${word.className || ''}`}>
                   {word.text}&nbsp;
                 </span>
               ))}
             </h1>
-            <p className="mt-6 max-w-2xl mx-auto text-lg sm:text-xl md:text-2xl text-shadow-md" style={{textShadow: '1px 1px 6px rgba(0,0,0,0.6)'}}>
-            Joyful, nurturing, and Christ-centered childcare for your little ones.
+            <p className="mt-6 max-w-2xl mx-auto text-lg sm:text-xl md:text-2xl text-shadow-md min-h-[64px] sm:min-h-[84px]" style={{textShadow: '1px 1px 6px rgba(0,0,0,0.6)'}}>
+              {currentSubtitle}
+              <span className="animate-pulse">|</span>
             </p>
             <div className="mt-10 flex flex-wrap justify-center gap-4">
             <Button size="lg" asChild className="transform transition-transform hover:scale-105">
