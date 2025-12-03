@@ -100,7 +100,7 @@ export function ContactSection({ emails, phones, sitters }: ContactSectionProps)
                           </div>
                           <div>
                               <h3 className="font-semibold text-lg">Our Team</h3>
-                              {sitters.map(sitter => sitter.email && <p key={sitter.id} className="text-muted-foreground">{sitter.name}: {sitter.email}</p>)}
+                              {sitters.map(sitter => sitter.email && <p key={sitter.id} className="text-muted-foreground">{sitter.email}</p>)}
                           </div>
                         </div>
                      )}
