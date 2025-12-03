@@ -6,7 +6,7 @@ import { z } from 'zod';
 
 const contactSchema = z.object({
   id: z.coerce.number().optional(),
-  contact_type: z.enum(['1', '2'], { // 1 for phone, 2 for email
+  type: z.enum(['1', '2'], { // 1 for phone, 2 for email
     errorMap: () => ({ message: 'Please select a valid type.' }),
   }).transform(v => parseInt(v, 10)),
   value: z.string().min(5, 'Value must be at least 5 characters.'),
@@ -15,7 +15,7 @@ const contactSchema = z.object({
 export type FormState = {
   message: string;
   errors?: {
-    contact_type?: string[];
+    type?: string[];
     value?: string[];
   };
   success: boolean;
@@ -24,7 +24,7 @@ export type FormState = {
 export async function upsertContactAction(prevState: FormState, formData: FormData): Promise<FormState> {
   const validatedFields = contactSchema.safeParse({
     id: formData.get('id'),
-    contact_type: formData.get('contact_type'),
+    type: formData.get('type'),
     value: formData.get('value'),
   });
   

@@ -26,7 +26,7 @@ export type Testimonial = {
 
 export type ContactDetail = {
   id: number;
-  contact_type: 1 | 2; // 1 for phone, 2 for email
+  type: 1 | 2; // 1 for phone, 2 for email
   value: string;
 }
 

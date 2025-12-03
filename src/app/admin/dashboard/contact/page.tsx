@@ -64,7 +64,7 @@ export default async function ContactPage() {
             </TableHeader>
             <TableBody>
               {contacts?.map((contact) => {
-                const typeLabel = getTypeLabel(contact.contact_type);
+                const typeLabel = getTypeLabel(contact.type);
                 const Icon = getIcon(typeLabel);
                 return (
                   <TableRow key={contact.id}>

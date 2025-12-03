@@ -17,8 +17,8 @@ export default async function Home() {
   const { data: contactDetails } = await supabase.from('contact_details').select('*').returns<ContactDetail[]>();
   const { data: socialLinks } = await supabase.from('social_links').select('*').returns<SocialLink[]>();
 
-  const emails = contactDetails?.filter(d => d.contact_type === 2) ?? [];
-  const phones = contactDetails?.filter(d => d.contact_type === 1) ?? [];
+  const emails = contactDetails?.filter(d => d.type === 2) ?? [];
+  const phones = contactDetails?.filter(d => d.type === 1) ?? [];
 
   return (
     <div className="flex min-h-screen flex-col">

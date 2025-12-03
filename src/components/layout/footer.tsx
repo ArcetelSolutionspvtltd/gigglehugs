@@ -27,8 +27,8 @@ export function Footer({ socialLinks, contactDetails }: FooterProps) {
   }, []);
 
 
-  const emails = contactDetails.filter(d => d.contact_type === 'email');
-  const phones = contactDetails.filter(d => d.contact_type === 'phone');
+  const emails = contactDetails.filter(d => d.type === 2);
+  const phones = contactDetails.filter(d => d.type === 1);
 
   return (
     <footer className="bg-secondary/50 border-t">
