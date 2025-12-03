@@ -62,7 +62,7 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
                             <CardTitle className="text-lg">{testimonial.name}</CardTitle>
                             <div className="flex items-center gap-1 mt-1">
                                 {[...Array(5)].map((_, i) => (
-                                <Star key={i} className={`h-4 w-4 text-primary ${i < (testimonial.rating ?? 0) ? 'fill-primary' : ''}`} />
+                                <Star key={i} className={`h-4 w-4 text-primary ${i < (testimonial.rating ?? 0) ? 'fill-primary' : 'fill-none'}`} />
                                 ))}
                             </div>
                         </div>

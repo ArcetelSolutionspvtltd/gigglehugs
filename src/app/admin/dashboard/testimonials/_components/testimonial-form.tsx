@@ -1,6 +1,6 @@
 'use client';
 
-import { useActionState, useState, useRef, useEffect, type ReactNode, useCallback } from 'react';
+import { useActionState, useState, useRef, useEffect, type ReactNode, useCallback, ChangeEvent } from 'react';
 import Image from 'next/image';
 import Cropper, { type Area } from 'react-easy-crop';
 
@@ -33,6 +33,8 @@ import { dataURLtoFile, getCroppedImg } from '@/lib/utils';
 import { Slider } from '@/components/ui/slider';
 import { useFormStatus } from 'react-dom';
 
+const MAX_TESTIMONIAL_LENGTH = 250;
+
 function SubmitButton({ isEditing }: { isEditing: boolean }) {
   const { pending } = useFormStatus();
   return (
@@ -63,6 +65,7 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
   const [avatarPreview, setAvatarPreview] = useState<string | null>(testimonial?.avatar_url || null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
+  const [charCount, setCharCount] = useState(testimonial?.testimonial?.length || 0);
 
   const [imgSrc, setImgSrc] = useState('');
   const [isCropModalOpen, setIsCropModalOpen] = useState(false);
@@ -75,6 +78,7 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
     if (!isOpen) {
         setAvatarPreview(testimonial?.avatar_url || null);
         setImgSrc('');
+        setCharCount(testimonial?.testimonial?.length || 0);
         formRef.current?.reset();
     }
   }, [isOpen, testimonial]);
@@ -135,6 +139,10 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
         console.error(e);
         toast({ title: 'Error', description: 'Could not crop image.', variant: 'destructive'});
     }
+  };
+
+  const handleTextareaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setCharCount(e.target.value.length);
   };
 
   return (
@@ -227,7 +235,13 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
               defaultValue={testimonial?.testimonial ?? ''}
               rows={5}
               required
+              maxLength={MAX_TESTIMONIAL_LENGTH}
+              onChange={handleTextareaChange}
             />
+            <div className="text-right text-sm text-muted-foreground">
+                {charCount}/{MAX_TESTIMONIAL_LENGTH}
+            </div>
+            {state?.errors?.testimonial && <p className="text-sm font-medium text-destructive">{state.errors.testimonial[0]}</p>}
           </div>
 
           <SheetFooter className="mt-4">
