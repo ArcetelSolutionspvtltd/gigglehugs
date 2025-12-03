@@ -106,7 +106,7 @@ export const testimonials: Testimonial[] = [
   },
   {
     id: 'testimonial-2',
-    name: 'Siziba M.',
+    name: 'Isabel',
     relation: "Single Mother",
     quote: "As a single mom, finding a sitter I trust is crucial. Natsai is so kind and understanding, and her help has made my days so much easier. I'm incredibly grateful.",
     image: getImage('testimonial-siziba'),
