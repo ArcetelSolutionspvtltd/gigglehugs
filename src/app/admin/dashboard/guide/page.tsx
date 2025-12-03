@@ -11,47 +11,47 @@ const guideSections = [
   {
     title: 'Dashboard',
     icon: Home,
-    content: 'The main dashboard gives you a quick overview of your site\'s content. It shows total counts for services, sitters, testimonials, and more.'
+    content: 'The main dashboard provides a high-level overview of your website\'s content. It displays the total counts for Services, Sitters, Testimonials, FAQs, Social Links, and Contact Details. These numbers are fetched directly from your database and animate on screen to give you a dynamic summary of your platform\'s scale.'
   },
   {
     title: 'Services',
     icon: List,
-    content: 'In the Services section, you can add, edit, or delete the babysitting services offered on your website. Each service has a title, description, and an icon.'
+    content: 'In the "Services" section, you can manage all the babysitting services your platform offers. When adding or editing a service, you can define its Title, a short Description, and select a relevant Icon from a visual picker. These services are then displayed in a dedicated section on your public-facing homepage.'
   },
   {
     title: 'Sitters',
     icon: Users,
-    content: 'Manage your team of sitters here. You can add new sitters, update their name, bio, and email, and upload an avatar for them. The bio has a character limit to keep the layout consistent.'
+    content: 'Manage your team of sitters here. You can add new sitters or edit existing ones. Each sitter has a Name, an Email, an Avatar, and a Bio. The Bio is limited to 150 characters to ensure a consistent and clean look on the homepage. When you upload an avatar, a cropping tool will appear, allowing you to create a perfect circular profile picture.'
   },
   {
     title: 'Testimonials',
     icon: Star,
-    content: 'Add and manage family testimonials. Each testimonial includes a name, a short bio (e.g., "Parents of two"), a rating from 1 to 5, the testimonial text, and an optional avatar.'
+    content: 'This section is for managing testimonials from families. Each testimonial includes the family\'s Name, a short Bio (e.g., "Parents of two"), a Rating from 1 to 5 stars, and the Testimonial text itself, which is limited to 150 characters. You can also upload an optional avatar, which can be cropped for a perfect fit.'
   },
   {
     title: 'FAQs',
     icon: HelpCircle,
-    content: 'Here you can manage the Frequently Asked Questions section. Add new questions and answers, or edit existing ones to keep your visitors informed.'
+    content: 'Manage the Frequently Asked Questions (FAQs) section of your website. You can add, edit, or delete question-and-answer pairs. This content is displayed on your homepage in an accordion-style format, allowing visitors to easily find answers to common queries.'
   },
   {
     title: 'Contact Details',
     icon: Phone,
-    content: 'Manage the phone numbers and email addresses displayed on your public website. You can add, edit, or delete contact details as needed.'
+    content: 'Here, you can manage the primary contact information displayed on your website, such as phone numbers and email addresses. You can add, edit, or delete these details to ensure your visitors can always reach you.'
   },
   {
     title: 'Social Links',
     icon: Link2,
-    content: 'Update the social media links that appear in your website\'s footer. You can select the platform and provide the full URL.'
+    content: 'Update the social media links that appear in your website\'s footer. For each link, you select a Platform (like Facebook, Instagram, etc.) and provide the full URL. This helps visitors connect with you on your social channels.'
   },
   {
     title: 'Settings',
     icon: Settings,
-    content: 'Customize your website\'s appearance. Use the AI Theme Customizer to generate a new color palette for your site by describing the look and feel you want.'
+    content: 'Customize your website\'s appearance using the AI Theme Customizer. Describe the look and feel you want (e.g., "warm and friendly," "professional and calm") and the AI will generate a new color palette (primary, background, and accent colors) for your site. You can apply the new theme or reset it to the default at any time.'
   },
   {
     title: 'Guide',
     icon: BookOpen,
-    content: 'This is the guide you are currently reading! It provides a brief explanation of each section in the admin dashboard.'
+    content: 'You are currently viewing the guide! This section serves as your reference for understanding and using all the features within the admin dashboard.'
   }
 ];
 
@@ -68,7 +68,7 @@ export default function GuidePage() {
             <CardDescription>Click on each section to learn more about what it does.</CardDescription>
         </CardHeader>
         <CardContent>
-            <Accordion type="single" collapsible className="w-full">
+            <Accordion type="single" collapsible className="w-full" defaultValue="Dashboard">
                 {guideSections.map((section) => (
                     <AccordionItem key={section.title} value={section.title}>
                         <AccordionTrigger className="text-lg hover:no-underline">

@@ -2,7 +2,7 @@
 
 import { useActionState, useState, useRef, useEffect, type ReactNode } from 'react';
 import { useFormStatus } from 'react-dom';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ChevronsUpDown } from 'lucide-react';
 import {
   Sheet,
   SheetContent,
@@ -27,18 +27,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import { useToast } from '@/hooks/use-toast';
 import { upsertServiceAction, type FormState } from '../actions';
 import type { Service } from '@/lib/types';
-import { iconMap } from '@/lib/icons';
+import { iconMap, getIcon } from '@/lib/icons';
 import { useMediaQuery } from '@/hooks/use-media-query';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { cn } from '@/lib/utils';
 
 function SubmitButton({ isEditing }: { isEditing: boolean }) {
   const { pending } = useFormStatus();
@@ -67,8 +63,19 @@ export function ServiceForm({ children, service }: ServiceFormProps) {
   const [state, formAction] = useActionState(upsertServiceAction, initialState);
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
+  const [isIconPopoverOpen, setIconPopoverOpen] = useState(false);
+  const [selectedIcon, setSelectedIcon] = useState(service?.icon_name ?? 'default');
   const formRef = useRef<HTMLFormElement>(null);
   const isDesktop = useMediaQuery("(min-width: 768px)");
+
+  const CurrentIcon = getIcon(selectedIcon);
+
+  useEffect(() => {
+    if (!isOpen) {
+        formRef.current?.reset();
+        setSelectedIcon(service?.icon_name ?? 'default');
+    }
+  }, [isOpen, service]);
 
   useEffect(() => {
     if (state.message) {
@@ -119,19 +126,51 @@ export function ServiceForm({ children, service }: ServiceFormProps) {
          {state?.errors?.description && <p className="text-sm font-medium text-destructive">{state.errors.description[0]}</p>}
       </div>
       <div className="space-y-2">
-        <Label htmlFor="icon_name">Icon</Label>
-        <Select name="icon_name" defaultValue={service?.icon_name ?? ''}>
-            <SelectTrigger>
-                <SelectValue placeholder="Select an icon" />
-            </SelectTrigger>
-            <SelectContent>
-                {Object.keys(iconMap).map(iconName => (
-                    <SelectItem key={iconName} value={iconName}>
-                        {iconName.charAt(0).toUpperCase() + iconName.slice(1).replace('-', ' ')}
-                    </SelectItem>
-                ))}
-            </SelectContent>
-        </Select>
+        <Label>Icon</Label>
+        <input type="hidden" name="icon_name" value={selectedIcon} />
+        <Popover open={isIconPopoverOpen} onOpenChange={setIconPopoverOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              role="combobox"
+              aria-expanded={isIconPopoverOpen}
+              className="w-full justify-between"
+            >
+              <div className="flex items-center gap-2">
+                <CurrentIcon className="h-5 w-5" />
+                {selectedIcon.charAt(0).toUpperCase() + selectedIcon.slice(1).replace(/-/g, ' ')}
+              </div>
+              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-[300px] p-0">
+            <ScrollArea className="h-72">
+              <div className="grid grid-cols-4 gap-2 p-4">
+                {Object.keys(iconMap).map(iconName => {
+                  const Icon = iconMap[iconName];
+                  return (
+                    <Button
+                      key={iconName}
+                      variant="outline"
+                      size="icon"
+                      className={cn(
+                        "h-16 w-full flex flex-col items-center justify-center gap-1",
+                        selectedIcon === iconName && "ring-2 ring-primary"
+                      )}
+                      onClick={() => {
+                        setSelectedIcon(iconName);
+                        setIconPopoverOpen(false);
+                      }}
+                    >
+                      <Icon className="h-6 w-6" />
+                      <span className="text-xs truncate">{iconName.replace(/-/g, ' ')}</span>
+                    </Button>
+                  )
+                })}
+              </div>
+            </ScrollArea>
+          </PopoverContent>
+        </Popover>
         {state?.errors?.icon_name && <p className="text-sm font-medium text-destructive">{state.errors.icon_name[0]}</p>}
       </div>
 
@@ -175,7 +214,7 @@ export function ServiceForm({ children, service }: ServiceFormProps) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>{children}</DialogTrigger>
-        <DialogContent>
+        <DialogContent className="max-w-[90vw] w-full rounded-lg">
             <DialogHeader>
             <DialogTitle>{isEditing ? 'Edit Service' : 'Add a New Service'}</DialogTitle>
             <DialogDescription>

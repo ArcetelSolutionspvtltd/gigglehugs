@@ -2,34 +2,54 @@ import {
     Heart, BookOpen, Music, ToyBrick, Baby, HandHelping, Star, Moon, 
     type LucideIcon, Twitter, Facebook, Instagram, Linkedin, Rss, Image,
     Smartphone, Mail, Home, List, Users, Link2, Phone, Youtube, HelpCircle,
-    Settings
+    Settings, Car, School, Stethoscope, UtensilsCrossed, Palette, Languages, 
+    Sparkles, ShieldCheck, Clock, Sun
 } from 'lucide-react';
 
 export const iconMap: { [key: string]: LucideIcon } = {
-  heart: Heart,
+  // Social
+  facebook: Facebook,
+  instagram: Instagram,
+  twitter: Twitter,
+  linkedin: Linkedin,
+  youtube: Youtube,
+  whatsapp: Smartphone, 
+  tiktok: Music,
+  rss: Rss,
+  
+  // Contact
+  phone: Phone,
+  email: Mail,
+  
+  // Dashboard Navigation
+  home: Home,
+  list: List,
+  users: Users,
+  star: Star,
+  'help-circle': HelpCircle,
+  settings: Settings,
+  link2: Link2,
   'book-open': BookOpen,
+
+  // Service & Value Icons
+  heart: Heart,
   music: Music,
   'toy-brick': ToyBrick,
   baby: Baby,
   'hand-helping': HandHelping,
-  star: Star,
   moon: Moon,
-  twitter: Twitter,
-  facebook: Facebook,
-  instagram: Instagram,
-  linkedin: Linkedin,
-  youtube: Youtube,
-  rss: Rss,
-  whatsapp: Smartphone, // Using Smartphone for WhatsApp
-  tiktok: Music, // Using Music for TikTok as a placeholder
-  phone: Phone,
-  email: Mail,
-  home: Home,
-  list: List,
-  users: Users,
-  link2: Link2,
-  'help-circle': HelpCircle,
-  settings: Settings,
+  sun: Sun,
+  car: Car,
+  school: School,
+  stethoscope: Stethoscope,
+  'utensils-crossed': UtensilsCrossed,
+  palette: Palette,
+  languages: Languages,
+  sparkles: Sparkles,
+  'shield-check': ShieldCheck,
+  clock: Clock,
+  
+  // Default
   default: Image,
 };
 
