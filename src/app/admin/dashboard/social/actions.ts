@@ -6,9 +6,8 @@ import { z } from 'zod';
 
 const socialLinkSchema = z.object({
   id: z.coerce.number().optional(),
-  platform: z.string().min(2, 'Platform name must be at least 2 characters.'),
+  platform: z.string().min(2, 'Please select a platform.'),
   url: z.string().url('Please enter a valid URL.'),
-  icon_name: z.string().min(1, 'Please select an icon.'),
 });
 
 export type FormState = {
@@ -16,7 +15,6 @@ export type FormState = {
   errors?: {
     platform?: string[];
     url?: string[];
-    icon_name?: string[];
   };
   success: boolean;
 };
@@ -26,7 +24,6 @@ export async function upsertSocialLinkAction(prevState: FormState, formData: For
     id: formData.get('id'),
     platform: formData.get('platform'),
     url: formData.get('url'),
-    icon_name: formData.get('icon_name'),
   });
 
   if (!validatedFields.success) {
@@ -38,10 +35,12 @@ export async function upsertSocialLinkAction(prevState: FormState, formData: For
   }
 
   const supabase = createClient();
-  const { id, platform, url, icon_name } = validatedFields.data;
+  const { id, platform, url } = validatedFields.data;
+  // The icon_name is the same as the platform name
+  const icon_name = platform;
 
   try {
-    // Check for uniqueness
+    // Check for uniqueness on platform or URL
     let query = supabase.from('social_links').select('id').or(`platform.eq.${platform},url.eq.${url}`);
     if (id) {
         query = query.neq('id', id);

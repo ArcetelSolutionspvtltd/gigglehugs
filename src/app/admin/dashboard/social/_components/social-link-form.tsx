@@ -28,7 +28,7 @@ import { upsertSocialLinkAction, type FormState } from '../actions';
 import type { SocialLink } from '@/lib/types';
 import { iconMap } from '@/lib/icons';
 
-const socialIcons = ['twitter', 'facebook', 'instagram', 'linkedin', 'tiktok', 'whatsapp'];
+const socialPlatforms = ['facebook', 'twitter', 'instagram', 'linkedin', 'youtube', 'tiktok', 'whatsapp'];
 
 function SubmitButton({ isEditing }: { isEditing: boolean }) {
   const { pending } = useFormStatus();
@@ -103,13 +103,18 @@ export function SocialLinkForm({ children, link }: SocialLinkFormProps) {
           {isEditing && <input type="hidden" name="id" value={link.id} />}
           <div className="space-y-2">
             <Label htmlFor="platform">Platform</Label>
-            <Input
-              id="platform"
-              name="platform"
-              placeholder="e.g., Facebook"
-              defaultValue={link?.platform ?? ''}
-              required
-            />
+            <Select name="platform" defaultValue={link?.platform ?? ''}>
+                <SelectTrigger>
+                    <SelectValue placeholder="Select a platform" />
+                </SelectTrigger>
+                <SelectContent>
+                    {socialPlatforms.map(platform => (
+                        <SelectItem key={platform} value={platform}>
+                            {platform.charAt(0).toUpperCase() + platform.slice(1)}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
             {state?.errors?.platform && <p className="text-sm font-medium text-destructive">{state.errors.platform[0]}</p>}
           </div>
 
@@ -124,23 +129,6 @@ export function SocialLinkForm({ children, link }: SocialLinkFormProps) {
               required
             />
             {state?.errors?.url && <p className="text-sm font-medium text-destructive">{state.errors.url[0]}</p>}
-          </div>
-
-           <div className="space-y-2">
-            <Label htmlFor="icon_name">Icon</Label>
-            <Select name="icon_name" defaultValue={link?.icon_name ?? ''}>
-                <SelectTrigger>
-                    <SelectValue placeholder="Select an icon" />
-                </SelectTrigger>
-                <SelectContent>
-                    {socialIcons.map(iconName => (
-                        <SelectItem key={iconName} value={iconName}>
-                            {iconName.charAt(0).toUpperCase() + iconName.slice(1)}
-                        </SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
-            {state?.errors?.icon_name && <p className="text-sm font-medium text-destructive">{state.errors.icon_name[0]}</p>}
           </div>
 
           <SheetFooter className="mt-4">
