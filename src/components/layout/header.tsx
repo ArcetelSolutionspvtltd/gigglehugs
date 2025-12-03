@@ -41,7 +41,7 @@ export function Header() {
         <div className="flex items-center gap-2">
           <ThemeToggle />
           <Button asChild>
-            <Link href="/#contact">Book Now</Link>
+            <a href="mailto:info@gigglehugs.org">Book Now</a>
           </Button>
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>

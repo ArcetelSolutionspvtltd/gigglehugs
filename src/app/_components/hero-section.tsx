@@ -72,10 +72,10 @@ export function HeroSection() {
             </p>
             <div className="mt-10 flex flex-wrap justify-center gap-4">
             <Button size="lg" asChild className="transform transition-transform hover:scale-105">
-                <Link href="/services">Our Services</Link>
+                <Link href="/#services">Our Services</Link>
             </Button>
             <Button size="lg" variant="secondary" asChild className="transform transition-transform hover:scale-105">
-                <Link href="/sitters">Meet Our Sitters</Link>
+                <Link href="/#sitters">Meet Our Sitters</Link>
             </Button>
             </div>
         </div>
