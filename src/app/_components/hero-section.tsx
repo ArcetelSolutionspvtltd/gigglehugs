@@ -65,7 +65,7 @@ export function HeroSection() {
   }, []);
 
   useEffect(() => {
-    const typeSpeed = isDeleting ? 50 : 100;
+    const typeSpeed = isDeleting ? 30 : 60;
     const currentText = subtitles[subtitleIndex];
 
     const handleTyping = () => {
