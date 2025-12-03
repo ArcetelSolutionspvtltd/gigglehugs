@@ -45,10 +45,10 @@ export function Footer({ socialLinks, contactDetails }: FooterProps) {
               {socialLinks.map((link) => {
                 const Icon = getIcon(link.icon_name);
                 return (
-                  <Link key={link.id} href={link.url || '#'} className="text-muted-foreground hover:text-primary">
+                  <a key={link.id} href={link.url || '#'} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary">
                     <span className="sr-only">{link.platform}</span>
                     <Icon className="h-6 w-6" aria-hidden="true" />
-                  </Link>
+                  </a>
                 )
               })}
             </div>
@@ -72,7 +72,9 @@ export function Footer({ socialLinks, contactDetails }: FooterProps) {
                 <ul className="mt-4 space-y-4">
                     {emails.slice(0,1).map(email => (
                       <li key={email.id}>
-                        <p className="text-base text-muted-foreground">{email.value}</p>
+                        <a href={`mailto:${email.value}`} className="text-base text-muted-foreground hover:text-primary">
+                          {email.value}
+                        </a>
                       </li>
                     ))}
                     {phones.map(phone => (

@@ -64,7 +64,7 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
                       </div>
                        <div className="flex gap-1 text-primary mb-2">
                         {[...Array(5)].map((_, i) => (
-                            <Star key={i} className={`h-5 w-5 ${i < (testimonial.rating ?? 5) ? 'fill-current' : 'text-gray-300'}`} />
+                            <Star key={i} className={`h-5 w-5 ${i < (testimonial.rating ?? 5) ? 'fill-current' : ''}`} />
                         ))}
                        </div>
                       <blockquote className="text-lg italic text-foreground flex-grow mt-4">

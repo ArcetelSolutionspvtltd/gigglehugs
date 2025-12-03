@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu } from "lucide-react";
+import type { SocialLink } from "@/lib/types";
 
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Logo } from "@/components/icons/logo";
 import { ThemeToggle } from "./theme-toggle";
 
@@ -16,8 +17,13 @@ const mainNavLinks = [
   { href: "/#contact", label: "Contact" },
 ];
 
-export function Header() {
+type HeaderProps = {
+  socialLinks?: SocialLink[];
+}
+
+export function Header({ socialLinks = [] }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const whatsAppLink = socialLinks.find(link => link.platform === 'whatsapp')?.url;
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -40,9 +46,11 @@ export function Header() {
 
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <Button asChild>
-            <a href="mailto:info@gigglehugs.org">Book Now</a>
-          </Button>
+          {whatsAppLink && (
+             <Button asChild className="hidden sm:inline-flex">
+              <a href={whatsAppLink} target="_blank" rel="noopener noreferrer">Book Now</a>
+            </Button>
+          )}
           <Sheet open={isMobileMenuOpen} onOpenChange={setIsMobileMenuOpen}>
             <SheetTrigger asChild>
               <Button variant="outline" size="icon" className="md:hidden">
@@ -51,19 +59,10 @@ export function Header() {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="w-full max-w-xs pr-6 sm:max-w-sm">
-              <SheetHeader className="text-left">
-                  <SheetTitle className="sr-only">Menu</SheetTitle>
-              </SheetHeader>
-              <div className="flex justify-between items-center mb-6">
+              <div className="flex items-center mb-6">
                 <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>
                   <Logo />
                 </Link>
-                <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon">
-                    <X className="h-5 w-5" />
-                    <span className="sr-only">Close menu</span>
-                  </Button>
-                </SheetTrigger>
               </div>
               <nav className="flex flex-col gap-4">
                 {mainNavLinks.map(({ href, label }) => (
@@ -77,6 +76,11 @@ export function Header() {
                   </Link>
                 ))}
               </nav>
+              {whatsAppLink && (
+                <Button asChild className="mt-8 w-full">
+                  <a href={whatsAppLink} target="_blank" rel="noopener noreferrer">Book Now</a>
+                </Button>
+              )}
             </SheetContent>
           </Sheet>
         </div>

@@ -22,7 +22,7 @@ export default async function Home() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <Header />
+      <Header socialLinks={socialLinks ?? []} />
       <main className="flex-1">
         <HeroSection />
         <AboutSection />

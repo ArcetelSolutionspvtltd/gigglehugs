@@ -79,7 +79,11 @@ export function ContactSection({ emails, phones, sitters }: ContactSectionProps)
                           </div>
                           <div>
                               <h3 className="font-semibold text-lg">Email Us</h3>
-                              {emails.map(email => <p key={email.id} className="text-muted-foreground">{email.value}</p>)}
+                              {emails.map(email => 
+                                <a key={email.id} href={`mailto:${email.value}`} className="text-muted-foreground hover:text-primary block">
+                                  {email.value}
+                                </a>
+                              )}
                           </div>
                       </div>
                     )}
@@ -101,7 +105,11 @@ export function ContactSection({ emails, phones, sitters }: ContactSectionProps)
                           </div>
                           <div>
                               <h3 className="font-semibold text-lg">Our Team</h3>
-                              {teamEmails.map(sitter => sitter.email && <p key={sitter.id} className="text-muted-foreground">{sitter.email}</p>)}
+                              {teamEmails.map(sitter => sitter.email && (
+                                <a key={sitter.id} href={`mailto:${sitter.email}`} className="text-muted-foreground hover:text-primary block">
+                                  {sitter.email}
+                                </a>
+                              ))}
                           </div>
                         </div>
                      )}
