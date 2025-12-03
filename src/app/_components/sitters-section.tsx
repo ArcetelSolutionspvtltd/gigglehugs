@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 export function SittersSection() {
   return (
     <section id="sitters" className="py-16 sm:py-24 bg-secondary/30">
-        <div className="container max-w-7xl px-4 md:px-8">
+      <div className="container max-w-7xl px-4 md:px-8">
         <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">Meet Our Sitters</h2>
             <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
@@ -16,13 +16,13 @@ export function SittersSection() {
             {sitters.map((sitter) => (
             <Card key={sitter.id} className="overflow-hidden group transform transition-all duration-300 hover:scale-105 hover:shadow-2xl">
                 <CardContent className="p-6 flex flex-col items-center text-center">
-                <div className="relative h-40 w-40 mb-4">
+                <div className="relative h-32 w-32 sm:h-40 sm:w-40 mb-4">
                     <Image
                     src={sitter.image.imageUrl}
                     alt={`Profile of ${sitter.name}`}
                     fill
                     className="object-cover rounded-full border-4 border-white shadow-md"
-                    sizes="160px"
+                    sizes="(max-width: 640px) 128px, 160px"
                     data-ai-hint={sitter.image.imageHint}
                     />
                 </div>

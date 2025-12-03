@@ -12,8 +12,13 @@ import {
 } from '@/components/ui/carousel';
 import Autoplay from 'embla-carousel-autoplay';
 import { Star } from 'lucide-react';
+import { useRef } from 'react';
 
 export function TestimonialsSection() {
+    const plugin = useRef(
+        Autoplay({ delay: 5000, stopOnInteraction: true, stopOnMouseEnter: true })
+    );
+
   return (
     <section className="py-16 sm:py-24 bg-secondary/30">
       <div className="container max-w-7xl px-4 md:px-8">
@@ -28,21 +33,17 @@ export function TestimonialsSection() {
             align: "start",
             loop: true,
           }}
-          plugins={[
-            Autoplay({
-              delay: 5000,
-              stopOnInteraction: true,
-              stopOnMouseEnter: true,
-            }),
-          ]}
+          plugins={[plugin.current]}
           className="w-full max-w-4xl mx-auto mt-16"
+          onMouseEnter={plugin.current.stop}
+          onMouseLeave={plugin.current.reset}
         >
           <CarouselContent>
             {testimonials.map((testimonial) => (
-              <CarouselItem key={testimonial.id} className="md:basis-1/2 lg:basis-1/3">
+              <CarouselItem key={testimonial.id} className="md:basis-1/2 lg:basis-1/1">
                 <div className="p-4 h-full">
                   <Card className="h-full flex flex-col">
-                    <CardContent className="p-8 flex flex-col items-center text-center flex-grow">
+                    <CardContent className="p-8 flex flex-col items-center justify-center text-center flex-grow">
                       <Image
                         src={testimonial.image.imageUrl}
                         alt={`Photo of ${testimonial.name}`}
@@ -54,7 +55,7 @@ export function TestimonialsSection() {
                        <div className="flex gap-1 text-primary mb-2">
                         {[...Array(5)].map((_, i) => <Star key={i} className="h-5 w-5 fill-current" />)}
                        </div>
-                      <blockquote className="text-lg italic text-foreground flex-grow">
+                      <blockquote className="text-lg italic text-foreground flex-grow mt-4">
                         "{testimonial.quote}"
                       </blockquote>
                       <p className="mt-4 font-bold text-lg">{testimonial.name}</p>
@@ -65,8 +66,8 @@ export function TestimonialsSection() {
               </CarouselItem>
             ))}
           </CarouselContent>
-          <CarouselPrevious />
-          <CarouselNext />
+          <CarouselPrevious className="hidden sm:flex" />
+          <CarouselNext className="hidden sm:flex"/>
         </Carousel>
       </div>
     </section>
