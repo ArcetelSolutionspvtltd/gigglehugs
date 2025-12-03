@@ -37,18 +37,35 @@ export async function upsertContactAction(prevState: FormState, formData: FormDa
   }
 
   const supabase = createClient();
-  const { id, ...contactData } = validatedFields.data;
+  const { id, value } = validatedFields.data;
 
-  const { error } = await supabase.from('contact_details').upsert(validatedFields.data);
+  try {
+     // Check for uniqueness
+    let query = supabase.from('contact_details').select('id').eq('value', value);
+    if (id) {
+        query = query.neq('id', id);
+    }
+    const { data: existing, error: existingError } = await query;
+    
+    if (existingError) throw existingError;
+    if (existing && existing.length > 0) {
+        return {
+            message: 'This contact detail already exists.',
+            success: false,
+        }
+    }
 
-  if (error) {
+    const { error } = await supabase.from('contact_details').upsert(validatedFields.data);
+    if (error) throw error;
+
+  } catch(error: any) {
     console.error('Supabase error:', error);
     return {
       message: error.message,
       success: false,
     };
   }
-
+  
   revalidatePath('/admin/dashboard/contact');
   revalidatePath('/'); 
 

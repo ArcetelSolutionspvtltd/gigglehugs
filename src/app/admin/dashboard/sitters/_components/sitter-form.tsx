@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef, useEffect, type ReactNode, useCallback } from 'react';
-import { useFormStatus } from 'react-dom';
 import Image from 'next/image';
 import Cropper, { type Area } from 'react-easy-crop';
 
@@ -28,10 +27,11 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { upsertSitterAction } from '../actions';
+import { upsertSitterAction, type FormState } from '../actions';
 import type { Sitter } from '@/lib/types';
 import { dataURLtoFile, getCroppedImg } from '@/lib/utils';
 import { Slider } from '@/components/ui/slider';
+import { useFormStatus } from 'react-dom';
 
 function SubmitButton({ isEditing }: { isEditing: boolean }) {
   const { pending } = useFormStatus();
@@ -60,6 +60,7 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(sitter?.avatar_url || null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const formRef = useRef<HTMLFormElement>(null);
 
   const [imgSrc, setImgSrc] = useState('');
   const [isCropModalOpen, setIsCropModalOpen] = useState(false);
@@ -72,6 +73,7 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
     if (!isOpen) {
         setAvatarPreview(sitter?.avatar_url || null);
         setImgSrc('');
+        formRef.current?.reset();
     }
   }, [isOpen, sitter]);
 
@@ -114,6 +116,23 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
         toast({ title: 'Error', description: 'Could not crop image.', variant: 'destructive'});
     }
   };
+  
+  const handleFormAction = async (formData: FormData) => {
+    const result = await upsertSitterAction(formData);
+    if (result.success) {
+      toast({
+        title: isEditing ? 'Success!' : 'Sitter Added!',
+        description: result.message,
+      });
+      setIsOpen(false);
+    } else {
+      toast({
+        title: 'Oops!',
+        description: result.message,
+        variant: 'destructive',
+      });
+    }
+  };
 
   return (
     <>
@@ -129,22 +148,8 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
           </SheetDescription>
         </SheetHeader>
         <form
-            action={async (formData) => {
-                const result = await upsertSitterAction(formData);
-                if (result.success) {
-                    toast({
-                    title: isEditing ? 'Success!' : 'Sitter Added!',
-                    description: result.message,
-                    });
-                    setIsOpen(false);
-                } else {
-                    toast({
-                    title: 'Oops!',
-                    description: result.message,
-                    variant: 'destructive',
-                    });
-                }
-            }}
+            ref={formRef}
+            action={handleFormAction}
             className="flex flex-col gap-6 mt-6"
         >
           {isEditing && <input type="hidden" name="id" value={sitter.id} />}
@@ -182,6 +187,17 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
               placeholder="e.g., Jane Doe"
               defaultValue={sitter?.name ?? ''}
               required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="e.g., jane@example.com"
+              defaultValue={sitter?.email ?? ''}
             />
           </div>
 

@@ -51,6 +51,7 @@ export default async function SittersPage() {
               <TableRow>
                 <TableHead className="hidden w-[100px] sm:table-cell">Avatar</TableHead>
                 <TableHead>Name</TableHead>
+                <TableHead>Email</TableHead>
                 <TableHead>Bio</TableHead>
                 <TableHead>
                   <span className="sr-only">Actions</span>
@@ -76,6 +77,7 @@ export default async function SittersPage() {
                     </div>
                   </TableCell>
                   <TableCell className="font-medium">{sitter.name}</TableCell>
+                  <TableCell>{sitter.email}</TableCell>
                   <TableCell>{sitter.bio}</TableCell>
                   <TableCell>
                     <div className="flex items-center justify-end gap-2">

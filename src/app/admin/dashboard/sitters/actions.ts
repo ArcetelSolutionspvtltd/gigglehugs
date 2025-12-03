@@ -11,6 +11,7 @@ const sitterSchema = z.object({
   id: z.coerce.number().optional(),
   name: z.string().min(3, 'Name must be at least 3 characters.'),
   bio: z.string().min(10, 'Bio must be at least 10 characters.'),
+  email: z.string().email('Please enter a valid email.').optional().or(z.literal('')),
   avatar_url: z
     .any()
     .refine((file) => !file || file.size === 0 || file.size <= MAX_FILE_SIZE, `Max image size is 5MB.`)
@@ -23,11 +24,6 @@ const sitterSchema = z.object({
 
 export type FormState = {
   message: string;
-  errors?: {
-    name?: string[];
-    bio?: string[];
-    avatar_url?: string[];
-  };
   success: boolean;
 };
 
@@ -35,27 +31,25 @@ export async function upsertSitterAction(formData: FormData): Promise<FormState>
   const validatedFields = sitterSchema.safeParse(Object.fromEntries(formData.entries()));
 
   if (!validatedFields.success) {
+    console.error('Validation failed:', validatedFields.error.flatten().fieldErrors);
     return {
       message: 'Validation failed. Please check your inputs.',
-      errors: validatedFields.error.flatten().fieldErrors,
       success: false,
     };
   }
 
   const supabase = createClient();
-  const { id, name, bio, avatar_url: avatarFile, current_avatar_url } = validatedFields.data;
+  const { id, name, bio, email, avatar_url: avatarFile, current_avatar_url } = validatedFields.data;
   let avatarPath: string | undefined = undefined;
 
   try {
     if (avatarFile && avatarFile.size > 0) {
       let fileName: string;
-      // If editing and an avatar exists, extract filename to overwrite
+      
       if (id && current_avatar_url) {
-        // Remove any query parameters from the URL before getting the filename
         const urlWithoutQuery = current_avatar_url.split('?')[0];
         fileName = urlWithoutQuery.split('/').pop()!;
       } else {
-        // For new sitters or if no avatar exists, create a new filename
         const fileExtension = avatarFile.name.split('.').pop();
         fileName = `${name.toLowerCase().replace(/\s+/g, '_')}_${Date.now()}.${fileExtension}`;
       }
@@ -74,11 +68,10 @@ export async function upsertSitterAction(formData: FormData): Promise<FormState>
         .from('avatars')
         .getPublicUrl(uploadData.path);
       
-      // Append a timestamp to force the browser to refetch the image
       avatarPath = `${publicUrlData.publicUrl}?t=${new Date().getTime()}`;
     }
     
-    const dataToUpsert: any = { name, bio };
+    const dataToUpsert: any = { name, bio, email };
     if (id) {
       dataToUpsert.id = id;
     }
@@ -95,9 +88,9 @@ export async function upsertSitterAction(formData: FormData): Promise<FormState>
   } catch (error: any) {
     console.error('Storage/DB error:', error);
     if (error.message.includes('Bucket not found')) {
-      return { message: "Failed to upload avatar: The 'avatars' bucket was not found. Please create it in your Supabase project.", success: false, errors: {}};
+      return { message: "Failed to upload avatar: The 'avatars' bucket was not found. Please create it in your Supabase project.", success: false };
     }
-    return { message: `Operation failed: ${error.message}`, success: false, errors: {} };
+    return { message: `Operation failed: ${error.message}`, success: false };
   }
 
 
@@ -107,7 +100,6 @@ export async function upsertSitterAction(formData: FormData): Promise<FormState>
   return {
     message: `Sitter ${id ? 'updated' : 'added'} successfully.`,
     success: true,
-    errors: {},
   };
 }
 

@@ -38,17 +38,38 @@ export async function upsertSocialLinkAction(prevState: FormState, formData: For
   }
 
   const supabase = createClient();
-  const { id, ...linkData } = validatedFields.data;
+  const { id, platform, url, icon_name } = validatedFields.data;
 
-  const { error } = await supabase.from('social_links').upsert(validatedFields.data);
+  try {
+    // Check for uniqueness
+    let query = supabase.from('social_links').select('id').or(`platform.eq.${platform},url.eq.${url}`);
+    if (id) {
+        query = query.neq('id', id);
+    }
+    const { data: existing, error: existingError } = await query;
 
-  if (error) {
+    if (existingError) throw existingError;
+    if (existing && existing.length > 0) {
+        return {
+            message: 'A social link with this platform or URL already exists.',
+            success: false,
+        }
+    }
+    
+    const { error } = await supabase.from('social_links').upsert({ id, platform, url, icon_name });
+
+    if (error) {
+      throw error;
+    }
+
+  } catch(error: any) {
     console.error('Supabase error:', error);
     return {
       message: error.message,
       success: false,
     };
   }
+
 
   revalidatePath('/admin/dashboard/social');
   revalidatePath('/'); 
