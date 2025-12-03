@@ -44,34 +44,36 @@ export default async function FaqsPage() {
             Add, edit, or delete frequently asked questions.
           </CardDescription>
         </CardHeader>
-        <CardContent className="overflow-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Question</TableHead>
-                <TableHead>Answer</TableHead>
-                <TableHead>
-                  <span className="sr-only">Actions</span>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {faqs?.map((faq) => (
-                <TableRow key={faq.id}>
-                  <TableCell className="font-medium max-w-sm truncate">{faq.question}</TableCell>
-                  <TableCell className="max-w-sm truncate">{faq.answer}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center justify-end gap-2">
-                      <FaqForm faq={faq}>
-                        <Button variant="outline" size="sm">Edit</Button>
-                      </FaqForm>
-                      <DeleteFaqButton faqId={faq.id} />
-                    </div>
-                  </TableCell>
+        <CardContent>
+          <div className="overflow-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Question</TableHead>
+                  <TableHead>Answer</TableHead>
+                  <TableHead>
+                    <span className="sr-only">Actions</span>
+                  </TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {faqs?.map((faq) => (
+                  <TableRow key={faq.id}>
+                    <TableCell className="font-medium max-w-sm truncate">{faq.question}</TableCell>
+                    <TableCell className="max-w-sm truncate">{faq.answer}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center justify-end gap-2">
+                        <FaqForm faq={faq}>
+                          <Button variant="outline" size="sm">Edit</Button>
+                        </FaqForm>
+                        <DeleteFaqButton faqId={faq.id} />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
     </div>

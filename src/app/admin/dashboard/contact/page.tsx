@@ -50,46 +50,48 @@ export default async function ContactPage() {
             Add, edit, or delete your company's contact details.
           </CardDescription>
         </CardHeader>
-        <CardContent className="overflow-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="hidden w-[100px] sm:table-cell">Icon</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Value</TableHead>
-                <TableHead>
-                  <span className="sr-only">Actions</span>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {contacts?.map((contact) => {
-                const typeLabel = getTypeLabel(contact.type);
-                const Icon = getIcon(typeLabel);
-                return (
-                  <TableRow key={contact.id}>
-                    <TableCell className="hidden sm:table-cell">
-                      <div className="bg-primary/10 p-2 rounded-md inline-flex">
-                        <Icon className="h-6 w-6 text-primary" />
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline">{typeLabel}</Badge>
-                    </TableCell>
-                    <TableCell className="font-medium">{contact.value}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center justify-end gap-2">
-                        <ContactForm contact={contact}>
-                          <Button variant="outline" size="sm">Edit</Button>
-                        </ContactForm>
-                        <DeleteContactButton contactId={contact.id} />
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
+        <CardContent>
+          <div className="overflow-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="hidden w-[100px] sm:table-cell">Icon</TableHead>
+                  <TableHead>Type</TableHead>
+                  <TableHead>Value</TableHead>
+                  <TableHead>
+                    <span className="sr-only">Actions</span>
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {contacts?.map((contact) => {
+                  const typeLabel = getTypeLabel(contact.type);
+                  const Icon = getIcon(typeLabel);
+                  return (
+                    <TableRow key={contact.id}>
+                      <TableCell className="hidden sm:table-cell">
+                        <div className="bg-primary/10 p-2 rounded-md inline-flex">
+                          <Icon className="h-6 w-6 text-primary" />
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline">{typeLabel}</Badge>
+                      </TableCell>
+                      <TableCell className="font-medium">{contact.value}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center justify-end gap-2">
+                          <ContactForm contact={contact}>
+                            <Button variant="outline" size="sm">Edit</Button>
+                          </ContactForm>
+                          <DeleteContactButton contactId={contact.id} />
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
     </div>

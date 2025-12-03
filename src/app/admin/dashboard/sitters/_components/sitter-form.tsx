@@ -13,6 +13,7 @@ import {
   DialogFooter,
   DialogClose,
   DialogTrigger,
+  DialogDescription,
 } from "@/components/ui/dialog"
 import {
   Sheet,
@@ -271,7 +272,7 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>{children}</DialogTrigger>
-            <DialogContent className="overflow-y-auto max-h-screen">
+            <DialogContent className="max-w-[90vw] w-full rounded-lg">
                 <DialogHeader>
                 <DialogTitle>{isEditing ? 'Edit Sitter' : 'Add a New Sitter'}</DialogTitle>
                 <DialogDescription>
@@ -290,11 +291,14 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
     <>
     <FormContainer>{children}</FormContainer>
     <Dialog open={isCropModalOpen} onOpenChange={setIsCropModalOpen}>
-        <DialogContent className="max-w-md w-full">
+        <DialogContent className="max-w-[90vw] w-full rounded-lg">
             <DialogHeader>
                 <DialogTitle>Crop Image</DialogTitle>
+                <DialogDescription>
+                  Adjust the image to fit perfectly in the circular avatar frame.
+                </DialogDescription>
             </DialogHeader>
-            <div className='relative w-full h-64 md:h-96'>
+            <div className='relative w-full h-64 md:h-96 my-4'>
                 <Cropper
                     image={imgSrc}
                     crop={crop}

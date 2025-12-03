@@ -46,45 +46,47 @@ export default async function SocialLinksPage() {
             Add, edit, or delete your social media links.
           </CardDescription>
         </CardHeader>
-        <CardContent className="overflow-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="hidden w-[100px] sm:table-cell">Icon</TableHead>
-                <TableHead>Platform</TableHead>
-                <TableHead>URL</TableHead>
-                <TableHead>
-                  <span className="sr-only">Actions</span>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {links?.map((link) => {
-                const Icon = getIcon(link.icon_name);
-                return (
-                  <TableRow key={link.id}>
-                    <TableCell className="hidden sm:table-cell">
-                      <div className="bg-primary/10 p-2 rounded-md inline-flex">
-                        <Icon className="h-6 w-6 text-primary" />
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline">{link.platform}</Badge>
-                    </TableCell>
-                    <TableCell className="font-medium">{link.url}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center justify-end gap-2">
-                        <SocialLinkForm link={link}>
-                          <Button variant="outline" size="sm">Edit</Button>
-                        </SocialLinkForm>
-                        <DeleteSocialLinkButton linkId={link.id} />
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
+        <CardContent>
+          <div className="overflow-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="hidden w-[100px] sm:table-cell">Icon</TableHead>
+                  <TableHead>Platform</TableHead>
+                  <TableHead>URL</TableHead>
+                  <TableHead>
+                    <span className="sr-only">Actions</span>
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {links?.map((link) => {
+                  const Icon = getIcon(link.icon_name);
+                  return (
+                    <TableRow key={link.id}>
+                      <TableCell className="hidden sm:table-cell">
+                        <div className="bg-primary/10 p-2 rounded-md inline-flex">
+                          <Icon className="h-6 w-6 text-primary" />
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline">{link.platform}</Badge>
+                      </TableCell>
+                      <TableCell className="font-medium">{link.url}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center justify-end gap-2">
+                          <SocialLinkForm link={link}>
+                            <Button variant="outline" size="sm">Edit</Button>
+                          </SocialLinkForm>
+                          <DeleteSocialLinkButton linkId={link.id} />
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
     </div>

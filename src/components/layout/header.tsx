@@ -11,6 +11,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Logo } from "@/components/icons/logo";
 import { ThemeToggle } from "./theme-toggle";
 import { cn } from "@/lib/utils";
+import { Card } from "../ui/card";
 
 const mainNavLinks = [
   { href: "/#about", label: "About Us" },
@@ -44,12 +45,12 @@ export function Header({ socialLinks = [] }: HeaderProps) {
   }, []);
 
   return (
-    <header className="fixed top-4 inset-x-0 z-50 px-4">
-      <div className={cn(
+    <header className="fixed top-0 inset-x-0 z-50 p-4">
+      <Card className={cn(
           "w-full max-w-7xl mx-auto rounded-full transition-all duration-300",
-          isScrolled ? 'bg-background/80 backdrop-blur-md shadow-lg border-border/40' : 'bg-transparent'
+           isScrolled ? 'bg-background/80 backdrop-blur-md shadow-lg border-border/40' : 'bg-transparent border-transparent'
         )}>
-        <div className="flex h-20 items-center justify-between p-4">
+        <div className="flex h-16 items-center justify-between px-6">
           <Link href="/" className="flex items-center">
             <Logo />
           </Link>
@@ -87,13 +88,13 @@ export function Header({ socialLinks = [] }: HeaderProps) {
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="w-full max-w-xs pr-6 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
-                <SheetHeader>
+                <SheetHeader className="mb-8">
                    <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
                   <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>
                     <Logo />
                   </Link>
                 </SheetHeader>
-                <nav className="flex flex-col gap-4 mt-8">
+                <nav className="flex flex-col gap-4">
                   {mainNavLinks.map(({ href, label }) => (
                     <Link
                       key={href}
@@ -114,7 +115,7 @@ export function Header({ socialLinks = [] }: HeaderProps) {
             </Sheet>
           </div>
         </div>
-      </div>
+      </Card>
     </header>
   );
 }

@@ -45,52 +45,54 @@ export default async function SittersPage() {
             Add, edit, or delete your babysitters.
           </CardDescription>
         </CardHeader>
-        <CardContent className="overflow-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="hidden w-[100px] sm:table-cell">Avatar</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Bio</TableHead>
-                <TableHead>
-                  <span className="sr-only">Actions</span>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {sitters?.map((sitter) => (
-                <TableRow key={sitter.id}>
-                  <TableCell className="hidden sm:table-cell">
-                    <div className="relative h-16 w-16 rounded-full overflow-hidden bg-muted flex items-center justify-center">
-                      {sitter.avatar_url ? (
-                        <Image
-                          src={sitter.avatar_url}
-                          alt={sitter.name || 'Sitter avatar'}
-                          fill
-                          sizes="64px"
-                          className="object-cover"
-                        />
-                      ) : (
-                        <User className="h-8 w-8 text-muted-foreground" />
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell className="font-medium">{sitter.name}</TableCell>
-                  <TableCell>{sitter.email}</TableCell>
-                  <TableCell>{sitter.bio}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center justify-end gap-2">
-                      <SitterForm sitter={sitter}>
-                        <Button variant="outline" size="sm">Edit</Button>
-                      </SitterForm>
-                      <DeleteSitterButton sitterId={sitter.id} />
-                    </div>
-                  </TableCell>
+        <CardContent>
+          <div className="overflow-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="hidden w-[100px] sm:table-cell">Avatar</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Email</TableHead>
+                  <TableHead>Bio</TableHead>
+                  <TableHead>
+                    <span className="sr-only">Actions</span>
+                  </TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {sitters?.map((sitter) => (
+                  <TableRow key={sitter.id}>
+                    <TableCell className="hidden sm:table-cell">
+                      <div className="relative h-16 w-16 rounded-full overflow-hidden bg-muted flex items-center justify-center">
+                        {sitter.avatar_url ? (
+                          <Image
+                            src={sitter.avatar_url}
+                            alt={sitter.name || 'Sitter avatar'}
+                            fill
+                            sizes="64px"
+                            className="object-cover"
+                          />
+                        ) : (
+                          <User className="h-8 w-8 text-muted-foreground" />
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="font-medium">{sitter.name}</TableCell>
+                    <TableCell>{sitter.email}</TableCell>
+                    <TableCell>{sitter.bio}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center justify-end gap-2">
+                        <SitterForm sitter={sitter}>
+                          <Button variant="outline" size="sm">Edit</Button>
+                        </SitterForm>
+                        <DeleteSitterButton sitterId={sitter.id} />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
     </div>

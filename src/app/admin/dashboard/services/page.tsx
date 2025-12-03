@@ -45,43 +45,45 @@ export default async function ServicesPage() {
             Add, edit, or delete your babysitting services.
           </CardDescription>
         </CardHeader>
-        <CardContent className="overflow-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="hidden w-[100px] sm:table-cell">Icon</TableHead>
-                <TableHead>Title</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>
-                  <span className="sr-only">Actions</span>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {services?.map((service) => {
-                const Icon = getIcon(service.icon_name);
-                return (
-                  <TableRow key={service.id}>
-                    <TableCell className="hidden sm:table-cell">
-                      <div className="bg-primary/10 p-2 rounded-md inline-flex">
-                        <Icon className="h-6 w-6 text-primary" />
-                      </div>
-                    </TableCell>
-                    <TableCell className="font-medium">{service.title}</TableCell>
-                    <TableCell>{service.description}</TableCell>
-                    <TableCell>
-                      <div className="flex items-center justify-end gap-2">
-                        <ServiceForm service={service}>
-                          <Button variant="outline" size="sm">Edit</Button>
-                        </ServiceForm>
-                        <DeleteServiceButton serviceId={service.id} />
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
-            </TableBody>
-          </Table>
+        <CardContent>
+          <div className="overflow-auto">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="hidden w-[100px] sm:table-cell">Icon</TableHead>
+                  <TableHead>Title</TableHead>
+                  <TableHead>Description</TableHead>
+                  <TableHead>
+                    <span className="sr-only">Actions</span>
+                  </TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {services?.map((service) => {
+                  const Icon = getIcon(service.icon_name);
+                  return (
+                    <TableRow key={service.id}>
+                      <TableCell className="hidden sm:table-cell">
+                        <div className="bg-primary/10 p-2 rounded-md inline-flex">
+                          <Icon className="h-6 w-6 text-primary" />
+                        </div>
+                      </TableCell>
+                      <TableCell className="font-medium">{service.title}</TableCell>
+                      <TableCell>{service.description}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center justify-end gap-2">
+                          <ServiceForm service={service}>
+                            <Button variant="outline" size="sm">Edit</Button>
+                          </ServiceForm>
+                          <DeleteServiceButton serviceId={service.id} />
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
         </CardContent>
       </Card>
     </div>

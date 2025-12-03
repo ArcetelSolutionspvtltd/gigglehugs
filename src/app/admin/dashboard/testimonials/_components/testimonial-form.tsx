@@ -278,7 +278,7 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>{children}</DialogTrigger>
-            <DialogContent className="overflow-y-auto max-h-screen">
+            <DialogContent className="max-w-[90vw] w-full rounded-lg">
                 <DialogHeader>
                     <DialogTitle>{isEditing ? 'Edit Testimonial' : 'Add a New Testimonial'}</DialogTitle>
                     <DialogDescription>
@@ -297,11 +297,14 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
     <>
     <FormContainer>{children}</FormContainer>
     <Dialog open={isCropModalOpen} onOpenChange={setIsCropModalOpen}>
-        <DialogContent className="max-w-md w-full">
+        <DialogContent className="max-w-[90vw] w-full rounded-lg">
             <DialogHeader>
                 <DialogTitle>Crop Image</DialogTitle>
+                 <DialogDescription>
+                  Adjust the image to fit perfectly in the circular avatar frame.
+                </DialogDescription>
             </DialogHeader>
-            <div className='relative w-full h-64 md:h-96'>
+            <div className='relative w-full h-64 md:h-96 my-4'>
                 <Cropper
                     image={imgSrc}
                     crop={crop}
