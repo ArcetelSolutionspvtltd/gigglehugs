@@ -36,7 +36,7 @@ const heroImages = [
 
 export function HeroSection() {
   return (
-    <section className="relative w-full h-[80vh] min-h-[500px] max-h-[800px] text-white">
+    <section className="relative w-full h-screen min-h-[500px] max-h-[850px] text-white">
       <Carousel
         className="absolute inset-0 w-full h-full"
         plugins={[Autoplay({ delay: 5000, stopOnInteraction: false })]}
@@ -45,7 +45,7 @@ export function HeroSection() {
         <CarouselContent>
           {heroImages.map((image, index) => (
             <CarouselItem key={index}>
-              <div className="relative h-[80vh] min-h-[500px] max-h-[800px]">
+              <div className="relative w-full h-screen min-h-[500px] max-h-[850px]">
                 <Image
                   src={image.src}
                   alt={image.alt}
