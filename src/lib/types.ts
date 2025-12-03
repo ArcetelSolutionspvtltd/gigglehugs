@@ -55,3 +55,10 @@ export type Setting = {
     key: string;
     value: any;
 }
+
+export type Font = {
+  id: number;
+  name: string;
+  css_family: string;
+  source: string;
+}

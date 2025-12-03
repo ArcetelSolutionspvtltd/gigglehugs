@@ -1,22 +1,30 @@
 import { createClient } from '@/lib/supabase/server';
 import { ThemeSettingsForm } from './_components/theme-settings-form';
-import type { ColorTheme } from '@/lib/types';
+import type { ColorTheme, Font } from '@/lib/types';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { ThemeToggle } from '@/components/layout/theme-toggle';
-import { Label } from '@/components/ui/label';
 
-async function getTheme() {
+async function getThemeSettings() {
     const supabase = createClient();
     const { data } = await supabase.from('settings').select('value').eq('key', 'theme').single();
     return data?.value as ColorTheme | null;
+}
+
+async function getAvailableFonts() {
+    const supabase = createClient();
+    const { data: fonts } = await supabase.from('fonts').select('*').order('name');
+    return fonts ?? [];
 }
 
 export default async function SettingsPage() {
   const supabase = createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  const currentTheme = await getTheme();
+  const [currentTheme, availableFonts] = await Promise.all([
+    getThemeSettings(),
+    getAvailableFonts()
+  ]);
 
   return (
     <div className="flex flex-col gap-8">
@@ -43,7 +51,7 @@ export default async function SettingsPage() {
         </CardContent>
       </Card>
       
-      <ThemeSettingsForm currentTheme={currentTheme} />
+      <ThemeSettingsForm currentTheme={currentTheme} fonts={availableFonts} />
 
       <Card>
         <CardHeader>

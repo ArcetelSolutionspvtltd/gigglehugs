@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
-import { Poppins, Montserrat, Lato, Roboto, Open_Sans } from 'next/font/google';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/layout/theme-provider';
 import { createClient } from '@/lib/supabase/server';
-import type { ColorTheme } from '@/lib/types';
+import type { ColorTheme, Font } from '@/lib/types';
+import { PT_Sans } from 'next/font/google';
 
 export const metadata: Metadata = {
   title: 'GiggleHugs | Sunshine Giggles and Hugs',
@@ -13,48 +13,37 @@ export const metadata: Metadata = {
   metadataBase: new URL('https://gigglehugs.org'),
 };
 
-const poppins = Poppins({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-poppins',
-});
-
-const montserrat = Montserrat({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-montserrat',
-});
-
-const lato = Lato({
+const ptSans = PT_Sans({
   subsets: ['latin'],
   weight: ['400', '700'],
-  variable: '--font-lato',
+  variable: '--font-pt-sans',
 });
 
-const roboto = Roboto({
-  subsets: ['latin'],
-  weight: ['400', '500', '700'],
-  variable: '--font-roboto',
-});
-
-const openSans = Open_Sans({
-  subsets: ['latin'],
-  weight: ['400', '600', '700'],
-  variable: '--font-open-sans',
-});
-
-const fontMap: { [key: string]: { variable: string } } = {
-  'poppins': poppins,
-  'montserrat': montserrat,
-  'lato': lato,
-  'roboto': roboto,
-  'open-sans': openSans
+type ThemeSettings = {
+  theme: ColorTheme | null,
+  font: Font | null,
 }
 
-async function getTheme() {
+async function getThemeSettings(): Promise<ThemeSettings> {
   const supabase = createClient();
-  const { data } = await supabase.from('settings').select('value').eq('key', 'theme').single();
-  return data?.value as ColorTheme | null;
+  const { data: themeSetting } = await supabase
+    .from('settings')
+    .select('value')
+    .eq('key', 'theme')
+    .single();
+
+  const fontName = (themeSetting?.value as ColorTheme)?.font || 'PT Sans';
+
+  const { data: fontData } = await supabase
+    .from('fonts')
+    .select('*')
+    .eq('name', fontName)
+    .single();
+
+  return {
+    theme: themeSetting?.value as ColorTheme | null,
+    font: fontData as Font | null,
+  }
 }
 
 export default async function RootLayout({
@@ -62,9 +51,11 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const theme = await getTheme();
+  const { theme, font } = await getThemeSettings();
   
-  const selectedFont = theme?.font ? fontMap[theme.font] : poppins;
+  const fontCssFamily = font?.css_family || '"PT Sans", sans-serif';
+  const fontVariable = font?.css_family.split(',')[0].toLowerCase().replace(/"/g, '').replace(/\s+/g, '-');
+  const googleFontUrl = font ? `https://fonts.googleapis.com/css2?family=${font.name.replace(/\s+/g, '+')}:wght@400;700&display=swap` : null;
 
   const themeStyle = theme?.primary ? {
     '--primary': theme.primary,
@@ -73,16 +64,15 @@ export default async function RootLayout({
   } as React.CSSProperties : {};
 
   return (
-    <html lang="en" suppressHydrationWarning style={themeStyle}>
+    <html lang="en" suppressHydrationWarning style={{ ...themeStyle, fontFamily: fontCssFamily }}>
+      <head>
+        {googleFontUrl && (
+          <link rel="stylesheet" href={googleFontUrl} />
+        )}
+      </head>
       <body className={cn(
-        "antialiased", 
-        poppins.variable,
-        montserrat.variable,
-        lato.variable,
-        roboto.variable,
-        openSans.variable,
-        selectedFont.variable,
-        "font-sans"
+        "antialiased font-sans",
+        ptSans.variable
         )}>
         <ThemeProvider
           attribute="class"

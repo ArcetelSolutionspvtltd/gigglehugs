@@ -2,22 +2,14 @@
 
 import { useActionState, useEffect, useRef } from 'react';
 import { useFormStatus } from 'react-dom';
-import { Loader2, RefreshCw, Save } from 'lucide-react';
-import { generateThemeAction, resetThemeAction, type FormState } from '../actions';
+import { Loader2, Save } from 'lucide-react';
+import { generateThemeAction, type FormState } from '../actions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import type { ColorTheme } from '@/lib/types';
+import type { ColorTheme, Font } from '@/lib/types';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-
-const fonts = [
-  { name: 'Poppins', variable: '--font-poppins' },
-  { name: 'Montserrat', variable: '--font-montserrat' },
-  { name: 'Lato', variable: '--font-lato' },
-  { name: 'Roboto', variable: '--font-roboto' },
-  { name: 'Open Sans', variable: '--font-open-sans' },
-];
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -40,9 +32,10 @@ function SubmitButton() {
 
 type ThemeSettingsFormProps = {
   currentTheme: ColorTheme | null;
+  fonts: Font[];
 }
 
-export function ThemeSettingsForm({ currentTheme }: ThemeSettingsFormProps) {
+export function ThemeSettingsForm({ currentTheme, fonts }: ThemeSettingsFormProps) {
   const initialState: FormState = { message: '', success: false };
   const [state, formAction] = useActionState(generateThemeAction, initialState);
   const { toast } = useToast();
@@ -56,8 +49,8 @@ export function ThemeSettingsForm({ currentTheme }: ThemeSettingsFormProps) {
           description: state.message,
         });
         if (state.newTheme) {
-            // Reload to see changes
-            window.location.reload();
+            // A page reload might be needed to see font changes on the public site
+            // but we won't force it here.
         }
       } else {
         toast({
@@ -81,13 +74,13 @@ export function ThemeSettingsForm({ currentTheme }: ThemeSettingsFormProps) {
         <CardContent className="space-y-6">
           <div className="space-y-2">
             <Label htmlFor="font">Website Font</Label>
-             <Select name="font" defaultValue={currentTheme?.font ?? 'poppins'}>
+             <Select name="font" defaultValue={currentTheme?.font ?? 'PT Sans'}>
                 <SelectTrigger>
                     <SelectValue placeholder="Select a font" />
                 </SelectTrigger>
                 <SelectContent>
                     {fonts.map(font => (
-                        <SelectItem key={font.variable} value={font.name.toLowerCase().replace(' ', '-')}>
+                        <SelectItem key={font.name} value={font.name}>
                             {font.name}
                         </SelectItem>
                     ))}
