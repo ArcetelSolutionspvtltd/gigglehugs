@@ -8,6 +8,8 @@ import {
   CarouselItem,
 } from '@/components/ui/carousel';
 import Autoplay from 'embla-carousel-autoplay';
+import { animate, stagger } from 'motion';
+import { useEffect } from 'react';
 
 import { Button } from '@/components/ui/button';
 
@@ -34,7 +36,22 @@ const heroImages = [
   }
 ];
 
+const heroTitle = [
+    { text: 'Sunshine' },
+    { text: 'Giggles', className: 'text-primary' },
+    { text: 'and' },
+    { text: 'Hugs', className: 'text-primary' },
+];
+
 export function HeroSection() {
+  useEffect(() => {
+    animate(
+      '.hero-title-word',
+      { y: [20, 0], opacity: [0, 1] },
+      { duration: 0.5, delay: stagger(0.1), easing: 'ease-out' }
+    );
+  }, []);
+
   return (
     <section className="relative w-full h-screen min-h-[500px] max-h-[850px] text-white">
       <Carousel
@@ -65,7 +82,11 @@ export function HeroSection() {
       <div className="relative z-10 h-full flex flex-col items-center justify-center text-center p-4">
         <div className="max-w-4xl pt-20">
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-shadow-lg" style={{textShadow: '2px 2px 10px rgba(0,0,0,0.6)'}}>
-            Sunshine Giggles and Hugs
+              {heroTitle.map((word, index) => (
+                <span key={index} className={`inline-block hero-title-word opacity-0 ${word.className || ''}`}>
+                  {word.text}&nbsp;
+                </span>
+              ))}
             </h1>
             <p className="mt-6 max-w-2xl mx-auto text-lg sm:text-xl md:text-2xl text-shadow-md" style={{textShadow: '1px 1px 6px rgba(0,0,0,0.6)'}}>
             Joyful, nurturing, and Christ-centered childcare for your little ones.

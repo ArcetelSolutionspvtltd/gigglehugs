@@ -70,7 +70,7 @@ export function Footer({ socialLinks, contactDetails }: FooterProps) {
               <div className="mt-12 md:mt-0">
                 <h3 className="text-sm font-semibold text-foreground tracking-wider uppercase">Contact</h3>
                 <ul className="mt-4 space-y-4">
-                    {emails.slice(0,1).map(email => (
+                    {emails.map(email => (
                       <li key={email.id}>
                         <a href={`mailto:${email.value}`} className="text-base text-muted-foreground hover:text-primary">
                           {email.value}
