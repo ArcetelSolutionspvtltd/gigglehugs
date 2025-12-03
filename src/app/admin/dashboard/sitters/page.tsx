@@ -66,6 +66,7 @@ export default async function SittersPage() {
                         src={sitter.avatar_url || '/assets/logo/logo.svg'}
                         alt={sitter.name || 'Sitter avatar'}
                         fill
+                        sizes="64px"
                         className="object-cover"
                       />
                     </div>

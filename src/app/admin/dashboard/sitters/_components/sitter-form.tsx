@@ -3,7 +3,16 @@
 import { useActionState, useState, useRef, useEffect, type ReactNode } from 'react';
 import { useFormStatus } from 'react-dom';
 import Image from 'next/image';
-import { PlusCircle, Loader2, Image as ImageIcon } from 'lucide-react';
+import ReactCrop, { centerCrop, makeAspectCrop, type Crop } from 'react-image-crop';
+import 'react-image-crop/dist/ReactCrop.css';
+import { PlusCircle, Loader2, Image as ImageIcon, RotateCw } from 'lucide-react';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog"
 import {
   Sheet,
   SheetContent,
@@ -21,6 +30,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { upsertSitterAction, type FormState } from '../actions';
 import type { Sitter } from '@/lib/types';
+import { dataURLtoFile } from '@/lib/utils';
+
 
 function SubmitButton({ isEditing }: { isEditing: boolean }) {
   const { pending } = useFormStatus();
@@ -53,6 +64,12 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(sitter?.avatar_url || null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const [crop, setCrop] = useState<Crop>();
+  const [imgSrc, setImgSrc] = useState('');
+  const imgRef = useRef<HTMLImageElement>(null);
+  const [isCropModalOpen, setIsCropModalOpen] = useState(false);
+  const [croppedFile, setCroppedFile] = useState<File | null>(null);
+
   useEffect(() => {
     if (state.message) {
       if (state.success) {
@@ -72,17 +89,102 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
   }, [state, toast, isEditing]);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
+    if (e.target.files && e.target.files.length > 0) {
+      setCrop(undefined); // Reset crop on new image
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setAvatarPreview(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      reader.addEventListener('load', () => {
+        setImgSrc(reader.result?.toString() || '');
+        setIsCropModalOpen(true);
+      });
+      reader.readAsDataURL(e.target.files[0]);
     }
   };
 
+  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
+    const { width, height } = e.currentTarget;
+    const initialCrop = centerCrop(
+      makeAspectCrop(
+        {
+          unit: '%',
+          width: 90,
+        },
+        1,
+        width,
+        height,
+      ),
+      width,
+      height,
+    )
+    setCrop(initialCrop);
+  };
+  
+  const getCroppedImg = async () => {
+    const image = imgRef.current;
+    if (!image || !crop || !crop.width || !crop.height) {
+      return;
+    }
+  
+    const canvas = document.createElement('canvas');
+    const scaleX = image.naturalWidth / image.width;
+    const scaleY = image.naturalHeight / image.height;
+    canvas.width = crop.width;
+    canvas.height = crop.height;
+    const ctx = canvas.getContext('2d');
+  
+    if (!ctx) {
+      return;
+    }
+  
+    const pixelRatio = window.devicePixelRatio;
+    canvas.width = crop.width * pixelRatio;
+    canvas.height = crop.height * pixelRatio;
+    ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+    ctx.imageSmoothingQuality = 'high';
+  
+    ctx.drawImage(
+      image,
+      crop.x * scaleX,
+      crop.y * scaleY,
+      crop.width * scaleX,
+      crop.height * scaleY,
+      0,
+      0,
+      crop.width,
+      crop.height
+    );
+  
+    return new Promise<string | null>((resolve) => {
+      canvas.toBlob((blob) => {
+        if (!blob) {
+          resolve(null);
+          return;
+        }
+        resolve(URL.createObjectURL(blob));
+      }, 'image/png');
+    });
+  };
+
+  const handleCropConfirm = async () => {
+    const croppedImageUrl = await getCroppedImg();
+    if (croppedImageUrl) {
+      setAvatarPreview(croppedImageUrl);
+      const file = dataURLtoFile(croppedImageUrl, 'avatar.png');
+      setCroppedFile(file);
+      setIsCropModalOpen(false);
+    }
+  };
+
+  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    if (croppedFile) {
+        formData.set('avatar_url', croppedFile);
+    }
+    formAction(formData);
+  };
+
   return (
+    <>
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>{children}</SheetTrigger>
       <SheetContent className="sm:max-w-lg">
@@ -96,7 +198,7 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
         </SheetHeader>
         <form
             ref={formRef}
-            action={formAction}
+            onSubmit={handleFormSubmit}
             className="flex flex-col gap-6 mt-6"
         >
           {isEditing && <input type="hidden" name="id" value={sitter.id} />}
@@ -160,5 +262,30 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
         </form>
       </SheetContent>
     </Sheet>
+    <Dialog open={isCropModalOpen} onOpenChange={setIsCropModalOpen}>
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>Crop Image</DialogTitle>
+            </DialogHeader>
+            {imgSrc && (
+                <div className='flex flex-col items-center'>
+                    <ReactCrop
+                        crop={crop}
+                        onChange={(_, percentCrop) => setCrop(percentCrop)}
+                        circularCrop
+                        aspect={1}
+                        className='max-h-[60vh]'
+                    >
+                        <img ref={imgRef} src={imgSrc} alt="Source" onLoad={handleImageLoad} />
+                    </ReactCrop>
+                </div>
+            )}
+             <DialogFooter>
+                <Button variant="outline" onClick={() => setIsCropModalOpen(false)}>Cancel</Button>
+                <Button onClick={handleCropConfirm}>Confirm Crop</Button>
+             </DialogFooter>
+        </DialogContent>
+    </Dialog>
+    </>
   );
 }

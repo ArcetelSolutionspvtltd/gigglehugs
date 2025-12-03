@@ -25,8 +25,8 @@ export function SittersSection({ sitters }: SittersSectionProps) {
                     src={sitter.avatar_url || '/assets/logo/logo.svg'}
                     alt={`Profile of ${sitter.name}`}
                     fill
-                    className="object-cover rounded-full border-4 border-white shadow-md"
                     sizes="(max-width: 640px) 128px, 160px"
+                    className="object-cover rounded-full border-4 border-white shadow-md"
                     data-ai-hint="woman smiling"
                     />
                 </div>

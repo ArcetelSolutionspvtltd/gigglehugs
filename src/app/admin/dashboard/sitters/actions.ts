@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
+import { dataURLtoFile } from '@/lib/utils';
 
 const MAX_FILE_SIZE = 5000000; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
@@ -30,7 +31,7 @@ export type FormState = {
   success: boolean;
 };
 
-export async function upsertSitterAction(prevState: FormState, formData: FormData): Promise<FormState> {
+export async function upsertSitterAction(formData: FormData): Promise<FormState> {
   const validatedFields = sitterSchema.safeParse({
     id: formData.get('id'),
     name: formData.get('name'),
