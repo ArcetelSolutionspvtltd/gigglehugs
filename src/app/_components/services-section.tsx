@@ -17,10 +17,14 @@ export function ServicesSection({ services }: ServicesSectionProps) {
                 </p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {services.map((service) => {
+            {services.map((service, index) => {
               const Icon = getIcon(service.icon_name);
               return (
-                <Card key={service.id} className="flex flex-col text-center hover:shadow-xl transition-shadow duration-300">
+                <Card 
+                  key={service.id} 
+                  className="flex flex-col text-center hover:shadow-xl transition-shadow duration-300 opacity-0 animate-fade-in-up"
+                  style={{ animationDelay: `${index * 150}ms` }}
+                >
                   <CardHeader className="items-center">
                       <div className="bg-primary/10 p-4 rounded-full">
                         <Icon className="h-10 w-10 text-primary" />

@@ -63,7 +63,7 @@ export function HeroSection() {
       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/40 to-transparent" />
 
       <div className="relative z-10 h-full flex flex-col items-center justify-center text-center p-4">
-        <div className="max-w-4xl">
+        <div className="max-w-4xl pt-20">
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-shadow-lg" style={{textShadow: '2px 2px 10px rgba(0,0,0,0.6)'}}>
             Sunshine Giggles and Hugs
             </h1>

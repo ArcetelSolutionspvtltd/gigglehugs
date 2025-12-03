@@ -18,8 +18,12 @@ export function SittersSection({ sitters }: SittersSectionProps) {
             </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {sitters.map((sitter) => (
-            <Card key={sitter.id} className="overflow-hidden group transform transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+            {sitters.map((sitter, index) => (
+            <Card 
+              key={sitter.id} 
+              className="overflow-hidden group transform transition-all duration-300 hover:scale-105 hover:shadow-2xl opacity-0 animate-fade-in-up"
+              style={{ animationDelay: `${index * 150}ms` }}
+            >
                 <CardContent className="p-6 flex flex-col items-center text-center">
                 <div className="relative h-32 w-32 sm:h-40 sm:w-40 mb-4 rounded-full overflow-hidden bg-muted flex items-center justify-center">
                     {sitter.avatar_url ? (
