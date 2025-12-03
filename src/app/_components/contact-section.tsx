@@ -16,6 +16,7 @@ type ContactSectionProps = {
 
 export function ContactSection({ emails, phones, sitters }: ContactSectionProps) {
     const { toast } = useToast()
+    const teamEmails = sitters.filter(s => s.email);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -93,14 +94,14 @@ export function ContactSection({ emails, phones, sitters }: ContactSectionProps)
                           </div>
                         </div>
                      )}
-                     {sitters.filter(s => s.email).length > 0 && (
+                     {teamEmails.length > 0 && (
                         <div className="flex items-start gap-4">
                           <div className="bg-primary/10 p-3 rounded-full">
                             <Users className="h-6 w-6 text-primary" />
                           </div>
                           <div>
                               <h3 className="font-semibold text-lg">Our Team</h3>
-                              {sitters.map(sitter => sitter.email && <p key={sitter.id} className="text-muted-foreground">{sitter.email}</p>)}
+                              {teamEmails.map(sitter => sitter.email && <p key={sitter.id} className="text-muted-foreground">{sitter.email}</p>)}
                           </div>
                         </div>
                      )}

@@ -100,13 +100,13 @@ export function ContactForm({ children, contact }: ContactFormProps) {
           {isEditing && <input type="hidden" name="id" value={contact.id} />}
           <div className="space-y-2">
             <Label htmlFor="contact_type">Contact Type</Label>
-            <Select name="contact_type" defaultValue={contact?.contact_type ?? ''}>
+            <Select name="contact_type" defaultValue={contact?.contact_type ? String(contact.contact_type) : ''}>
                 <SelectTrigger>
                     <SelectValue placeholder="Select a type" />
                 </SelectTrigger>
                 <SelectContent>
-                    <SelectItem value="phone">Phone</SelectItem>
-                    <SelectItem value="email">Email</SelectItem>
+                    <SelectItem value="1">Phone</SelectItem>
+                    <SelectItem value="2">Email</SelectItem>
                 </SelectContent>
             </Select>
             {state?.errors?.contact_type && <p className="text-sm font-medium text-destructive">{state.errors.contact_type[0]}</p>}

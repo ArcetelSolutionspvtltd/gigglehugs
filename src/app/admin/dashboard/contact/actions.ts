@@ -6,9 +6,9 @@ import { z } from 'zod';
 
 const contactSchema = z.object({
   id: z.coerce.number().optional(),
-  contact_type: z.enum(['phone', 'email'], {
+  contact_type: z.enum(['1', '2'], { // 1 for phone, 2 for email
     errorMap: () => ({ message: 'Please select a valid type.' }),
-  }),
+  }).transform(v => parseInt(v, 10)),
   value: z.string().min(5, 'Value must be at least 5 characters.'),
 });
 
@@ -27,7 +27,7 @@ export async function upsertContactAction(prevState: FormState, formData: FormDa
     contact_type: formData.get('contact_type'),
     value: formData.get('value'),
   });
-
+  
   if (!validatedFields.success) {
     return {
       message: 'Validation failed. Please check your inputs.',

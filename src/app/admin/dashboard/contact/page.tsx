@@ -26,6 +26,10 @@ export default async function ContactPage() {
   const supabase = createClient();
   const { data: contacts } = await supabase.from('contact_details').select('*').order('id').returns<ContactDetail[]>();
 
+  const getTypeLabel = (type: 1 | 2) => {
+    return type === 1 ? 'phone' : 'email';
+  }
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center gap-4">
@@ -60,7 +64,8 @@ export default async function ContactPage() {
             </TableHeader>
             <TableBody>
               {contacts?.map((contact) => {
-                const Icon = getIcon(contact.contact_type);
+                const typeLabel = getTypeLabel(contact.contact_type);
+                const Icon = getIcon(typeLabel);
                 return (
                   <TableRow key={contact.id}>
                     <TableCell className="hidden sm:table-cell">
@@ -69,7 +74,7 @@ export default async function ContactPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline">{contact.contact_type}</Badge>
+                      <Badge variant="outline">{typeLabel}</Badge>
                     </TableCell>
                     <TableCell className="font-medium">{contact.value}</TableCell>
                     <TableCell>
