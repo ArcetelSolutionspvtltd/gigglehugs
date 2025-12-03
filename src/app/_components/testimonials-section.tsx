@@ -1,3 +1,5 @@
+'use client';
+
 import Image from 'next/image';
 import { testimonials } from '@/lib/data';
 import { Card, CardContent } from '@/components/ui/card';
@@ -8,6 +10,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel';
+import Autoplay from 'embla-carousel-autoplay';
 import { Star } from 'lucide-react';
 
 export function TestimonialsSection() {
@@ -25,6 +28,13 @@ export function TestimonialsSection() {
             align: "start",
             loop: true,
           }}
+          plugins={[
+            Autoplay({
+              delay: 5000,
+              stopOnInteraction: true,
+              stopOnMouseEnter: true,
+            }),
+          ]}
           className="w-full max-w-4xl mx-auto mt-16"
         >
           <CarouselContent>
