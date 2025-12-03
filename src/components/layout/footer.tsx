@@ -3,11 +3,11 @@ import { Twitter, Facebook, Instagram } from "lucide-react";
 import { Logo } from "@/components/icons/logo";
 
 const footerLinks = [
-  { href: "/about", label: "About Us" },
-  { href: "/services", label: "Services" },
-  { href: "/sitters", label: "Our Sitters" },
-  { href: "/contact", label: "Contact Us" },
-  { href: "/admin/generate-bio", label: "Admin" }
+  { href: "/#about", label: "About Us" },
+  { href: "/#services", label: "Services" },
+  { href: "/#sitters", label: "Our Sitters" },
+  { href: "/#contact", label: "Contact Us" },
+  { href: "/admin/login", label: "Admin" }
 ];
 
 const socialLinks = [
@@ -58,10 +58,10 @@ export function Footer() {
                         <p className="text-base text-muted-foreground">info@gigglehugs.org</p>
                     </li>
                     <li>
-                        <p className="text-base text-muted-foreground">(123) 456-7890</p>
+                        <p className="text-base text-muted-foreground">+263 78 551 9413</p>
                     </li>
-                    <li>
-                        <p className="text-base text-muted-foreground">123 Sunshine Lane, Happyville</p>
+                     <li>
+                        <p className="text-base text-muted-foreground">+263 71 734 0963</p>
                     </li>
                 </ul>
               </div>

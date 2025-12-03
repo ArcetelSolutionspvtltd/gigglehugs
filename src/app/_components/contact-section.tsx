@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Phone, Mail, MapPin } from 'lucide-react';
+import { Phone, Mail } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast"
 
 export function ContactSection() {
@@ -70,6 +70,9 @@ export function ContactSection() {
                         <div>
                             <h3 className="font-semibold text-lg">Email Us</h3>
                             <p className="text-muted-foreground">info@gigglehugs.org</p>
+                            <p className="text-muted-foreground">natsai@gigglehugs.org</p>
+                            <p className="text-muted-foreground">shaynese@gigglehugs.org</p>
+                            <p className="text-muted-foreground">ruvimbo@gigglehugs.org</p>
                         </div>
                     </div>
                      <div className="flex items-start gap-4">
@@ -78,16 +81,8 @@ export function ContactSection() {
                         </div>
                         <div>
                             <h3 className="font-semibold text-lg">Call Us</h3>
-                            <p className="text-muted-foreground">(123) 456-7890</p>
-                        </div>
-                    </div>
-                     <div className="flex items-start gap-4">
-                        <div className="bg-primary/10 p-3 rounded-full">
-                           <MapPin className="h-6 w-6 text-primary" />
-                        </div>
-                        <div>
-                            <h3 className="font-semibold text-lg">Visit Us</h3>
-                            <p className="text-muted-foreground">123 Sunshine Lane, Happyville, USA</p>
+                            <p className="text-muted-foreground">+263 78 551 9413</p>
+                            <p className="text-muted-foreground">+263 71 734 0963</p>
                         </div>
                     </div>
                 </div>
