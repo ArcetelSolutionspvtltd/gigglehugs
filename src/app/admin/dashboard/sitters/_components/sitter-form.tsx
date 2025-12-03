@@ -68,13 +68,11 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
   const [imgSrc, setImgSrc] = useState('');
   const imgRef = useRef<HTMLImageElement>(null);
   const [isCropModalOpen, setIsCropModalOpen] = useState(false);
-  const [croppedFile, setCroppedFile] = useState<File | null>(null);
 
   useEffect(() => {
     if (!isOpen) {
         // Reset state when sheet closes
         setAvatarPreview(sitter?.avatar_url || null);
-        setCroppedFile(null);
         setImgSrc('');
         if (formRef.current) {
           formRef.current.reset();
@@ -177,18 +175,15 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
     if (croppedImageUrl) {
       setAvatarPreview(croppedImageUrl);
       const file = dataURLtoFile(croppedImageUrl, 'avatar.png');
-      setCroppedFile(file);
+      // Create a new DataTransfer object and add the file
+      const dataTransfer = new DataTransfer();
+      dataTransfer.items.add(file);
+      // Set the files property of the file input
+      if (fileInputRef.current) {
+        fileInputRef.current.files = dataTransfer.files;
+      }
       setIsCropModalOpen(false);
     }
-  };
-
-  const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    const formData = new FormData(e.currentTarget);
-    if (croppedFile) {
-        formData.set('avatar_url', croppedFile);
-    }
-    formAction(formData);
   };
 
   return (
@@ -206,7 +201,7 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
         </SheetHeader>
         <form
             ref={formRef}
-            onSubmit={handleFormSubmit}
+            action={formAction}
             className="flex flex-col gap-6 mt-6"
         >
           {isEditing && <input type="hidden" name="id" value={sitter.id} />}

@@ -3,11 +3,12 @@
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { dataURLtoFile } from '@/lib/utils';
 
 const MAX_FILE_SIZE = 5000000; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
+// Note: any() is used for the avatar_url because File objects aren't directly supported by Zod.
+// The refinement functions provide the actual validation.
 const sitterSchema = z.object({
   id: z.coerce.number().optional(),
   name: z.string().min(3, 'Name must be at least 3 characters.'),
@@ -31,7 +32,7 @@ export type FormState = {
   success: boolean;
 };
 
-export async function upsertSitterAction(formData: FormData): Promise<FormState> {
+export async function upsertSitterAction(prevState: FormState, formData: FormData): Promise<FormState> {
   const validatedFields = sitterSchema.safeParse({
     id: formData.get('id'),
     name: formData.get('name'),
@@ -63,7 +64,7 @@ export async function upsertSitterAction(formData: FormData): Promise<FormState>
     if (uploadError) {
       console.error('Storage error:', uploadError);
       if (uploadError.message.includes('Bucket not found')) {
-        return { message: `Failed to upload avatar: The 'avatars' bucket was not found. Please create it in your Supabase project.`, success: false };
+        return { message: "Failed to upload avatar: The 'avatars' bucket was not found. Please create it in your Supabase project.", success: false };
       }
       return { message: `Failed to upload avatar: ${uploadError.message}`, success: false };
     }
