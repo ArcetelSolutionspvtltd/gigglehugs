@@ -17,7 +17,7 @@ export function FaqSection({ faqs }: FaqSectionProps) {
   
   return (
     <section id="faq" className="py-16 sm:py-24 bg-secondary/30">
-      <div className="container max-w-4xl">
+      <div className="container mx-auto max-w-4xl px-4 md:px-8">
         <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">Frequently Asked Questions</h2>
             <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">

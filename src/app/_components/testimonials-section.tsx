@@ -20,7 +20,7 @@ type TestimonialsSectionProps = {
 export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) {
   return (
     <section id="testimonials" className="py-16 sm:py-24 bg-background">
-      <div className="container">
+      <div className="container mx-auto max-w-7xl px-4 md:px-8">
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">Words of Trust from Our Families</h2>
           <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
@@ -38,7 +38,7 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
               stopOnInteraction: true,
             }),
           ]}
-          className="w-full max-w-4xl mx-auto"
+          className="w-full max-w-6xl mx-auto"
         >
           <CarouselContent>
             {testimonials.map((testimonial) => (
