@@ -1,16 +1,10 @@
 import Link from 'next/link';
-import { Menu, type LucideIcon } from 'lucide-react';
+import { Menu } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Logo } from '@/components/icons/logo';
-import { NavItem } from './nav-item';
-
-type NavItemProps = {
-    href: string;
-    icon: LucideIcon;
-    label: string;
-}
+import { NavItem, type NavItemProps } from './nav-item';
 
 type MobileNavProps = {
     navItems: NavItemProps[]

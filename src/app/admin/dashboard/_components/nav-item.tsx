@@ -2,18 +2,19 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import type { LucideIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { getIcon } from '@/lib/icons';
 
-type NavItemProps = {
+export type NavItemProps = {
     href: string;
-    icon: LucideIcon;
+    iconName: string;
     label: string;
 };
 
-export function NavItem({ href, icon: Icon, label }: NavItemProps) {
+export function NavItem({ href, iconName, label }: NavItemProps) {
     const pathname = usePathname();
     const isActive = pathname === href;
+    const Icon = getIcon(iconName);
 
     return (
         <Link

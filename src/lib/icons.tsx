@@ -1,7 +1,7 @@
 import { 
     Heart, BookOpen, Music, ToyBrick, Baby, HandHelping, Star, Moon, 
     type LucideIcon, Twitter, Facebook, Instagram, Linkedin, Rss, Image,
-    Smartphone, Mail
+    Smartphone, Mail, Home, List, Users, Link2, Phone
 } from 'lucide-react';
 
 export const iconMap: { [key: string]: LucideIcon } = {
@@ -20,8 +20,12 @@ export const iconMap: { [key: string]: LucideIcon } = {
   rss: Rss,
   whatsapp: Smartphone, // Using Smartphone for WhatsApp
   tiktok: Music, // Using Music for TikTok as a placeholder
-  phone: Smartphone,
+  phone: Phone,
   email: Mail,
+  home: Home,
+  list: List,
+  users: Users,
+  link2: Link2,
   default: Image,
 };
 

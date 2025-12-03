@@ -32,14 +32,15 @@ import { redirect } from 'next/navigation';
 import { Logo } from '@/components/icons/logo';
 import { MobileNav } from './_components/mobile-nav';
 import { NavItem } from './_components/nav-item';
+import type { NavItemProps } from './_components/nav-item';
 
-const navItems = [
-    { href: '/admin/dashboard', icon: Home, label: 'Dashboard' },
-    { href: '/admin/dashboard/services', icon: List, label: 'Services' },
-    { href: '/admin/dashboard/sitters', icon: Users, label: 'Sitters' },
-    { href: '/admin/dashboard/testimonials', icon: Star, label: 'Testimonials' },
-    { href: '/admin/dashboard/contact', icon: Phone, label: 'Contact Details' },
-    { href: '/admin/dashboard/social', icon: Link2, label: 'Social Links' },
+const navItems: NavItemProps[] = [
+    { href: '/admin/dashboard', iconName: 'home', label: 'Dashboard' },
+    { href: '/admin/dashboard/services', iconName: 'list', label: 'Services' },
+    { href: '/admin/dashboard/sitters', iconName: 'users', label: 'Sitters' },
+    { href: '/admin/dashboard/testimonials', iconName: 'star', label: 'Testimonials' },
+    { href: '/admin/dashboard/contact', iconName: 'phone', label: 'Contact Details' },
+    { href: '/admin/dashboard/social', iconName: 'link2', label: 'Social Links' },
 ];
 
 export default async function DashboardLayout({
