@@ -46,7 +46,7 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
                 <div className="p-1 h-full">
                   <Card className="flex flex-col h-full">
                     <CardHeader className="flex flex-row items-center gap-4">
-                        <div className="relative h-16 w-16 rounded-full overflow-hidden bg-muted flex items-center justify-center ring-4 ring-primary/20 ring-offset-4 ring-offset-background">
+                        <div className="relative h-16 w-16 rounded-full overflow-hidden bg-muted flex items-center justify-center ring-4 ring-primary/20 dark:ring-primary/40 ring-offset-4 ring-offset-background">
                             {testimonial.avatar_url ? (
                                 <Image
                                     src={testimonial.avatar_url}

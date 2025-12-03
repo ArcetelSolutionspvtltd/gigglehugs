@@ -25,7 +25,7 @@ export function SittersSection({ sitters }: SittersSectionProps) {
               style={{ animationDelay: `${index * 150}ms` }}
             >
                 <CardContent className="p-6 flex flex-col items-center text-center flex-grow">
-                <div className="relative h-32 w-32 sm:h-40 sm:w-40 mb-6 rounded-full overflow-hidden bg-muted flex items-center justify-center ring-4 ring-primary/20 ring-offset-4 ring-offset-secondary/30">
+                <div className="relative h-32 w-32 sm:h-40 sm:w-40 mb-6 rounded-full overflow-hidden bg-muted flex items-center justify-center ring-4 ring-primary/20 dark:ring-primary/40 ring-offset-4 ring-offset-secondary/30">
                     {sitter.avatar_url ? (
                         <Image
                             src={sitter.avatar_url}
