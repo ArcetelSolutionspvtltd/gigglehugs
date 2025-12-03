@@ -22,7 +22,7 @@ export function SittersSection({ sitters }: SittersSectionProps) {
                 <CardContent className="p-6 flex flex-col items-center text-center">
                 <div className="relative h-32 w-32 sm:h-40 sm:w-40 mb-4">
                     <Image
-                    src={sitter.avatar_url || 'https://picsum.photos/seed/placeholder/200/200'}
+                    src={sitter.avatar_url || '/assets/logo/logo.svg'}
                     alt={`Profile of ${sitter.name}`}
                     fill
                     className="object-cover rounded-full border-4 border-white shadow-md"

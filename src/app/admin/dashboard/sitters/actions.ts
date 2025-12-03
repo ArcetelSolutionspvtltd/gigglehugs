@@ -53,13 +53,17 @@ export async function upsertSitterAction(prevState: FormState, formData: FormDat
   if (avatarFile && avatarFile.size > 0) {
     const fileExtension = avatarFile.name.split('.').pop();
     const fileName = `${name.toLowerCase().replace(/\s+/g, '_')}_${Date.now()}.${fileExtension}`;
+    const filePath = `sitters/${fileName}`;
     
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('avatars')
-      .upload(`sitters/${fileName}`, avatarFile, { upsert: true });
+      .upload(filePath, avatarFile, { upsert: true });
 
     if (uploadError) {
       console.error('Storage error:', uploadError);
+      if (uploadError.message.includes('Bucket not found')) {
+        return { message: `Failed to upload avatar: The 'avatars' bucket was not found. Please create it in your Supabase project.`, success: false };
+      }
       return { message: `Failed to upload avatar: ${uploadError.message}`, success: false };
     }
     
@@ -79,7 +83,6 @@ export async function upsertSitterAction(prevState: FormState, formData: FormDat
   }
 
   const { error: dbError } = await supabase.from('sitters').upsert(dataToUpsert).select().single();
-
 
   if (dbError) {
     console.error('Supabase error:', dbError);
