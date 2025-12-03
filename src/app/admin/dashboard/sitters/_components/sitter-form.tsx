@@ -1,11 +1,11 @@
 'use client';
 
-import { useState, useRef, useEffect, type ReactNode, useActionState } from 'react';
-import { useFormStatus } from 'react-dom';
+import { useState, useRef, useEffect, type ReactNode } from 'react';
+import { useFormStatus, useActionState } from 'react-dom';
 import Image from 'next/image';
 import ReactCrop, { centerCrop, makeAspectCrop, type Crop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
-import { PlusCircle, Loader2, Image as ImageIcon } from 'lucide-react';
+import { Loader2, ImageIcon } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -127,7 +127,7 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
     setCrop(initialCrop);
   };
   
-  const getCroppedImg = async () => {
+  const getCroppedImg = () => {
     const image = imgRef.current;
     if (!image || !crop || !crop.width || !crop.height) {
       return null;
@@ -137,21 +137,14 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
     const scaleX = image.naturalWidth / image.width;
     const scaleY = image.naturalHeight / image.height;
     
-    // We use a fixed size for the canvas to maintain quality
-    const targetSize = 512;
-    canvas.width = targetSize;
-    canvas.height = targetSize;
+    canvas.width = Math.floor(crop.width * scaleX);
+    canvas.height = Math.floor(crop.height * scaleY);
     
     const ctx = canvas.getContext('2d');
     if (!ctx) {
       return null;
     }
 
-    const pixelRatio = window.devicePixelRatio;
-    canvas.width = Math.floor(crop.width * scaleX * pixelRatio);
-    canvas.height = Math.floor(crop.height * scaleY * pixelRatio);
-    ctx.scale(pixelRatio, pixelRatio);
-    
     const cropX = crop.x * scaleX;
     const cropY = crop.y * scaleY;
   
@@ -170,7 +163,17 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
     );
   
     return new Promise<string | null>((resolve) => {
-      resolve(canvas.toDataURL('image/png'));
+      canvas.toBlob(blob => {
+        if (!blob) {
+          resolve(null);
+          return;
+        }
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          resolve(reader.result as string);
+        };
+        reader.readAsDataURL(blob);
+      }, 'image/png');
     });
   };
 
@@ -179,10 +182,8 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
     if (croppedImageUrl) {
       setAvatarPreview(croppedImageUrl);
       const file = dataURLtoFile(croppedImageUrl, 'avatar.png');
-      // Create a new DataTransfer object and add the file
       const dataTransfer = new DataTransfer();
       dataTransfer.items.add(file);
-      // Set the files property of the file input
       if (fileInputRef.current) {
         fileInputRef.current.files = dataTransfer.files;
       }

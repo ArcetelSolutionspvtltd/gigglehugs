@@ -32,13 +32,7 @@ export type FormState = {
 };
 
 export async function upsertSitterAction(prevState: FormState, formData: FormData): Promise<FormState> {
-  const validatedFields = sitterSchema.safeParse({
-    id: formData.get('id'),
-    name: formData.get('name'),
-    bio: formData.get('bio'),
-    avatar_url: formData.get('avatar_url'),
-    current_avatar_url: formData.get('current_avatar_url'),
-  });
+  const validatedFields = sitterSchema.safeParse(Object.fromEntries(formData.entries()));
 
   if (!validatedFields.success) {
     return {
@@ -55,9 +49,11 @@ export async function upsertSitterAction(prevState: FormState, formData: FormDat
   try {
     if (avatarFile && avatarFile.size > 0) {
       let fileName: string;
+      // If editing and an avatar exists, extract filename to overwrite
       if (id && current_avatar_url) {
-        // If editing and an avatar exists, extract filename to overwrite
-        fileName = current_avatar_url.split('/').pop()!;
+        // Remove any query parameters from the URL before getting the filename
+        const urlWithoutQuery = current_avatar_url.split('?')[0];
+        fileName = urlWithoutQuery.split('/').pop()!;
       } else {
         // For new sitters or if no avatar exists, create a new filename
         const fileExtension = avatarFile.name.split('.').pop();
@@ -77,8 +73,9 @@ export async function upsertSitterAction(prevState: FormState, formData: FormDat
       const { data: publicUrlData } = supabase.storage
         .from('avatars')
         .getPublicUrl(uploadData.path);
-        
-      avatarPath = publicUrlData.publicUrl;
+      
+      // Append a timestamp to force the browser to refetch the image
+      avatarPath = `${publicUrlData.publicUrl}?t=${new Date().getTime()}`;
     }
     
     const dataToUpsert: any = { name, bio };
