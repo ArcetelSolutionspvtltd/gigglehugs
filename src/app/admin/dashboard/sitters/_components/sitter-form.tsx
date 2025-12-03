@@ -71,6 +71,18 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
   const [croppedFile, setCroppedFile] = useState<File | null>(null);
 
   useEffect(() => {
+    if (!isOpen) {
+        // Reset state when sheet closes
+        setAvatarPreview(sitter?.avatar_url || null);
+        setCroppedFile(null);
+        setImgSrc('');
+        if (formRef.current) {
+          formRef.current.reset();
+        }
+    }
+  }, [isOpen, sitter]);
+
+  useEffect(() => {
     if (state.message) {
       if (state.success) {
         toast({
@@ -127,40 +139,36 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
     const canvas = document.createElement('canvas');
     const scaleX = image.naturalWidth / image.width;
     const scaleY = image.naturalHeight / image.height;
-    canvas.width = crop.width;
-    canvas.height = crop.height;
+    
+    const cropWidth = crop.width * scaleX;
+    const cropHeight = crop.height * scaleY;
+    const cropX = crop.x * scaleX;
+    const cropY = crop.y * scaleY;
+
+    // Use a fixed size for the canvas to maintain quality
+    const targetSize = 512;
+    canvas.width = targetSize;
+    canvas.height = targetSize;
+    
     const ctx = canvas.getContext('2d');
-  
     if (!ctx) {
       return;
     }
   
-    const pixelRatio = window.devicePixelRatio;
-    canvas.width = crop.width * pixelRatio;
-    canvas.height = crop.height * pixelRatio;
-    ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
-    ctx.imageSmoothingQuality = 'high';
-  
     ctx.drawImage(
       image,
-      crop.x * scaleX,
-      crop.y * scaleY,
-      crop.width * scaleX,
-      crop.height * scaleY,
+      cropX,
+      cropY,
+      cropWidth,
+      cropHeight,
       0,
       0,
-      crop.width,
-      crop.height
+      targetSize,
+      targetSize,
     );
   
     return new Promise<string | null>((resolve) => {
-      canvas.toBlob((blob) => {
-        if (!blob) {
-          resolve(null);
-          return;
-        }
-        resolve(URL.createObjectURL(blob));
-      }, 'image/png');
+      resolve(canvas.toDataURL('image/png'));
     });
   };
 
