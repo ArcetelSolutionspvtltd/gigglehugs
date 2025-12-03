@@ -67,7 +67,7 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
                             </div>
                         </div>
                     </CardHeader>
-                    <CardContent className="flex-grow">
+                    <CardContent className="flex-grow flex flex-col justify-between">
                       <p className="text-muted-foreground italic">&quot;{testimonial.testimonial}&quot;</p>
                       <p className="text-sm font-semibold mt-4 text-foreground">- {testimonial.bio}</p>
                     </CardContent>
