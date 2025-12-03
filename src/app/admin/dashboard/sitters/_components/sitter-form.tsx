@@ -11,6 +11,8 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogClose,
+  DialogTrigger,
 } from "@/components/ui/dialog"
 import {
   Sheet,
@@ -32,6 +34,7 @@ import type { Sitter } from '@/lib/types';
 import { dataURLtoFile, getCroppedImg } from '@/lib/utils';
 import { Slider } from '@/components/ui/slider';
 import { useFormStatus } from 'react-dom';
+import { useMediaQuery } from '@/hooks/use-media-query';
 
 const MAX_BIO_LENGTH = 150;
 
@@ -74,6 +77,8 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
   const [zoom, setZoom] = useState(1);
   const [rotation, setRotation] = useState(0);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+
+  const isDesktop = useMediaQuery("(min-width: 768px)");
 
   useEffect(() => {
     if (!isOpen) {
@@ -147,127 +152,162 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
     setBioCharCount(e.target.value.length);
   };
 
-  return (
-    <>
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetTrigger asChild>{children}</SheetTrigger>
-      <SheetContent className="sm:max-w-lg">
-        <SheetHeader>
-          <SheetTitle>{isEditing ? 'Edit Sitter' : 'Add a New Sitter'}</SheetTitle>
-          <SheetDescription>
-            {isEditing
-              ? 'Update the details for this sitter.'
-              : 'Fill out the form to add a new sitter to your website.'}
-          </SheetDescription>
-        </SheetHeader>
-        <form
-            ref={formRef}
-            action={handleFormAction}
-            className="flex flex-col gap-6 mt-6"
-        >
-          {isEditing && <input type="hidden" name="id" value={sitter.id} />}
-          {isEditing && sitter.avatar_url && <input type="hidden" name="current_avatar_url" value={sitter.avatar_url} />}
-           <div className="space-y-2">
-            <Label>Avatar</Label>
-            <div className="flex items-center gap-4">
-              <div className="relative h-20 w-20 rounded-full overflow-hidden bg-muted flex items-center justify-center">
-                {avatarPreview ? (
-                  <Image src={avatarPreview} alt="Avatar preview" fill className="object-cover" />
-                ) : (
-                  <ImageIcon className="h-8 w-8 text-muted-foreground" />
-                )}
-              </div>
-              <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
-                {avatarPreview ? 'Change' : 'Upload'}
-              </Button>
-              <Input
-                ref={fileInputRef}
-                id="avatar_url"
-                name="avatar_url"
-                type="file"
-                className="hidden"
-                accept="image/*"
-                onChange={handleAvatarChange}
-              />
-            </div>
+  const FormContent = (
+    <form
+        ref={formRef}
+        action={handleFormAction}
+        className="flex flex-col gap-6 mt-6"
+    >
+      {isEditing && <input type="hidden" name="id" value={sitter.id} />}
+      {isEditing && sitter.avatar_url && <input type="hidden" name="current_avatar_url" value={sitter.avatar_url} />}
+        <div className="space-y-2">
+        <Label>Avatar</Label>
+        <div className="flex items-center gap-4">
+          <div className="relative h-20 w-20 rounded-full overflow-hidden bg-muted flex items-center justify-center">
+            {avatarPreview ? (
+              <Image src={avatarPreview} alt="Avatar preview" fill className="object-cover" />
+            ) : (
+              <ImageIcon className="h-8 w-8 text-muted-foreground" />
+            )}
           </div>
+          <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
+            {avatarPreview ? 'Change' : 'Upload'}
+          </Button>
+          <Input
+            ref={fileInputRef}
+            id="avatar_url"
+            name="avatar_url"
+            type="file"
+            className="hidden"
+            accept="image/*"
+            onChange={handleAvatarChange}
+          />
+        </div>
+      </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
-            <Input
-              id="name"
-              name="name"
-              placeholder="e.g., Jane Doe"
-              defaultValue={sitter?.name ?? ''}
-              required
-            />
-          </div>
+      <div className="space-y-2">
+        <Label htmlFor="name">Name</Label>
+        <Input
+          id="name"
+          name="name"
+          placeholder="e.g., Jane Doe"
+          defaultValue={sitter?.name ?? ''}
+          required
+        />
+      </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="email_name">Email</Label>
-            <div className="flex items-center">
-              <Input
-                id="email_name"
-                name="email_name"
-                placeholder="jane"
-                value={emailName}
-                onChange={(e) => setEmailName(e.target.value)}
-                className="rounded-r-none focus-visible:ring-0 focus-visible:ring-offset-0"
-              />
-              <span className="inline-flex h-10 items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm text-muted-foreground">
-                @gigglehugs.org
-              </span>
-            </div>
-          </div>
+      <div className="space-y-2">
+        <Label htmlFor="email_name">Email</Label>
+        <div className="flex items-center">
+          <Input
+            id="email_name"
+            name="email_name"
+            placeholder="jane"
+            value={emailName}
+            onChange={(e) => setEmailName(e.target.value)}
+            className="rounded-r-none focus-visible:ring-0 focus-visible:ring-offset-0"
+          />
+          <span className="inline-flex h-10 items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm text-muted-foreground">
+            @gigglehugs.org
+          </span>
+        </div>
+      </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="bio">Bio</Label>
-            <Textarea
-              id="bio"
-              name="bio"
-              placeholder="Describe the sitter..."
-              defaultValue={sitter?.bio ?? ''}
-              rows={4}
-              required
-              maxLength={MAX_BIO_LENGTH}
-              onChange={handleBioChange}
-            />
-            <div className="text-right text-sm text-muted-foreground">
-                {bioCharCount}/{MAX_BIO_LENGTH}
-            </div>
-            {state?.errors?.bio && <p className="text-sm font-medium text-destructive">{state.errors.bio[0]}</p>}
-          </div>
+      <div className="space-y-2">
+        <Label htmlFor="bio">Bio</Label>
+        <Textarea
+          id="bio"
+          name="bio"
+          placeholder="Describe the sitter..."
+          defaultValue={sitter?.bio ?? ''}
+          rows={4}
+          required
+          maxLength={MAX_BIO_LENGTH}
+          onChange={handleBioChange}
+        />
+        <div className="text-right text-sm text-muted-foreground">
+            {bioCharCount}/{MAX_BIO_LENGTH}
+        </div>
+        {state?.errors?.bio && <p className="text-sm font-medium text-destructive">{state.errors.bio[0]}</p>}
+      </div>
 
-          <SheetFooter className="mt-4">
+      {isDesktop ? (
+        <SheetFooter className="mt-4">
             <SheetClose asChild>
                 <Button variant="outline">Cancel</Button>
             </SheetClose>
             <SubmitButton isEditing={isEditing} />
-          </SheetFooter>
-        </form>
-      </SheetContent>
-    </Sheet>
+        </SheetFooter>
+      ) : (
+        <DialogFooter className="mt-4">
+            <DialogClose asChild>
+                <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <SubmitButton isEditing={isEditing} />
+        </DialogFooter>
+      )}
+    </form>
+  );
+
+  const FormContainer = ({ children }: { children: ReactNode }) => {
+    if (isDesktop) {
+        return (
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+                <SheetTrigger asChild>{children}</SheetTrigger>
+                <SheetContent className="sm:max-w-lg overflow-y-auto max-h-screen">
+                    <SheetHeader>
+                    <SheetTitle>{isEditing ? 'Edit Sitter' : 'Add a New Sitter'}</SheetTitle>
+                    <SheetDescription>
+                        {isEditing
+                        ? 'Update the details for this sitter.'
+                        : 'Fill out the form to add a new sitter to your website.'}
+                    </SheetDescription>
+                    </SheetHeader>
+                    {FormContent}
+                </SheetContent>
+            </Sheet>
+        );
+    }
+    return (
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>{children}</DialogTrigger>
+            <DialogContent className="overflow-y-auto max-h-screen">
+                <DialogHeader>
+                <DialogTitle>{isEditing ? 'Edit Sitter' : 'Add a New Sitter'}</DialogTitle>
+                <DialogDescription>
+                    {isEditing
+                    ? 'Update the details for this sitter.'
+                    : 'Fill out the form to add a new sitter to your website.'}
+                </DialogDescription>
+                </DialogHeader>
+                {FormContent}
+            </DialogContent>
+        </Dialog>
+    );
+  };
+
+  return (
+    <>
+    <FormContainer>{children}</FormContainer>
     <Dialog open={isCropModalOpen} onOpenChange={setIsCropModalOpen}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="max-w-md w-full">
             <DialogHeader>
                 <DialogTitle>Crop Image</DialogTitle>
             </DialogHeader>
-            {imgSrc && (
-                <div className='relative w-full h-[50vh]'>
-                    <Cropper
-                        image={imgSrc}
-                        crop={crop}
-                        zoom={zoom}
-                        rotation={rotation}
-                        aspect={1}
-                        cropShape="round"
-                        onCropChange={setCrop}
-                        onZoomChange={setZoom}
-                        onRotationChange={setRotation}
-                        onCropComplete={onCropComplete}
-                    />
-                </div>
-            )}
+            <div className='relative w-full h-64 md:h-96'>
+                <Cropper
+                    image={imgSrc}
+                    crop={crop}
+                    zoom={zoom}
+                    rotation={rotation}
+                    aspect={1}
+                    cropShape="round"
+                    onCropChange={setCrop}
+                    onZoomChange={setZoom}
+                    onRotationChange={setRotation}
+                    onCropComplete={onCropComplete}
+                />
+            </div>
             <div className="space-y-4 p-4">
                 <div className="space-y-2">
                     <Label>Zoom</Label>

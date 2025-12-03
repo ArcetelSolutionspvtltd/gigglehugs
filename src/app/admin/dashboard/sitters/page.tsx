@@ -45,7 +45,7 @@ export default async function SittersPage() {
             Add, edit, or delete your babysitters.
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="overflow-auto">
           <Table>
             <TableHeader>
               <TableRow>

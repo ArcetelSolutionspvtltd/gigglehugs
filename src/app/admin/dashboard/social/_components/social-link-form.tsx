@@ -13,6 +13,16 @@ import {
   SheetClose,
   SheetTrigger,
 } from '@/components/ui/sheet';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogClose,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -26,7 +36,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { upsertSocialLinkAction, type FormState } from '../actions';
 import type { SocialLink } from '@/lib/types';
-import { iconMap } from '@/lib/icons';
+import { useMediaQuery } from '@/hooks/use-media-query';
 
 const socialPlatforms = ['facebook', 'twitter', 'instagram', 'linkedin', 'youtube', 'tiktok', 'whatsapp'];
 
@@ -58,6 +68,7 @@ export function SocialLinkForm({ children, link }: SocialLinkFormProps) {
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
+  const isDesktop = useMediaQuery("(min-width: 768px)");
 
   useEffect(() => {
     if (!isOpen) {
@@ -83,62 +94,94 @@ export function SocialLinkForm({ children, link }: SocialLinkFormProps) {
     }
   }, [state, toast, isEditing]);
 
-  return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetTrigger asChild>{children}</SheetTrigger>
-      <SheetContent>
-        <SheetHeader>
-          <SheetTitle>{isEditing ? 'Edit Social Link' : 'Add a New Social Link'}</SheetTitle>
-          <SheetDescription>
-            {isEditing
-              ? 'Update the details for this social link.'
-              : 'Fill out the form to add a new social link.'}
-          </SheetDescription>
-        </SheetHeader>
-        <form
-            ref={formRef}
-            action={formAction}
-            className="flex flex-col gap-6 mt-6"
-        >
-          {isEditing && <input type="hidden" name="id" value={link.id} />}
-          <div className="space-y-2">
-            <Label htmlFor="platform">Platform</Label>
-            <Select name="platform" defaultValue={link?.platform ?? ''}>
-                <SelectTrigger>
-                    <SelectValue placeholder="Select a platform" />
-                </SelectTrigger>
-                <SelectContent>
-                    {socialPlatforms.map(platform => (
-                        <SelectItem key={platform} value={platform}>
-                            {platform.charAt(0).toUpperCase() + platform.slice(1)}
-                        </SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
-            {state?.errors?.platform && <p className="text-sm font-medium text-destructive">{state.errors.platform[0]}</p>}
-          </div>
+  const FormContent = (
+    <form
+        ref={formRef}
+        action={formAction}
+        className="flex flex-col gap-6 mt-6"
+    >
+      {isEditing && <input type="hidden" name="id" value={link.id} />}
+      <div className="space-y-2">
+        <Label htmlFor="platform">Platform</Label>
+        <Select name="platform" defaultValue={link?.platform ?? ''}>
+            <SelectTrigger>
+                <SelectValue placeholder="Select a platform" />
+            </SelectTrigger>
+            <SelectContent>
+                {socialPlatforms.map(platform => (
+                    <SelectItem key={platform} value={platform}>
+                        {platform.charAt(0).toUpperCase() + platform.slice(1)}
+                    </SelectItem>
+                ))}
+            </SelectContent>
+        </Select>
+        {state?.errors?.platform && <p className="text-sm font-medium text-destructive">{state.errors.platform[0]}</p>}
+      </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="url">URL</Label>
-            <Input
-              id="url"
-              name="url"
-              type='url'
-              placeholder="https://facebook.com/your-page"
-              defaultValue={link?.url ?? ''}
-              required
-            />
-            {state?.errors?.url && <p className="text-sm font-medium text-destructive">{state.errors.url[0]}</p>}
-          </div>
+      <div className="space-y-2">
+        <Label htmlFor="url">URL</Label>
+        <Input
+          id="url"
+          name="url"
+          type='url'
+          placeholder="https://facebook.com/your-page"
+          defaultValue={link?.url ?? ''}
+          required
+        />
+        {state?.errors?.url && <p className="text-sm font-medium text-destructive">{state.errors.url[0]}</p>}
+      </div>
 
-          <SheetFooter className="mt-4">
+      {isDesktop ? (
+        <SheetFooter className="mt-4">
             <SheetClose asChild>
                 <Button variant="outline">Cancel</Button>
             </SheetClose>
             <SubmitButton isEditing={isEditing} />
-          </SheetFooter>
-        </form>
-      </SheetContent>
-    </Sheet>
+        </SheetFooter>
+      ) : (
+        <DialogFooter className="mt-4">
+            <DialogClose asChild>
+                <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <SubmitButton isEditing={isEditing} />
+        </DialogFooter>
+      )}
+    </form>
+  );
+
+  if (isDesktop) {
+    return (
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
+        <SheetTrigger asChild>{children}</SheetTrigger>
+        <SheetContent>
+            <SheetHeader>
+            <SheetTitle>{isEditing ? 'Edit Social Link' : 'Add a New Social Link'}</SheetTitle>
+            <SheetDescription>
+                {isEditing
+                ? 'Update the details for this social link.'
+                : 'Fill out the form to add a new social link.'}
+            </SheetDescription>
+            </SheetHeader>
+            {FormContent}
+        </SheetContent>
+        </Sheet>
+    );
+  }
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogTrigger asChild>{children}</DialogTrigger>
+        <DialogContent>
+            <DialogHeader>
+                <DialogTitle>{isEditing ? 'Edit Social Link' : 'Add a New Social Link'}</DialogTitle>
+                <DialogDescription>
+                    {isEditing
+                    ? 'Update the details for this social link.'
+                    : 'Fill out the form to add a new social link.'}
+                </DialogDescription>
+            </DialogHeader>
+            {FormContent}
+        </DialogContent>
+    </Dialog>
   );
 }

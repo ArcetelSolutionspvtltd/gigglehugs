@@ -50,7 +50,7 @@ export default async function ContactPage() {
             Add, edit, or delete your company's contact details.
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="overflow-auto">
           <Table>
             <TableHeader>
               <TableRow>

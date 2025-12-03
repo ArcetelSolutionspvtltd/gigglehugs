@@ -13,6 +13,16 @@ import {
   SheetClose,
   SheetTrigger,
 } from '@/components/ui/sheet';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+  DialogClose,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -26,6 +36,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { upsertContactAction, type FormState } from '../actions';
 import type { ContactDetail } from '@/lib/types';
+import { useMediaQuery } from '@/hooks/use-media-query';
 
 function SubmitButton({ isEditing }: { isEditing: boolean }) {
   const { pending } = useFormStatus();
@@ -55,6 +66,7 @@ export function ContactForm({ children, contact }: ContactFormProps) {
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
+  const isDesktop = useMediaQuery("(min-width: 768px)");
 
   useEffect(() => {
     if (!isOpen) {
@@ -80,58 +92,92 @@ export function ContactForm({ children, contact }: ContactFormProps) {
     }
   }, [state, toast, isEditing]);
 
+  const FormContent = (
+    <>
+      <form
+          ref={formRef}
+          action={formAction}
+          className="flex flex-col gap-6 mt-6"
+      >
+        {isEditing && <input type="hidden" name="id" value={contact.id} />}
+        <div className="space-y-2">
+          <Label htmlFor="type">Contact Type</Label>
+          <Select name="type" defaultValue={contact?.type ? String(contact.type) : ''}>
+              <SelectTrigger>
+                  <SelectValue placeholder="Select a type" />
+              </SelectTrigger>
+              <SelectContent>
+                  <SelectItem value="1">Phone</SelectItem>
+                  <SelectItem value="2">Email</SelectItem>
+              </SelectContent>
+          </Select>
+          {state?.errors?.type && <p className="text-sm font-medium text-destructive">{state.errors.type[0]}</p>}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="value">Value</Label>
+          <Input
+            id="value"
+            name="value"
+            placeholder="e.g., info@gigglehugs.org"
+            defaultValue={contact?.value ?? ''}
+            required
+          />
+          {state?.errors?.value && <p className="text-sm font-medium text-destructive">{state.errors.value[0]}</p>}
+        </div>
+
+        {isDesktop ? (
+            <SheetFooter className="mt-4">
+                <SheetClose asChild>
+                    <Button variant="outline">Cancel</Button>
+                </SheetClose>
+                <SubmitButton isEditing={isEditing} />
+            </SheetFooter>
+        ) : (
+            <DialogFooter className="mt-4">
+                <DialogClose asChild>
+                    <Button variant="outline">Cancel</Button>
+                </DialogClose>
+                <SubmitButton isEditing={isEditing} />
+            </DialogFooter>
+        )}
+      </form>
+    </>
+  );
+
+  if (isDesktop) {
+    return (
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
+        <SheetTrigger asChild>{children}</SheetTrigger>
+        <SheetContent>
+            <SheetHeader>
+            <SheetTitle>{isEditing ? 'Edit Contact' : 'Add a New Contact'}</SheetTitle>
+            <SheetDescription>
+                {isEditing
+                ? 'Update the details for this contact.'
+                : 'Fill out the form to add a new contact detail.'}
+            </SheetDescription>
+            </SheetHeader>
+            {FormContent}
+        </SheetContent>
+        </Sheet>
+    );
+  }
+
   return (
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetTrigger asChild>{children}</SheetTrigger>
-      <SheetContent>
-        <SheetHeader>
-          <SheetTitle>{isEditing ? 'Edit Contact' : 'Add a New Contact'}</SheetTitle>
-          <SheetDescription>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{isEditing ? 'Edit Contact' : 'Add a New Contact'}</DialogTitle>
+          <DialogDescription>
             {isEditing
               ? 'Update the details for this contact.'
               : 'Fill out the form to add a new contact detail.'}
-          </SheetDescription>
-        </SheetHeader>
-        <form
-            ref={formRef}
-            action={formAction}
-            className="flex flex-col gap-6 mt-6"
-        >
-          {isEditing && <input type="hidden" name="id" value={contact.id} />}
-          <div className="space-y-2">
-            <Label htmlFor="type">Contact Type</Label>
-            <Select name="type" defaultValue={contact?.type ? String(contact.type) : ''}>
-                <SelectTrigger>
-                    <SelectValue placeholder="Select a type" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="1">Phone</SelectItem>
-                    <SelectItem value="2">Email</SelectItem>
-                </SelectContent>
-            </Select>
-            {state?.errors?.type && <p className="text-sm font-medium text-destructive">{state.errors.type[0]}</p>}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="value">Value</Label>
-            <Input
-              id="value"
-              name="value"
-              placeholder="e.g., info@gigglehugs.org"
-              defaultValue={contact?.value ?? ''}
-              required
-            />
-            {state?.errors?.value && <p className="text-sm font-medium text-destructive">{state.errors.value[0]}</p>}
-          </div>
-
-          <SheetFooter className="mt-4">
-            <SheetClose asChild>
-                <Button variant="outline">Cancel</Button>
-            </SheetClose>
-            <SubmitButton isEditing={isEditing} />
-          </SheetFooter>
-        </form>
-      </SheetContent>
-    </Sheet>
+          </DialogDescription>
+        </DialogHeader>
+        {FormContent}
+      </DialogContent>
+    </Dialog>
   );
 }

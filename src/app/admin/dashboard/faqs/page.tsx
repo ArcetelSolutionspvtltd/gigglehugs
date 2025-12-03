@@ -44,7 +44,7 @@ export default async function FaqsPage() {
             Add, edit, or delete frequently asked questions.
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="overflow-auto">
           <Table>
             <TableHeader>
               <TableRow>

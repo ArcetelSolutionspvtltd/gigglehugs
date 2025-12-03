@@ -45,7 +45,7 @@ export default async function TestimonialsPage() {
             Add, edit, or delete your family testimonials.
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="overflow-auto">
           <Table>
             <TableHeader>
               <TableRow>

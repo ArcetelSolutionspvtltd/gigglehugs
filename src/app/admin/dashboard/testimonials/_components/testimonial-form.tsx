@@ -11,6 +11,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogFooter,
+  DialogClose,
+  DialogTrigger,
+  DialogDescription,
 } from "@/components/ui/dialog"
 import {
   Sheet,
@@ -32,6 +35,7 @@ import type { Testimonial } from '@/lib/types';
 import { dataURLtoFile, getCroppedImg } from '@/lib/utils';
 import { Slider } from '@/components/ui/slider';
 import { useFormStatus } from 'react-dom';
+import { useMediaQuery } from '@/hooks/use-media-query';
 
 const MAX_TESTIMONIAL_LENGTH = 150;
 
@@ -73,6 +77,8 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
   const [zoom, setZoom] = useState(1);
   const [rotation, setRotation] = useState(0);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+
+  const isDesktop = useMediaQuery("(min-width: 768px)");
 
   useEffect(() => {
     if (!isOpen) {
@@ -145,135 +151,170 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
     setCharCount(e.target.value.length);
   };
 
-  return (
-    <>
-    <Sheet open={isOpen} onOpenChange={setIsOpen}>
-      <SheetTrigger asChild>{children}</SheetTrigger>
-      <SheetContent className="sm:max-w-lg overflow-y-auto">
-        <SheetHeader>
-          <SheetTitle>{isEditing ? 'Edit Testimonial' : 'Add a New Testimonial'}</SheetTitle>
-          <SheetDescription>
-            {isEditing
-              ? 'Update the details for this testimonial.'
-              : 'Fill out the form to add a new testimonial.'}
-          </SheetDescription>
-        </SheetHeader>
-        <form
-            ref={formRef}
-            action={formAction}
-            className="flex flex-col gap-6 mt-6"
-        >
-          {isEditing && <input type="hidden" name="id" value={testimonial.id} />}
-          {isEditing && testimonial.avatar_url && <input type="hidden" name="current_avatar_url" value={testimonial.avatar_url} />}
-           <div className="space-y-2">
-            <Label>Avatar</Label>
-            <div className="flex items-center gap-4">
-              <div className="relative h-20 w-20 rounded-full overflow-hidden bg-muted flex items-center justify-center">
-                {avatarPreview ? (
-                  <Image src={avatarPreview} alt="Avatar preview" fill className="object-cover" />
-                ) : (
-                  <ImageIcon className="h-8 w-8 text-muted-foreground" />
-                )}
-              </div>
-              <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
-                {avatarPreview ? 'Change' : 'Upload'}
-              </Button>
-              <Input
-                ref={fileInputRef}
-                id="avatar_url"
-                name="avatar_url"
-                type="file"
-                className="hidden"
-                accept="image/*"
-                onChange={handleAvatarChange}
-              />
-            </div>
+  const FormContent = (
+    <form
+        ref={formRef}
+        action={formAction}
+        className="flex flex-col gap-6 mt-6"
+    >
+      {isEditing && <input type="hidden" name="id" value={testimonial.id} />}
+      {isEditing && testimonial.avatar_url && <input type="hidden" name="current_avatar_url" value={testimonial.avatar_url} />}
+        <div className="space-y-2">
+        <Label>Avatar</Label>
+        <div className="flex items-center gap-4">
+          <div className="relative h-20 w-20 rounded-full overflow-hidden bg-muted flex items-center justify-center">
+            {avatarPreview ? (
+              <Image src={avatarPreview} alt="Avatar preview" fill className="object-cover" />
+            ) : (
+              <ImageIcon className="h-8 w-8 text-muted-foreground" />
+            )}
           </div>
+          <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
+            {avatarPreview ? 'Change' : 'Upload'}
+          </Button>
+          <Input
+            ref={fileInputRef}
+            id="avatar_url"
+            name="avatar_url"
+            type="file"
+            className="hidden"
+            accept="image/*"
+            onChange={handleAvatarChange}
+          />
+        </div>
+      </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
-            <Input
-              id="name"
-              name="name"
-              placeholder="e.g., The Chitehwe Family"
-              defaultValue={testimonial?.name ?? ''}
-              required
-            />
-          </div>
+      <div className="space-y-2">
+        <Label htmlFor="name">Name</Label>
+        <Input
+          id="name"
+          name="name"
+          placeholder="e.g., The Chitehwe Family"
+          defaultValue={testimonial?.name ?? ''}
+          required
+        />
+      </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="bio">Bio</Label>
-            <Input
-              id="bio"
-              name="bio"
-              placeholder="e.g., Parents of two"
-              defaultValue={testimonial?.bio ?? ''}
-              required
-            />
-          </div>
+      <div className="space-y-2">
+        <Label htmlFor="bio">Bio</Label>
+        <Input
+          id="bio"
+          name="bio"
+          placeholder="e.g., Parents of two"
+          defaultValue={testimonial?.bio ?? ''}
+          required
+        />
+      </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="rating">Rating (1-5)</Label>
-            <Input
-              id="rating"
-              name="rating"
-              type="number"
-              min="1"
-              max="5"
-              placeholder="5"
-              defaultValue={testimonial?.rating ?? 5}
-              required
-            />
-          </div>
+      <div className="space-y-2">
+        <Label htmlFor="rating">Rating (1-5)</Label>
+        <Input
+          id="rating"
+          name="rating"
+          type="number"
+          min="1"
+          max="5"
+          placeholder="5"
+          defaultValue={testimonial?.rating ?? 5}
+          required
+        />
+      </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="testimonial">Testimonial</Label>
-            <Textarea
-              id="testimonial"
-              name="testimonial"
-              placeholder="Write the testimonial here..."
-              defaultValue={testimonial?.testimonial ?? ''}
-              rows={5}
-              required
-              maxLength={MAX_TESTIMONIAL_LENGTH}
-              onChange={handleTextareaChange}
-            />
-            <div className="text-right text-sm text-muted-foreground">
-                {charCount}/{MAX_TESTIMONIAL_LENGTH}
-            </div>
-            {state?.errors?.testimonial && <p className="text-sm font-medium text-destructive">{state.errors.testimonial[0]}</p>}
-          </div>
+      <div className="space-y-2">
+        <Label htmlFor="testimonial">Testimonial</Label>
+        <Textarea
+          id="testimonial"
+          name="testimonial"
+          placeholder="Write the testimonial here..."
+          defaultValue={testimonial?.testimonial ?? ''}
+          rows={5}
+          required
+          maxLength={MAX_TESTIMONIAL_LENGTH}
+          onChange={handleTextareaChange}
+        />
+        <div className="text-right text-sm text-muted-foreground">
+            {charCount}/{MAX_TESTIMONIAL_LENGTH}
+        </div>
+        {state?.errors?.testimonial && <p className="text-sm font-medium text-destructive">{state.errors.testimonial[0]}</p>}
+      </div>
 
-          <SheetFooter className="mt-4">
+      {isDesktop ? (
+        <SheetFooter className="mt-4">
             <SheetClose asChild>
                 <Button variant="outline">Cancel</Button>
             </SheetClose>
             <SubmitButton isEditing={isEditing} />
-          </SheetFooter>
-        </form>
-      </SheetContent>
-    </Sheet>
+        </SheetFooter>
+      ) : (
+        <DialogFooter className="mt-4">
+            <DialogClose asChild>
+                <Button variant="outline">Cancel</Button>
+            </DialogClose>
+            <SubmitButton isEditing={isEditing} />
+        </DialogFooter>
+      )}
+    </form>
+  );
+
+  const FormContainer = ({ children }: { children: ReactNode }) => {
+    if (isDesktop) {
+        return (
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+                <SheetTrigger asChild>{children}</SheetTrigger>
+                <SheetContent className="sm:max-w-lg overflow-y-auto max-h-screen">
+                    <SheetHeader>
+                        <SheetTitle>{isEditing ? 'Edit Testimonial' : 'Add a New Testimonial'}</SheetTitle>
+                        <SheetDescription>
+                            {isEditing
+                            ? 'Update the details for this testimonial.'
+                            : 'Fill out the form to add a new testimonial.'}
+                        </SheetDescription>
+                    </SheetHeader>
+                    {FormContent}
+                </SheetContent>
+            </Sheet>
+        );
+    }
+    return (
+        <Dialog open={isOpen} onOpenChange={setIsOpen}>
+            <DialogTrigger asChild>{children}</DialogTrigger>
+            <DialogContent className="overflow-y-auto max-h-screen">
+                <DialogHeader>
+                    <DialogTitle>{isEditing ? 'Edit Testimonial' : 'Add a New Testimonial'}</DialogTitle>
+                    <DialogDescription>
+                        {isEditing
+                        ? 'Update the details for this testimonial.'
+                        : 'Fill out the form to add a new testimonial.'}
+                    </DialogDescription>
+                </DialogHeader>
+                {FormContent}
+            </DialogContent>
+        </Dialog>
+    );
+  };
+
+  return (
+    <>
+    <FormContainer>{children}</FormContainer>
     <Dialog open={isCropModalOpen} onOpenChange={setIsCropModalOpen}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="max-w-md w-full">
             <DialogHeader>
                 <DialogTitle>Crop Image</DialogTitle>
             </DialogHeader>
-            {imgSrc && (
-                <div className='relative w-full h-[50vh]'>
-                    <Cropper
-                        image={imgSrc}
-                        crop={crop}
-                        zoom={zoom}
-                        rotation={rotation}
-                        aspect={1}
-                        cropShape="round"
-                        onCropChange={setCrop}
-                        onZoomChange={setZoom}
-                        onRotationChange={setRotation}
-                        onCropComplete={onCropComplete}
-                    />
-                </div>
-            )}
+            <div className='relative w-full h-64 md:h-96'>
+                <Cropper
+                    image={imgSrc}
+                    crop={crop}
+                    zoom={zoom}
+                    rotation={rotation}
+                    aspect={1}
+                    cropShape="round"
+                    onCropChange={setCrop}
+                    onZoomChange={setZoom}
+                    onRotationChange={setRotation}
+                    onCropComplete={onCropComplete}
+                />
+            </div>
             <div className="space-y-4 p-4">
                 <div className="space-y-2">
                     <Label>Zoom</Label>

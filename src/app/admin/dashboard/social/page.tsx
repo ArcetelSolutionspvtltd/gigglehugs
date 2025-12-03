@@ -46,7 +46,7 @@ export default async function SocialLinksPage() {
             Add, edit, or delete your social media links.
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="overflow-auto">
           <Table>
             <TableHeader>
               <TableRow>

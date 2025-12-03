@@ -45,7 +45,7 @@ export default async function ServicesPage() {
             Add, edit, or delete your babysitting services.
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="overflow-auto">
           <Table>
             <TableHeader>
               <TableRow>
