@@ -2,26 +2,25 @@
 
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { suggestTheme } from '@/ai/flows/theme-suggestion';
 import { createClient } from '@/lib/supabase/server';
 import type { ColorTheme } from '@/lib/types';
 
 const themeSchema = z.object({
-  prompt: z.string().min(3, 'Prompt must be at least 3 characters.'),
+  font: z.string().min(3, 'Please select a font.'),
 });
 
 export type FormState = {
   message: string;
   success: boolean;
   errors?: {
-    prompt?: string[];
+    font?: string[];
   };
-  newTheme?: ColorTheme | null;
+  newTheme?: Partial<ColorTheme> | null;
 };
 
 export async function generateThemeAction(prevState: FormState, formData: FormData): Promise<FormState> {
   const validatedFields = themeSchema.safeParse({
-    prompt: formData.get('prompt'),
+    font: formData.get('font'),
   });
 
   if (!validatedFields.success) {
@@ -33,26 +32,33 @@ export async function generateThemeAction(prevState: FormState, formData: FormDa
   }
 
   try {
-    const theme = await suggestTheme({ prompt: validatedFields.data.prompt });
+    const newSettings: Partial<ColorTheme> = { font: validatedFields.data.font };
     
-    // Save to DB
     const supabase = createClient();
+    const { data: currentSettings } = await supabase
+      .from('settings')
+      .select('value')
+      .eq('key', 'theme')
+      .single();
+
+    const updatedValue = { ...currentSettings?.value, ...newSettings };
+    
     const { error } = await supabase
       .from('settings')
-      .upsert({ key: 'theme', value: theme }, { onConflict: 'key' });
+      .upsert({ key: 'theme', value: updatedValue }, { onConflict: 'key' });
 
     if (error) throw error;
     
     revalidatePath('/', 'layout');
 
     return {
-      message: 'New theme generated and applied!',
+      message: 'Appearance settings updated!',
       success: true,
-      newTheme: theme,
+      newTheme: newSettings,
     };
   } catch (error: any) {
     return {
-      message: `Failed to generate theme: ${error.message}`,
+      message: `Failed to update settings: ${error.message}`,
       success: false,
     };
   }

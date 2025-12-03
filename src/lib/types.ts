@@ -44,9 +44,10 @@ export type FAQ = {
 }
 
 export type ColorTheme = {
-  primary: string;
-  background: string;
-  accent: string;
+  primary?: string;
+  background?: string;
+  accent?: string;
+  font?: string;
 }
 
 export type Setting = {

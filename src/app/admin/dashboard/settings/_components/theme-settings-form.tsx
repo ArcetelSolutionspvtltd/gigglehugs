@@ -1,15 +1,23 @@
 'use client';
 
-import { useActionState, useEffect, useRef, useState } from 'react';
+import { useActionState, useEffect, useRef } from 'react';
 import { useFormStatus } from 'react-dom';
-import { Wand2, Loader2, RefreshCw } from 'lucide-react';
+import { Loader2, RefreshCw, Save } from 'lucide-react';
 import { generateThemeAction, resetThemeAction, type FormState } from '../actions';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import type { ColorTheme } from '@/lib/types';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
+const fonts = [
+  { name: 'Poppins', variable: '--font-poppins' },
+  { name: 'Montserrat', variable: '--font-montserrat' },
+  { name: 'Lato', variable: '--font-lato' },
+  { name: 'Roboto', variable: '--font-roboto' },
+  { name: 'Open Sans', variable: '--font-open-sans' },
+];
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -18,40 +26,16 @@ function SubmitButton() {
       {pending ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          Generating...
+          Saving...
         </>
       ) : (
         <>
-          <Wand2 className="mr-2 h-4 w-4" />
-          Generate Theme
+          <Save className="mr-2 h-4 w-4" />
+          Save Changes
         </>
       )}
     </Button>
   );
-}
-
-function ResetButton() {
-    const [isResetting, setIsResetting] = useState(false);
-    const { toast } = useToast();
-
-    const handleReset = async () => {
-        setIsResetting(true);
-        const result = await resetThemeAction();
-        if (result.success) {
-            toast({ title: 'Success!', description: result.message });
-            // This will cause a page reload to show the default theme
-            window.location.reload(); 
-        } else {
-            toast({ title: 'Oops!', description: result.message, variant: 'destructive' });
-        }
-        setIsResetting(false);
-    }
-    return (
-        <Button type="button" variant="outline" onClick={handleReset} disabled={isResetting}>
-            {isResetting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <RefreshCw className="mr-2 h-4 w-4" />}
-            Reset to Default
-        </Button>
-    )
 }
 
 type ThemeSettingsFormProps = {
@@ -63,7 +47,6 @@ export function ThemeSettingsForm({ currentTheme }: ThemeSettingsFormProps) {
   const [state, formAction] = useActionState(generateThemeAction, initialState);
   const { toast } = useToast();
   const formRef = useRef<HTMLFormElement>(null);
-  const [theme, setTheme] = useState(currentTheme);
 
   useEffect(() => {
     if (state.message) {
@@ -73,7 +56,6 @@ export function ThemeSettingsForm({ currentTheme }: ThemeSettingsFormProps) {
           description: state.message,
         });
         if (state.newTheme) {
-            setTheme(state.newTheme);
             // Reload to see changes
             window.location.reload();
         }
@@ -90,51 +72,36 @@ export function ThemeSettingsForm({ currentTheme }: ThemeSettingsFormProps) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>AI Theme Customizer</CardTitle>
+        <CardTitle>Appearance</CardTitle>
         <CardDescription>
-          Describe the look and feel you want, and let AI generate a color palette for your site.
-          Try prompts like "warm and friendly", "professional and calm", or "ocean vibes".
+          Customize the look and feel of your public-facing website.
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <form ref={formRef} action={formAction} className="space-y-4">
+      <form ref={formRef} action={formAction}>
+        <CardContent className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="prompt">Theme Prompt</Label>
-            <Input
-              id="prompt"
-              name="prompt"
-              placeholder="e.g., modern and playful with a touch of pink"
-              required
-            />
-            {state.errors?.prompt && <p className="text-sm font-medium text-destructive">{state.errors.prompt[0]}</p>}
+            <Label htmlFor="font">Website Font</Label>
+             <Select name="font" defaultValue={currentTheme?.font ?? 'poppins'}>
+                <SelectTrigger>
+                    <SelectValue placeholder="Select a font" />
+                </SelectTrigger>
+                <SelectContent>
+                    {fonts.map(font => (
+                        <SelectItem key={font.variable} value={font.name.toLowerCase().replace(' ', '-')}>
+                            {font.name}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+            <p className="text-sm text-muted-foreground">
+              This will change the primary font for all text on your public pages.
+            </p>
           </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div className="flex flex-col items-center gap-2 p-4 rounded-md border bg-card">
-              <div className="h-10 w-10 rounded-full border" style={{ backgroundColor: `hsl(${theme?.primary})` }} />
-              <p className="text-sm font-medium">Primary</p>
-              <p className="text-xs text-muted-foreground">{theme?.primary ?? 'Default'}</p>
-            </div>
-             <div className="flex flex-col items-center gap-2 p-4 rounded-md border bg-card">
-              <div className="h-10 w-10 rounded-full border" style={{ backgroundColor: `hsl(${theme?.background})` }} />
-              <p className="text-sm font-medium">Background</p>
-              <p className="text-xs text-muted-foreground">{theme?.background ?? 'Default'}</p>
-            </div>
-             <div className="flex flex-col items-center gap-2 p-4 rounded-md border bg-card">
-              <div className="h-10 w-10 rounded-full border" style={{ backgroundColor: `hsl(${theme?.accent})` }} />
-              <p className="text-sm font-medium">Accent</p>
-              <p className="text-xs text-muted-foreground">{theme?.accent ?? 'Default'}</p>
-            </div>
-          </div>
-        </form>
-      </CardContent>
-      <CardFooter className="flex flex-col sm:flex-row justify-between gap-2">
-        <ResetButton />
-        <form action={formAction} className="w-full sm:w-auto">
-             <input type="hidden" name="prompt" value={formRef.current?.prompt.value ?? ''} />
-            <SubmitButton />
-        </form>
-      </CardFooter>
+        </CardContent>
+        <CardFooter>
+          <SubmitButton />
+        </CardFooter>
+      </form>
     </Card>
   );
 }

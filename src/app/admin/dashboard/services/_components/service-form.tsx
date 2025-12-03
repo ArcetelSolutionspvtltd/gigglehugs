@@ -145,7 +145,7 @@ export function ServiceForm({ children, service }: ServiceFormProps) {
           </PopoverTrigger>
           <PopoverContent className="w-[300px] p-0">
             <ScrollArea className="h-72">
-              <div className="grid grid-cols-4 gap-2 p-4">
+              <div className="grid grid-cols-6 gap-1 p-2">
                 {Object.keys(iconMap).map(iconName => {
                   const Icon = iconMap[iconName];
                   return (
@@ -154,7 +154,7 @@ export function ServiceForm({ children, service }: ServiceFormProps) {
                       variant="outline"
                       size="icon"
                       className={cn(
-                        "h-16 w-full flex flex-col items-center justify-center gap-1",
+                        "h-12 w-full flex flex-col items-center justify-center gap-1",
                         selectedIcon === iconName && "ring-2 ring-primary"
                       )}
                       onClick={() => {
@@ -162,8 +162,7 @@ export function ServiceForm({ children, service }: ServiceFormProps) {
                         setIconPopoverOpen(false);
                       }}
                     >
-                      <Icon className="h-6 w-6" />
-                      <span className="text-xs truncate">{iconName.replace(/-/g, ' ')}</span>
+                      <Icon className="h-5 w-5" />
                     </Button>
                   )
                 })}

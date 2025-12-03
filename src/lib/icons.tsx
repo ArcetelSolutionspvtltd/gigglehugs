@@ -3,7 +3,8 @@ import {
     type LucideIcon, Twitter, Facebook, Instagram, Linkedin, Rss, Image,
     Smartphone, Mail, Home, List, Users, Link2, Phone, Youtube, HelpCircle,
     Settings, Car, School, Stethoscope, UtensilsCrossed, Palette, Languages, 
-    Sparkles, ShieldCheck, Clock, Sun
+    Sparkles, ShieldCheck, Clock, Sun, BookOpenCheck, BrainCircuit, Dumbbell,
+    PartyPopper, Cake, Soup
 } from 'lucide-react';
 
 export const iconMap: { [key: string]: LucideIcon } = {
@@ -41,13 +42,19 @@ export const iconMap: { [key: string]: LucideIcon } = {
   sun: Sun,
   car: Car,
   school: School,
+  'book-open-check': BookOpenCheck,
   stethoscope: Stethoscope,
   'utensils-crossed': UtensilsCrossed,
+  soup: Soup,
   palette: Palette,
   languages: Languages,
   sparkles: Sparkles,
   'shield-check': ShieldCheck,
   clock: Clock,
+  'brain-circuit': BrainCircuit,
+  dumbbell: Dumbbell,
+  'party-popper': PartyPopper,
+  cake: Cake,
   
   // Default
   default: Image,
