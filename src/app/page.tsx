@@ -6,12 +6,13 @@ import { ServicesSection } from './_components/services-section';
 import { SittersSection } from './_components/sitters-section';
 import { TestimonialsSection } from './_components/testimonials-section';
 import { ContactSection } from './_components/contact-section';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/server';
 import type { Service, Sitter, Testimonial, ContactDetail, SocialLink } from '@/lib/types';
 
 export default async function Home() {
+  const supabase = createClient();
   const { data: services } = await supabase.from('services').select('*').returns<Service[]>();
-  const { data: sitters } = await supabase.from('sitters').select('*').returns<Sitter[]>();
+  const { data: sitters } = await supabase.from('sitters').select('*').order('name').returns<Sitter[]>();
   const { data: testimonials } = await supabase.from('testimonials').select('*').returns<Testimonial[]>();
   const { data: contactDetails } = await supabase.from('contact_details').select('*').returns<ContactDetail[]>();
   const { data: socialLinks } = await supabase.from('social_links').select('*').returns<SocialLink[]>();
@@ -28,7 +29,7 @@ export default async function Home() {
         <ServicesSection services={services ?? []} />
         <SittersSection sitters={sitters ?? []} />
         <TestimonialsSection testimonials={testimonials ?? []} />
-        <ContactSection emails={emails} phones={phones} />
+        <ContactSection emails={emails} phones={phones} sitters={sitters ?? []}/>
       </main>
       <Footer socialLinks={socialLinks ?? []} contactDetails={contactDetails ?? []} />
     </div>

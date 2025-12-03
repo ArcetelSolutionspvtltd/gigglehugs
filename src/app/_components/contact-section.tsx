@@ -4,16 +4,17 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Phone, Mail } from 'lucide-react';
+import { Phone, Mail, Users } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
-import type { ContactDetail } from '@/lib/types';
+import type { ContactDetail, Sitter } from '@/lib/types';
 
 type ContactSectionProps = {
   emails: ContactDetail[];
   phones: ContactDetail[];
+  sitters: Sitter[];
 }
 
-export function ContactSection({ emails, phones }: ContactSectionProps) {
+export function ContactSection({ emails, phones, sitters }: ContactSectionProps) {
     const { toast } = useToast()
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -89,6 +90,17 @@ export function ContactSection({ emails, phones }: ContactSectionProps) {
                           <div>
                               <h3 className="font-semibold text-lg">Call Us</h3>
                               {phones.map(phone => <p key={phone.id} className="text-muted-foreground">{phone.value}</p>)}
+                          </div>
+                        </div>
+                     )}
+                     {sitters.filter(s => s.email).length > 0 && (
+                        <div className="flex items-start gap-4">
+                          <div className="bg-primary/10 p-3 rounded-full">
+                            <Users className="h-6 w-6 text-primary" />
+                          </div>
+                          <div>
+                              <h3 className="font-semibold text-lg">Our Team</h3>
+                              {sitters.map(sitter => sitter.email && <p key={sitter.id} className="text-muted-foreground">{sitter.name}: {sitter.email}</p>)}
                           </div>
                         </div>
                      )}

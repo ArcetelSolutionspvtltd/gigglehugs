@@ -5,6 +5,7 @@ export type Sitter = {
   name: string | null;
   bio: string | null;
   avatar_url: string | null;
+  email: string | null;
 };
 
 export type Service = {
@@ -25,7 +26,7 @@ export type Testimonial = {
 
 export type ContactDetail = {
   id: number;
-  contact_type: string;
+  contact_type: 'phone' | 'email';
   value: string;
 }
 
