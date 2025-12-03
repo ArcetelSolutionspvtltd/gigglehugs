@@ -56,11 +56,14 @@ type SitterFormProps = {
 
 export function SitterForm({ children, sitter }: SitterFormProps) {
   const isEditing = !!sitter;
+  const initialState: FormState = { message: '', success: false };
+  const [state, setState] = useState(initialState);
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(sitter?.avatar_url || null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
+  const [emailName, setEmailName] = useState(sitter?.email?.split('@')[0] || '');
 
   const [imgSrc, setImgSrc] = useState('');
   const [isCropModalOpen, setIsCropModalOpen] = useState(false);
@@ -73,6 +76,7 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
     if (!isOpen) {
         setAvatarPreview(sitter?.avatar_url || null);
         setImgSrc('');
+        setEmailName(sitter?.email?.split('@')[0] || '');
         formRef.current?.reset();
     }
   }, [isOpen, sitter]);
@@ -119,6 +123,7 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
   
   const handleFormAction = async (formData: FormData) => {
     const result = await upsertSitterAction(formData);
+    setState(result);
     if (result.success) {
       toast({
         title: isEditing ? 'Success!' : 'Sitter Added!',
@@ -191,14 +196,20 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input
-              id="email"
-              name="email"
-              type="email"
-              placeholder="e.g., jane@example.com"
-              defaultValue={sitter?.email ?? ''}
-            />
+            <Label htmlFor="email_name">Email</Label>
+            <div className="flex items-center">
+              <Input
+                id="email_name"
+                name="email_name"
+                placeholder="jane"
+                value={emailName}
+                onChange={(e) => setEmailName(e.target.value)}
+                className="rounded-r-none focus-visible:ring-0 focus-visible:ring-offset-0"
+              />
+              <span className="inline-flex h-10 items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm text-muted-foreground">
+                @gigglehugs.org
+              </span>
+            </div>
           </div>
 
           <div className="space-y-2">

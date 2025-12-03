@@ -81,8 +81,8 @@ export default async function TestimonialsPage() {
                   <TableCell>{testimonial.bio}</TableCell>
                    <TableCell>
                     <div className="flex items-center gap-1">
-                        {testimonial.rating && [...Array(testimonial.rating)].map((_, i) => (
-                            <Star key={i} className="h-4 w-4 fill-primary text-primary" />
+                        {[...Array(5)].map((_, i) => (
+                          <Star key={i} className={`h-4 w-4 text-primary ${i < (testimonial.rating ?? 0) ? 'fill-primary' : 'fill-none'}`} />
                         ))}
                     </div>
                   </TableCell>

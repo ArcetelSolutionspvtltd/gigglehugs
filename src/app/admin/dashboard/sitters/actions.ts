@@ -11,7 +11,7 @@ const sitterSchema = z.object({
   id: z.coerce.number().optional(),
   name: z.string().min(3, 'Name must be at least 3 characters.'),
   bio: z.string().min(10, 'Bio must be at least 10 characters.'),
-  email: z.string().email('Please enter a valid email.').optional().or(z.literal('')),
+  email_name: z.string().min(2, "Please enter a valid email name.").optional().or(z.literal('')),
   avatar_url: z
     .any()
     .refine((file) => !file || file.size === 0 || file.size <= MAX_FILE_SIZE, `Max image size is 5MB.`)
@@ -39,8 +39,10 @@ export async function upsertSitterAction(formData: FormData): Promise<FormState>
   }
 
   const supabase = createClient();
-  const { id, name, bio, email, avatar_url: avatarFile, current_avatar_url } = validatedFields.data;
+  const { id, name, bio, email_name, avatar_url: avatarFile, current_avatar_url } = validatedFields.data;
   let avatarPath: string | undefined = undefined;
+
+  const email = email_name ? `${email_name}@gigglehugs.org` : null;
 
   try {
     if (avatarFile && avatarFile.size > 0) {
