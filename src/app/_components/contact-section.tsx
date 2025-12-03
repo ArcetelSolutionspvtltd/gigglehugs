@@ -5,13 +5,20 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Phone, Mail } from 'lucide-react';
-import { useToast } from "@/hooks/use-toast"
+import { useToast } from "@/hooks/use-toast";
+import type { ContactDetail } from '@/lib/types';
 
-export function ContactSection() {
+type ContactSectionProps = {
+  emails: ContactDetail[];
+  phones: ContactDetail[];
+}
+
+export function ContactSection({ emails, phones }: ContactSectionProps) {
     const { toast } = useToast()
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        // In a real app, you'd handle form submission here (e.g., send to an API)
         toast({
             title: "Message Sent!",
             description: "Thanks for reaching out. We'll get back to you soon!",
@@ -21,7 +28,7 @@ export function ContactSection() {
 
   return (
     <section id="contact" className="py-16 sm:py-24 bg-background">
-        <div className="container max-w-7xl px-4 md:px-8">
+        <div className="container">
             <div className="text-center mb-16">
                 <h2 className="text-4xl sm:text-5xl font-bold tracking-tight">Get in Touch</h2>
                 <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
@@ -63,28 +70,28 @@ export function ContactSection() {
                   We are always happy to chat! Whether you have questions about our services, want to join our team, or just want to say hello, here's how you can reach us.
                 </p>
                 <div className="space-y-6">
-                    <div className="flex items-start gap-4">
-                        <div className="bg-primary/10 p-3 rounded-full">
-                           <Mail className="h-6 w-6 text-primary" />
+                    {emails.length > 0 && (
+                      <div className="flex items-start gap-4">
+                          <div className="bg-primary/10 p-3 rounded-full">
+                            <Mail className="h-6 w-6 text-primary" />
+                          </div>
+                          <div>
+                              <h3 className="font-semibold text-lg">Email Us</h3>
+                              {emails.map(email => <p key={email.id} className="text-muted-foreground">{email.value}</p>)}
+                          </div>
+                      </div>
+                    )}
+                     {phones.length > 0 && (
+                        <div className="flex items-start gap-4">
+                          <div className="bg-primary/10 p-3 rounded-full">
+                            <Phone className="h-6 w-6 text-primary" />
+                          </div>
+                          <div>
+                              <h3 className="font-semibold text-lg">Call Us</h3>
+                              {phones.map(phone => <p key={phone.id} className="text-muted-foreground">{phone.value}</p>)}
+                          </div>
                         </div>
-                        <div>
-                            <h3 className="font-semibold text-lg">Email Us</h3>
-                            <p className="text-muted-foreground">info@gigglehugs.org</p>
-                            <p className="text-muted-foreground">natsai@gigglehugs.org</p>
-                            <p className="text-muted-foreground">shaynese@gigglehugs.org</p>
-                            <p className="text-muted-foreground">ruvimbo@gigglehugs.org</p>
-                        </div>
-                    </div>
-                     <div className="flex items-start gap-4">
-                        <div className="bg-primary/10 p-3 rounded-full">
-                           <Phone className="h-6 w-6 text-primary" />
-                        </div>
-                        <div>
-                            <h3 className="font-semibold text-lg">Call Us</h3>
-                            <p className="text-muted-foreground">+263 78 551 9413</p>
-                            <p className="text-muted-foreground">+263 71 734 0963</p>
-                        </div>
-                    </div>
+                     )}
                 </div>
               </div>
             </div>

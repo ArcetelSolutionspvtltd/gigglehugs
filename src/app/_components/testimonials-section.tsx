@@ -1,7 +1,6 @@
 'use client';
 
 import Image from 'next/image';
-import { testimonials } from '@/lib/data';
 import { Card, CardContent } from '@/components/ui/card';
 import {
   Carousel,
@@ -13,15 +12,20 @@ import {
 import Autoplay from 'embla-carousel-autoplay';
 import { Star } from 'lucide-react';
 import { useRef } from 'react';
+import type { Testimonial } from '@/lib/types';
 
-export function TestimonialsSection() {
+type TestimonialsSectionProps = {
+  testimonials: Testimonial[];
+}
+
+export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) {
     const plugin = useRef(
         Autoplay({ delay: 5000, stopOnInteraction: true, stopOnMouseEnter: true })
     );
 
   return (
     <section className="py-16 sm:py-24 bg-secondary/30">
-      <div className="container max-w-7xl px-4 md:px-8">
+      <div className="container">
         <div className="text-center">
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">Words of Trust from Our Families</h2>
           <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
@@ -45,21 +49,21 @@ export function TestimonialsSection() {
                   <Card className="h-full flex flex-col">
                     <CardContent className="p-8 flex flex-col items-center justify-center text-center flex-grow">
                       <Image
-                        src={testimonial.image.imageUrl}
+                        src={testimonial.avatar_url || 'https://picsum.photos/seed/placeholder/80/80'}
                         alt={`Photo of ${testimonial.name}`}
                         width={80}
                         height={80}
                         className="rounded-full mb-4 border-4 border-primary/20"
-                        data-ai-hint={testimonial.image.imageHint}
+                        data-ai-hint="family photo"
                       />
                        <div className="flex gap-1 text-primary mb-2">
-                        {[...Array(5)].map((_, i) => <Star key={i} className="h-5 w-5 fill-current" />)}
+                        {[...Array(testimonial.rating ?? 5)].map((_, i) => <Star key={i} className="h-5 w-5 fill-current" />)}
                        </div>
                       <blockquote className="text-lg italic text-foreground flex-grow mt-4">
-                        "{testimonial.quote}"
+                        "{testimonial.testimonial}"
                       </blockquote>
                       <p className="mt-4 font-bold text-lg">{testimonial.name}</p>
-                      <p className="text-sm text-muted-foreground">{testimonial.relation}</p>
+                      <p className="text-sm text-muted-foreground">{testimonial.bio}</p>
                     </CardContent>
                   </Card>
                 </div>

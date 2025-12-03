@@ -1,8 +1,9 @@
 import Link from "next/link";
-import { Twitter, Facebook, Instagram } from "lucide-react";
 import { Logo } from "@/components/icons/logo";
+import type { SocialLink, ContactDetail } from "@/lib/types";
+import { getIcon } from "@/lib/icons";
 
-const footerLinks = [
+const footerNavLinks = [
   { href: "/#about", label: "About Us" },
   { href: "/#services", label: "Services" },
   { href: "/#sitters", label: "Our Sitters" },
@@ -10,13 +11,15 @@ const footerLinks = [
   { href: "/admin/login", label: "Admin" }
 ];
 
-const socialLinks = [
-  { href: "#", icon: Twitter, label: "Twitter" },
-  { href: "#", icon: Facebook, label: "Facebook" },
-  { href: "#", icon: Instagram, label: "Instagram" },
-];
+type FooterProps = {
+  socialLinks: SocialLink[];
+  contactDetails: ContactDetail[];
+}
 
-export function Footer() {
+export function Footer({ socialLinks, contactDetails }: FooterProps) {
+  const emails = contactDetails.filter(d => d.contact_type === 'email');
+  const phones = contactDetails.filter(d => d.contact_type === 'phone');
+
   return (
     <footer className="bg-secondary/50 border-t">
       <div className="container max-w-7xl py-12 px-4 sm:px-6 lg:px-8">
@@ -29,12 +32,15 @@ export function Footer() {
               Sunshine Giggles and Hugs.
             </p>
             <div className="flex space-x-6">
-              {socialLinks.map(({ href, icon: Icon, label }) => (
-                <Link key={label} href={href} className="text-muted-foreground hover:text-primary">
-                  <span className="sr-only">{label}</span>
-                  <Icon className="h-6 w-6" aria-hidden="true" />
-                </Link>
-              ))}
+              {socialLinks.map((link) => {
+                const Icon = getIcon(link.icon_name);
+                return (
+                  <Link key={link.id} href={link.url || '#'} className="text-muted-foreground hover:text-primary">
+                    <span className="sr-only">{link.platform}</span>
+                    <Icon className="h-6 w-6" aria-hidden="true" />
+                  </Link>
+                )
+              })}
             </div>
           </div>
           <div className="mt-12 grid grid-cols-2 gap-8 xl:mt-0 xl:col-span-2">
@@ -42,7 +48,7 @@ export function Footer() {
               <div>
                 <h3 className="text-sm font-semibold text-foreground tracking-wider uppercase">Navigation</h3>
                 <ul className="mt-4 space-y-4">
-                  {footerLinks.map(({ href, label }) => (
+                  {footerNavLinks.map(({ href, label }) => (
                     <li key={label}>
                       <Link href={href} className="text-base text-muted-foreground hover:text-primary">
                         {label}
@@ -54,15 +60,16 @@ export function Footer() {
               <div className="mt-12 md:mt-0">
                 <h3 className="text-sm font-semibold text-foreground tracking-wider uppercase">Contact</h3>
                 <ul className="mt-4 space-y-4">
-                    <li>
-                        <p className="text-base text-muted-foreground">info@gigglehugs.org</p>
-                    </li>
-                    <li>
-                        <p className="text-base text-muted-foreground">+263 78 551 9413</p>
-                    </li>
-                     <li>
-                        <p className="text-base text-muted-foreground">+263 71 734 0963</p>
-                    </li>
+                    {emails.slice(0,1).map(email => (
+                      <li key={email.id}>
+                        <p className="text-base text-muted-foreground">{email.value}</p>
+                      </li>
+                    ))}
+                    {phones.map(phone => (
+                      <li key={phone.id}>
+                        <p className="text-base text-muted-foreground">{phone.value}</p>
+                      </li>
+                    ))}
                 </ul>
               </div>
             </div>
