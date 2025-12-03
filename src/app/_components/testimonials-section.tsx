@@ -52,6 +52,7 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
                                     src={testimonial.avatar_url}
                                     alt={testimonial.name || 'Avatar'}
                                     fill
+                                    sizes="64px"
                                     className="object-cover"
                                 />
                             ) : (
