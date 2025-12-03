@@ -52,19 +52,19 @@ export async function upsertSitterAction(prevState: FormState, formData: FormDat
 
   if (avatarFile && avatarFile.size > 0) {
     const fileExtension = avatarFile.name.split('.').pop();
-    const fileName = `${Date.now()}_${name.toLowerCase().replace(/\s+/g, '_')}.${fileExtension}`;
+    const fileName = `${name.toLowerCase().replace(/\s+/g, '_')}_${Date.now()}.${fileExtension}`;
     
     const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('sitters')
-      .upload(`avatars/${fileName}`, avatarFile, { upsert: true });
+      .from('avatars')
+      .upload(`sitters/${fileName}`, avatarFile, { upsert: true });
 
     if (uploadError) {
       console.error('Storage error:', uploadError);
-      return { message: 'Failed to upload avatar.', success: false };
+      return { message: `Failed to upload avatar: ${uploadError.message}`, success: false };
     }
     
     const { data: publicUrlData } = supabase.storage
-      .from('sitters')
+      .from('avatars')
       .getPublicUrl(uploadData.path);
       
     avatarPath = publicUrlData.publicUrl;
