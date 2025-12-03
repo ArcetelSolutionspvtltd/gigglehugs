@@ -52,10 +52,8 @@ export async function upsertSitterAction(prevState: FormState, formData: FormDat
 
   if (avatarFile && avatarFile.size > 0) {
     const fileExtension = avatarFile.name.split('.').pop();
-    // Create a URL-friendly filename from the sitter's name
     const fileName = `${Date.now()}_${name.toLowerCase().replace(/\s+/g, '_')}.${fileExtension}`;
     
-    // Upload to 'sitters' bucket in 'avatars' folder
     const { data: uploadData, error: uploadError } = await supabase.storage
       .from('sitters')
       .upload(`avatars/${fileName}`, avatarFile, { upsert: true });
