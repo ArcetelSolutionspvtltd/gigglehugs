@@ -1,7 +1,10 @@
+'use client';
+
 import Link from "next/link";
 import { Logo } from "@/components/icons/logo";
 import type { SocialLink, ContactDetail } from "@/lib/types";
 import { getIcon } from "@/lib/icons";
+import { useState, useEffect } from "react";
 
 const footerNavLinks = [
   { href: "/#about", label: "About Us" },
@@ -17,12 +20,19 @@ type FooterProps = {
 }
 
 export function Footer({ socialLinks, contactDetails }: FooterProps) {
+  const [currentYear, setCurrentYear] = useState<number | null>(null);
+
+  useEffect(() => {
+    setCurrentYear(new Date().getFullYear());
+  }, []);
+
+
   const emails = contactDetails.filter(d => d.contact_type === 'email');
   const phones = contactDetails.filter(d => d.contact_type === 'phone');
 
   return (
     <footer className="bg-secondary/50 border-t">
-      <div className="container max-w-7xl py-12 px-4 sm:px-6 lg:px-8">
+      <div className="container py-12 px-4 sm:px-6 lg:px-8">
         <div className="xl:grid xl:grid-cols-3 xl:gap-8">
           <div className="space-y-4 xl:col-span-1">
              <Link href="/" className="inline-block">
@@ -77,7 +87,7 @@ export function Footer({ socialLinks, contactDetails }: FooterProps) {
         </div>
         <div className="mt-12 border-t border-border pt-8">
           <p className="text-base text-muted-foreground xl:text-center">
-            &copy; {new Date().getFullYear()} GiggleHugs. All rights reserved.
+            &copy; {currentYear ?? new Date().getFullYear()} GiggleHugs. All rights reserved.
           </p>
         </div>
       </div>
