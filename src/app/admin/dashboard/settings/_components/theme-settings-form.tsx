@@ -80,7 +80,11 @@ export function ThemeSettingsForm({ currentTheme, fonts }: ThemeSettingsFormProp
                 </SelectTrigger>
                 <SelectContent>
                     {fonts.map(font => (
-                        <SelectItem key={font.name} value={font.name}>
+                        <SelectItem 
+                            key={font.id} 
+                            value={font.name}
+                            style={{fontFamily: font.css_family}}
+                        >
                             {font.name}
                         </SelectItem>
                     ))}
