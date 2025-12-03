@@ -33,7 +33,7 @@ import { dataURLtoFile, getCroppedImg } from '@/lib/utils';
 import { Slider } from '@/components/ui/slider';
 import { useFormStatus } from 'react-dom';
 
-const MAX_TESTIMONIAL_LENGTH = 250;
+const MAX_TESTIMONIAL_LENGTH = 150;
 
 function SubmitButton({ isEditing }: { isEditing: boolean }) {
   const { pending } = useFormStatus();

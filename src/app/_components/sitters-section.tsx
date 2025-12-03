@@ -21,11 +21,11 @@ export function SittersSection({ sitters }: SittersSectionProps) {
             {sitters.map((sitter, index) => (
             <Card 
               key={sitter.id} 
-              className="overflow-hidden group transform transition-all duration-300 hover:scale-105 hover:shadow-2xl opacity-0 animate-fade-in-up"
+              className="overflow-hidden group transform transition-all duration-300 hover:scale-105 hover:shadow-2xl opacity-0 animate-fade-in-up flex flex-col"
               style={{ animationDelay: `${index * 150}ms` }}
             >
-                <CardContent className="p-6 flex flex-col items-center text-center">
-                <div className="relative h-32 w-32 sm:h-40 sm:w-40 mb-4 rounded-full overflow-hidden bg-muted flex items-center justify-center">
+                <CardContent className="p-6 flex flex-col items-center text-center flex-grow">
+                <div className="relative h-32 w-32 sm:h-40 sm:w-40 mb-6 rounded-full overflow-hidden bg-muted flex items-center justify-center ring-4 ring-primary/20 ring-offset-4 ring-offset-secondary/30">
                     {sitter.avatar_url ? (
                         <Image
                             src={sitter.avatar_url}

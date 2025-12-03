@@ -11,7 +11,7 @@ const testimonialSchema = z.object({
   id: z.coerce.number().optional(),
   name: z.string().min(3, 'Name must be at least 3 characters.'),
   bio: z.string().min(3, 'Bio must be at least 3 characters.'),
-  testimonial: z.string().min(10, 'Testimonial must be at least 10 characters.').max(250, 'Testimonial cannot exceed 250 characters.'),
+  testimonial: z.string().min(10, 'Testimonial must be at least 10 characters.').max(150, 'Testimonial cannot exceed 150 characters.'),
   rating: z.coerce.number().min(1).max(5),
   avatar_url: z.any().optional(),
   current_avatar_url: z.string().optional(),

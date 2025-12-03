@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, type ReactNode, useCallback } from 'react';
+import { useState, useRef, useEffect, type ReactNode, useCallback, ChangeEvent } from 'react';
 import Image from 'next/image';
 import Cropper, { type Area } from 'react-easy-crop';
 
@@ -33,6 +33,8 @@ import { dataURLtoFile, getCroppedImg } from '@/lib/utils';
 import { Slider } from '@/components/ui/slider';
 import { useFormStatus } from 'react-dom';
 
+const MAX_BIO_LENGTH = 150;
+
 function SubmitButton({ isEditing }: { isEditing: boolean }) {
   const { pending } = useFormStatus();
   return (
@@ -56,7 +58,7 @@ type SitterFormProps = {
 
 export function SitterForm({ children, sitter }: SitterFormProps) {
   const isEditing = !!sitter;
-  const initialState: FormState = { message: '', success: false };
+  const initialState: FormState = { message: '', success: false, errors: undefined };
   const [state, setState] = useState(initialState);
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
@@ -64,6 +66,7 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const [emailName, setEmailName] = useState(sitter?.email?.split('@')[0] || '');
+  const [bioCharCount, setBioCharCount] = useState(sitter?.bio?.length || 0);
 
   const [imgSrc, setImgSrc] = useState('');
   const [isCropModalOpen, setIsCropModalOpen] = useState(false);
@@ -77,6 +80,7 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
         setAvatarPreview(sitter?.avatar_url || null);
         setImgSrc('');
         setEmailName(sitter?.email?.split('@')[0] || '');
+        setBioCharCount(sitter?.bio?.length || 0);
         formRef.current?.reset();
     }
   }, [isOpen, sitter]);
@@ -137,6 +141,10 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
         variant: 'destructive',
       });
     }
+  };
+
+  const handleBioChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    setBioCharCount(e.target.value.length);
   };
 
   return (
@@ -221,7 +229,13 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
               defaultValue={sitter?.bio ?? ''}
               rows={4}
               required
+              maxLength={MAX_BIO_LENGTH}
+              onChange={handleBioChange}
             />
+            <div className="text-right text-sm text-muted-foreground">
+                {bioCharCount}/{MAX_BIO_LENGTH}
+            </div>
+            {state?.errors?.bio && <p className="text-sm font-medium text-destructive">{state.errors.bio[0]}</p>}
           </div>
 
           <SheetFooter className="mt-4">

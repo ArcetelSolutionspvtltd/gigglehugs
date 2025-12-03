@@ -46,7 +46,7 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
                 <div className="p-1 h-full">
                   <Card className="flex flex-col h-full">
                     <CardHeader className="flex flex-row items-center gap-4">
-                        <div className="relative h-16 w-16 rounded-full overflow-hidden bg-muted flex items-center justify-center">
+                        <div className="relative h-16 w-16 rounded-full overflow-hidden bg-muted flex items-center justify-center ring-4 ring-primary/20 ring-offset-4 ring-offset-background">
                             {testimonial.avatar_url ? (
                                 <Image
                                     src={testimonial.avatar_url}
@@ -68,7 +68,7 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
                         </div>
                     </CardHeader>
                     <CardContent className="flex-grow flex flex-col justify-between">
-                      <p className="text-muted-foreground italic">&quot;{testimonial.testimonial}&quot;</p>
+                      <p className="text-muted-foreground italic flex-grow">&quot;{testimonial.testimonial}&quot;</p>
                       <p className="text-sm font-semibold mt-4 text-foreground">- {testimonial.bio}</p>
                     </CardContent>
                   </Card>

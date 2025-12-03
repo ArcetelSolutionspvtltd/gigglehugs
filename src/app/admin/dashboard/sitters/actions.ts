@@ -10,7 +10,7 @@ const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/web
 const sitterSchema = z.object({
   id: z.coerce.number().optional(),
   name: z.string().min(3, 'Name must be at least 3 characters.'),
-  bio: z.string().min(10, 'Bio must be at least 10 characters.'),
+  bio: z.string().min(10, 'Bio must be at least 10 characters.').max(150, 'Bio cannot exceed 150 characters.'),
   email_name: z.string().min(2, "Please enter a valid email name.").optional().or(z.literal('')),
   avatar_url: z
     .any()
@@ -25,6 +25,9 @@ const sitterSchema = z.object({
 export type FormState = {
   message: string;
   success: boolean;
+  errors?: {
+    bio?: string[];
+  };
 };
 
 export async function upsertSitterAction(formData: FormData): Promise<FormState> {
@@ -35,6 +38,7 @@ export async function upsertSitterAction(formData: FormData): Promise<FormState>
     return {
       message: 'Validation failed. Please check your inputs.',
       success: false,
+      errors: validatedFields.error.flatten().fieldErrors,
     };
   }
 
