@@ -31,7 +31,7 @@ export type FormState = {
   success: boolean;
 };
 
-export async function upsertSitterAction(prevState: FormState, formData: FormData): Promise<FormState> {
+export async function upsertSitterAction(formData: FormData): Promise<FormState> {
   const validatedFields = sitterSchema.safeParse(Object.fromEntries(formData.entries()));
 
   if (!validatedFields.success) {
@@ -95,9 +95,9 @@ export async function upsertSitterAction(prevState: FormState, formData: FormDat
   } catch (error: any) {
     console.error('Storage/DB error:', error);
     if (error.message.includes('Bucket not found')) {
-      return { message: "Failed to upload avatar: The 'avatars' bucket was not found. Please create it in your Supabase project.", success: false };
+      return { message: "Failed to upload avatar: The 'avatars' bucket was not found. Please create it in your Supabase project.", success: false, errors: {}};
     }
-    return { message: `Operation failed: ${error.message}`, success: false };
+    return { message: `Operation failed: ${error.message}`, success: false, errors: {} };
   }
 
 
@@ -107,6 +107,7 @@ export async function upsertSitterAction(prevState: FormState, formData: FormDat
   return {
     message: `Sitter ${id ? 'updated' : 'added'} successfully.`,
     success: true,
+    errors: {},
   };
 }
 

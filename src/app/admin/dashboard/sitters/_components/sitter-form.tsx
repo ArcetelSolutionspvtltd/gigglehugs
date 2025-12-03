@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, type ReactNode } from 'react';
-import { useFormStatus, useActionState } from 'react-dom';
+import { useFormStatus } from 'react-dom';
 import Image from 'next/image';
 import ReactCrop, { centerCrop, makeAspectCrop, type Crop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
@@ -55,8 +55,6 @@ type SitterFormProps = {
 
 export function SitterForm({ children, sitter }: SitterFormProps) {
   const isEditing = !!sitter;
-  const initialState: FormState = { message: '', errors: undefined, success: false };
-  const [state, formAction] = useActionState(upsertSitterAction, initialState);
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const formRef = useRef<HTMLFormElement>(null);
@@ -79,23 +77,23 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
     }
   }, [isOpen, sitter]);
 
-  useEffect(() => {
-    if (state.message) {
-      if (state.success) {
-        toast({
-          title: isEditing ? 'Success!' : 'Sitter Added!',
-          description: state.message,
-        });
-        setIsOpen(false);
-      } else {
-        toast({
-          title: 'Oops!',
-          description: state.message,
-          variant: 'destructive',
-        });
-      }
+  const handleAction = async (formData: FormData) => {
+    const result = await upsertSitterAction(formData);
+
+    if (result.success) {
+      toast({
+        title: isEditing ? 'Success!' : 'Sitter Added!',
+        description: result.message,
+      });
+      setIsOpen(false);
+    } else {
+      toast({
+        title: 'Oops!',
+        description: result.message,
+        variant: 'destructive',
+      });
     }
-  }, [state, toast, isEditing]);
+  };
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -206,7 +204,7 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
         </SheetHeader>
         <form
             ref={formRef}
-            action={formAction}
+            action={handleAction}
             className="flex flex-col gap-6 mt-6"
         >
           {isEditing && <input type="hidden" name="id" value={sitter.id} />}
@@ -234,7 +232,6 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
                 onChange={handleAvatarChange}
               />
             </div>
-             {state?.errors?.avatar_url && <p className="text-sm font-medium text-destructive">{state.errors.avatar_url[0]}</p>}
           </div>
 
           <div className="space-y-2">
@@ -246,7 +243,6 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
               defaultValue={sitter?.name ?? ''}
               required
             />
-            {state?.errors?.name && <p className="text-sm font-medium text-destructive">{state.errors.name[0]}</p>}
           </div>
 
           <div className="space-y-2">
@@ -259,7 +255,6 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
               rows={4}
               required
             />
-             {state?.errors?.bio && <p className="text-sm font-medium text-destructive">{state.errors.bio[0]}</p>}
           </div>
 
           <SheetFooter className="mt-4">
