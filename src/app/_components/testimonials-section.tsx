@@ -39,10 +39,10 @@ export function TestimonialsSection() {
         >
           <CarouselContent>
             {testimonials.map((testimonial) => (
-              <CarouselItem key={testimonial.id} className="md:basis-1/2 lg:basis-1/1">
-                <div className="p-4">
-                  <Card className="h-full">
-                    <CardContent className="p-8 flex flex-col items-center text-center">
+              <CarouselItem key={testimonial.id} className="md:basis-1/2 lg:basis-1/3">
+                <div className="p-4 h-full">
+                  <Card className="h-full flex flex-col">
+                    <CardContent className="p-8 flex flex-col items-center text-center flex-grow">
                       <Image
                         src={testimonial.image.imageUrl}
                         alt={`Photo of ${testimonial.name}`}
@@ -54,7 +54,7 @@ export function TestimonialsSection() {
                        <div className="flex gap-1 text-primary mb-2">
                         {[...Array(5)].map((_, i) => <Star key={i} className="h-5 w-5 fill-current" />)}
                        </div>
-                      <blockquote className="text-lg italic text-foreground">
+                      <blockquote className="text-lg italic text-foreground flex-grow">
                         "{testimonial.quote}"
                       </blockquote>
                       <p className="mt-4 font-bold text-lg">{testimonial.name}</p>
