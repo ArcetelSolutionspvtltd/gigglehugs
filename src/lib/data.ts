@@ -16,13 +16,13 @@ export const sitters: Sitter[] = [
   {
     id: 'sitter-1',
     name: 'Natsai Mudzengi',
-    bio: 'A recent child psychology graduate with a passion for creative play and learning. Natsai brings a ray of sunshine and patience to every family.',
+    bio: 'With a passion for creative play and learning, Natsai brings a ray of sunshine and patience to every family she works with.',
     image: getImage('sitter-1'),
   },
   {
     id: 'sitter-2',
     name: 'Ruvimbo Chigumira',
-    bio: 'With over 5 years of experience, Ruvimbo is a natural with kids of all ages. She loves outdoor adventures and crafting.',
+    bio: 'With many years of experience, Ruvimbo is a natural with kids of all ages. She loves outdoor adventures and crafting.',
     image: getImage('sitter-2'),
   },
   {
@@ -99,23 +99,23 @@ export const serviceAddons: Service[] = [
 export const testimonials: Testimonial[] = [
   {
     id: 'testimonial-1',
-    name: 'The Miller Family',
-    relation: "Parents of 2",
-    quote: "GiggleHugs has been a lifesaver! Our sitter, Emily, is an absolute gem. Our kids adore her and we can finally enjoy our date nights without a worry.",
-    image: getImage('testimonial-1'),
+    name: 'The Chitehwe Family',
+    relation: "Parents of one",
+    quote: "Our son has become so much more social and confident since Shaynese started sitting for him. GiggleHugs has been a true blessing to our family.",
+    image: getImage('testimonial-chitehwe'),
   },
   {
     id: 'testimonial-2',
-    name: 'Susan P.',
-    relation: "Mother of Leo (4)",
-    quote: "The name says it all! So much joy and warmth from this service. Mark had our son in fits of giggles the whole evening. Highly recommend!",
-    image: getImage('testimonial-2'),
+    name: 'Siziba M.',
+    relation: "Single Mother",
+    quote: "As a single mom, finding a sitter I trust is crucial. Natsai is so kind and understanding, and her help has made my days so much easier. I'm incredibly grateful.",
+    image: getImage('testimonial-siziba'),
   },
   {
     id: 'testimonial-3',
-    name: 'David Chen',
-    relation: "Father of Mia (6)",
-    quote: "Professional, trustworthy, and so caring. Sarah has a magical way with children. We feel so confident leaving Mia in her care. A truly five-star service.",
-    image: getImage('testimonial-3'),
+    name: 'The Nhamo Kids',
+    relation: "Ages 7 & 9",
+    quote: "Ruvimbo is the best! She always takes such good care of us and makes sure we eat healthy, yummy vegetarian food. We love having her over.",
+    image: getImage('testimonial-nhamo'),
   },
 ];

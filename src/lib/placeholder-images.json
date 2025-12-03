@@ -31,22 +31,22 @@
       "imageHint": "woman smiling"
     },
     {
-      "id": "testimonial-1",
-      "description": "A happy parent with their child.",
-      "imageUrl": "https://images.unsplash.com/photo-1580377968103-84cadc052dc7?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxwYXJlbnQlMjBjaGlsZHxlbnwwfHx8fDE3NjQ3MTA4NzV8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "parent child"
+      "id": "testimonial-chitehwe",
+      "description": "A photo of the Chitehwe family.",
+      "imageUrl": "/assets/testimonials/chitehwe.png",
+      "imageHint": "family photo"
     },
     {
-      "id": "testimonial-2",
-      "description": "A smiling mother.",
-      "imageUrl": "https://images.unsplash.com/photo-1633379204542-430941769df3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxtb3RoZXIlMjBzbWlsaW5nfGVufDB8fHx8MTc2NDcxMDg3Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "id": "testimonial-siziba",
+      "description": "A portrait of a smiling mother.",
+      "imageUrl": "/assets/testimonials/siziba.png",
       "imageHint": "mother smiling"
     },
     {
-      "id": "testimonial-3",
-      "description": "A happy father.",
-      "imageUrl": "https://images.unsplash.com/photo-1578461270476-037089c8af04?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxmYXRoZXIlMjBzbWlsaW5nfGVufDB8fHx8MTc2NDYzMDAyMnww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "father smiling"
+      "id": "testimonial-nhamo",
+      "description": "A photo of happy children.",
+      "imageUrl": "/assets/testimonials/nhamo-kids.png",
+      "imageHint": "children playing"
     }
   ]
 }
