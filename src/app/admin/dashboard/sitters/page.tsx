@@ -71,6 +71,7 @@ export default async function SittersPage() {
                             fill
                             sizes="64px"
                             className="object-cover"
+                            data-ai-hint="person smiling"
                           />
                         ) : (
                           <User className="h-8 w-8 text-muted-foreground" />

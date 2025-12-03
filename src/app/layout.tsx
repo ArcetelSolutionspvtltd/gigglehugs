@@ -54,8 +54,9 @@ export default async function RootLayout({
   const { theme, font } = await getThemeSettings();
   
   const fontCssFamily = font?.css_family || '"PT Sans", sans-serif';
-  const fontVariable = font?.css_family.split(',')[0].toLowerCase().replace(/"/g, '').replace(/\s+/g, '-');
   const googleFontUrl = font ? `https://fonts.googleapis.com/css2?family=${font.name.replace(/\s+/g, '+')}:wght@400;700&display=swap` : null;
+
+  const primaryColor = theme?.primary?.split(' ').join(', ') ?? '346.8 77.2% 49.8%';
 
   const themeStyle = theme?.primary ? {
     '--primary': theme.primary,
@@ -65,10 +66,13 @@ export default async function RootLayout({
 
   return (
     <html lang="en" suppressHydrationWarning style={{ ...themeStyle, fontFamily: fontCssFamily }}>
-      <head>
-        {googleFontUrl && (
-          <link rel="stylesheet" href={googleFontUrl} />
-        )}
+       <head>
+        {googleFontUrl && <link rel="stylesheet" href={googleFontUrl} />}
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        <link rel="manifest" href="/site.webmanifest" />
+        <meta name="theme-color" content={`hsl(${primaryColor})`} />
       </head>
       <body className={cn(
         "antialiased font-sans",

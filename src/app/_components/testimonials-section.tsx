@@ -54,6 +54,7 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
                                     fill
                                     sizes="64px"
                                     className="object-cover"
+                                    data-ai-hint="family photo"
                                 />
                             ) : (
                                 <User className="h-8 w-8 text-muted-foreground" />
