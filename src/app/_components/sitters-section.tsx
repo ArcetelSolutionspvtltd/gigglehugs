@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 export function SittersSection() {
   return (
     <section id="sitters" className="py-16 sm:py-24 bg-secondary/30">
-        <div className="container max-w-7xl">
+        <div className="container max-w-7xl px-4 md:px-8">
         <div className="text-center mb-16">
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">Meet Our Sitters</h2>
             <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
