@@ -6,7 +6,7 @@ import { Menu } from "lucide-react";
 import type { SocialLink } from "@/lib/types";
 
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Logo } from "@/components/icons/logo";
 import { ThemeToggle } from "./theme-toggle";
 
@@ -58,12 +58,13 @@ export function Header({ socialLinks = [] }: HeaderProps) {
                 <span className="sr-only">Open main menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="left" className="w-full max-w-xs pr-6 sm:max-w-sm">
-              <div className="flex items-center mb-6">
+            <SheetContent side="left" className="w-full max-w-xs pr-6 sm:max-w-sm bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+              <SheetHeader className="mb-6">
+                <SheetTitle className="sr-only">Mobile Menu</SheetTitle>
                 <Link href="/" onClick={() => setIsMobileMenuOpen(false)}>
                   <Logo />
                 </Link>
-              </div>
+              </SheetHeader>
               <nav className="flex flex-col gap-4">
                 {mainNavLinks.map(({ href, label }) => (
                   <Link
