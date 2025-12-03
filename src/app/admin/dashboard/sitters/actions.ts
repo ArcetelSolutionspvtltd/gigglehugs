@@ -7,8 +7,6 @@ import { z } from 'zod';
 const MAX_FILE_SIZE = 5000000; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
 
-// Note: any() is used for the avatar_url because File objects aren't directly supported by Zod.
-// The refinement functions provide the actual validation.
 const sitterSchema = z.object({
   id: z.coerce.number().optional(),
   name: z.string().min(3, 'Name must be at least 3 characters.'),
@@ -20,6 +18,7 @@ const sitterSchema = z.object({
       (file) => !file || file.size === 0 || ACCEPTED_IMAGE_TYPES.includes(file.type),
       "Only .jpg, .jpeg, .png and .webp formats are supported."
     ).optional(),
+  current_avatar_url: z.string().optional(),
 });
 
 export type FormState = {
@@ -38,6 +37,7 @@ export async function upsertSitterAction(prevState: FormState, formData: FormDat
     name: formData.get('name'),
     bio: formData.get('bio'),
     avatar_url: formData.get('avatar_url'),
+    current_avatar_url: formData.get('current_avatar_url'),
   });
 
   if (!validatedFields.success) {
@@ -49,53 +49,63 @@ export async function upsertSitterAction(prevState: FormState, formData: FormDat
   }
 
   const supabase = createClient();
-  const { id, name, bio, avatar_url: avatarFile } = validatedFields.data;
+  const { id, name, bio, avatar_url: avatarFile, current_avatar_url } = validatedFields.data;
   let avatarPath: string | undefined = undefined;
 
-  if (avatarFile && avatarFile.size > 0) {
-    const fileExtension = avatarFile.name.split('.').pop();
-    const fileName = `${name.toLowerCase().replace(/\s+/g, '_')}_${Date.now()}.${fileExtension}`;
-    const filePath = `sitters/${fileName}`;
-    
-    const { data: uploadData, error: uploadError } = await supabase.storage
-      .from('avatars')
-      .upload(filePath, avatarFile, { upsert: true });
-
-    if (uploadError) {
-      console.error('Storage error:', uploadError);
-      if (uploadError.message.includes('Bucket not found')) {
-        return { message: "Failed to upload avatar: The 'avatars' bucket was not found. Please create it in your Supabase project.", success: false };
+  try {
+    if (avatarFile && avatarFile.size > 0) {
+      let fileName: string;
+      if (id && current_avatar_url) {
+        // If editing and an avatar exists, extract filename to overwrite
+        fileName = current_avatar_url.split('/').pop()!;
+      } else {
+        // For new sitters or if no avatar exists, create a new filename
+        const fileExtension = avatarFile.name.split('.').pop();
+        fileName = `${name.toLowerCase().replace(/\s+/g, '_')}_${Date.now()}.${fileExtension}`;
       }
-      return { message: `Failed to upload avatar: ${uploadError.message}`, success: false };
+
+      const filePath = `sitters/${fileName}`;
+      
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, avatarFile, { upsert: true });
+
+      if (uploadError) {
+        throw uploadError;
+      }
+      
+      const { data: publicUrlData } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(uploadData.path);
+        
+      avatarPath = publicUrlData.publicUrl;
     }
     
-    const { data: publicUrlData } = supabase.storage
-      .from('avatars')
-      .getPublicUrl(uploadData.path);
-      
-    avatarPath = publicUrlData.publicUrl;
-  }
-  
-  const dataToUpsert: any = { name, bio };
-  if (id) {
-    dataToUpsert.id = id;
-  }
-  if (avatarPath) {
-    dataToUpsert.avatar_url = avatarPath;
+    const dataToUpsert: any = { name, bio };
+    if (id) {
+      dataToUpsert.id = id;
+    }
+    if (avatarPath) {
+      dataToUpsert.avatar_url = avatarPath;
+    }
+
+    const { error: dbError } = await supabase.from('sitters').upsert(dataToUpsert).select().single();
+
+    if (dbError) {
+      throw dbError;
+    }
+
+  } catch (error: any) {
+    console.error('Storage/DB error:', error);
+    if (error.message.includes('Bucket not found')) {
+      return { message: "Failed to upload avatar: The 'avatars' bucket was not found. Please create it in your Supabase project.", success: false };
+    }
+    return { message: `Operation failed: ${error.message}`, success: false };
   }
 
-  const { error: dbError } = await supabase.from('sitters').upsert(dataToUpsert).select().single();
-
-  if (dbError) {
-    console.error('Supabase error:', dbError);
-    return {
-      message: dbError.message,
-      success: false,
-    };
-  }
 
   revalidatePath('/admin/dashboard/sitters');
-  revalidatePath('/'); // Also revalidate home page
+  revalidatePath('/');
 
   return {
     message: `Sitter ${id ? 'updated' : 'added'} successfully.`,

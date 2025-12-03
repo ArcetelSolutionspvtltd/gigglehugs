@@ -1,4 +1,4 @@
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, User } from 'lucide-react';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import {
@@ -61,14 +61,18 @@ export default async function SittersPage() {
               {sitters?.map((sitter) => (
                 <TableRow key={sitter.id}>
                   <TableCell className="hidden sm:table-cell">
-                    <div className="relative h-16 w-16 rounded-full overflow-hidden">
-                      <Image
-                        src={sitter.avatar_url || '/assets/logo/logo.svg'}
-                        alt={sitter.name || 'Sitter avatar'}
-                        fill
-                        sizes="64px"
-                        className="object-cover"
-                      />
+                    <div className="relative h-16 w-16 rounded-full overflow-hidden bg-muted flex items-center justify-center">
+                      {sitter.avatar_url ? (
+                        <Image
+                          src={sitter.avatar_url}
+                          alt={sitter.name || 'Sitter avatar'}
+                          fill
+                          sizes="64px"
+                          className="object-cover"
+                        />
+                      ) : (
+                        <User className="h-8 w-8 text-muted-foreground" />
+                      )}
                     </div>
                   </TableCell>
                   <TableCell className="font-medium">{sitter.name}</TableCell>

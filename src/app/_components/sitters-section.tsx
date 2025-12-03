@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { Card, CardContent } from '@/components/ui/card';
 import type { Sitter } from '@/lib/types';
+import { User } from 'lucide-react';
 
 type SittersSectionProps = {
   sitters: Sitter[];
@@ -20,15 +21,19 @@ export function SittersSection({ sitters }: SittersSectionProps) {
             {sitters.map((sitter) => (
             <Card key={sitter.id} className="overflow-hidden group transform transition-all duration-300 hover:scale-105 hover:shadow-2xl">
                 <CardContent className="p-6 flex flex-col items-center text-center">
-                <div className="relative h-32 w-32 sm:h-40 sm:w-40 mb-4">
-                    <Image
-                    src={sitter.avatar_url || '/assets/logo/logo.svg'}
-                    alt={`Profile of ${sitter.name}`}
-                    fill
-                    sizes="(max-width: 640px) 128px, 160px"
-                    className="object-cover rounded-full border-4 border-white shadow-md"
-                    data-ai-hint="woman smiling"
-                    />
+                <div className="relative h-32 w-32 sm:h-40 sm:w-40 mb-4 rounded-full overflow-hidden bg-muted flex items-center justify-center">
+                    {sitter.avatar_url ? (
+                        <Image
+                            src={sitter.avatar_url}
+                            alt={`Profile of ${sitter.name}`}
+                            fill
+                            sizes="(max-width: 640px) 128px, 160px"
+                            className="object-cover"
+                            data-ai-hint="woman smiling"
+                        />
+                    ) : (
+                        <User className="h-16 w-16 text-muted-foreground" />
+                    )}
                 </div>
                 <h3 className="text-2xl font-bold">{sitter.name}</h3>
                 <p className="mt-2 text-base text-muted-foreground flex-grow">{sitter.bio}</p>

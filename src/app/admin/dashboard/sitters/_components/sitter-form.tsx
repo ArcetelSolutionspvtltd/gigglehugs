@@ -1,11 +1,11 @@
 'use client';
 
-import { useActionState, useState, useRef, useEffect, type ReactNode } from 'react';
+import { useState, useRef, useEffect, type ReactNode, useActionState } from 'react';
 import { useFormStatus } from 'react-dom';
 import Image from 'next/image';
 import ReactCrop, { centerCrop, makeAspectCrop, type Crop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
-import { PlusCircle, Loader2, Image as ImageIcon, RotateCw } from 'lucide-react';
+import { PlusCircle, Loader2, Image as ImageIcon } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -31,7 +31,6 @@ import { useToast } from '@/hooks/use-toast';
 import { upsertSitterAction, type FormState } from '../actions';
 import type { Sitter } from '@/lib/types';
 import { dataURLtoFile } from '@/lib/utils';
-
 
 function SubmitButton({ isEditing }: { isEditing: boolean }) {
   const { pending } = useFormStatus();
@@ -131,38 +130,43 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
   const getCroppedImg = async () => {
     const image = imgRef.current;
     if (!image || !crop || !crop.width || !crop.height) {
-      return;
+      return null;
     }
   
     const canvas = document.createElement('canvas');
     const scaleX = image.naturalWidth / image.width;
     const scaleY = image.naturalHeight / image.height;
     
-    const cropWidth = crop.width * scaleX;
-    const cropHeight = crop.height * scaleY;
-    const cropX = crop.x * scaleX;
-    const cropY = crop.y * scaleY;
-
-    // Use a fixed size for the canvas to maintain quality
+    // We use a fixed size for the canvas to maintain quality
     const targetSize = 512;
     canvas.width = targetSize;
     canvas.height = targetSize;
     
     const ctx = canvas.getContext('2d');
     if (!ctx) {
-      return;
+      return null;
     }
+
+    const pixelRatio = window.devicePixelRatio;
+    canvas.width = Math.floor(crop.width * scaleX * pixelRatio);
+    canvas.height = Math.floor(crop.height * scaleY * pixelRatio);
+    ctx.scale(pixelRatio, pixelRatio);
+    
+    const cropX = crop.x * scaleX;
+    const cropY = crop.y * scaleY;
   
+    ctx.imageSmoothingQuality = 'high';
+
     ctx.drawImage(
       image,
       cropX,
       cropY,
-      cropWidth,
-      cropHeight,
+      crop.width * scaleX,
+      crop.height * scaleY,
       0,
       0,
-      targetSize,
-      targetSize,
+      crop.width * scaleX,
+      crop.height * scaleY
     );
   
     return new Promise<string | null>((resolve) => {
@@ -205,6 +209,7 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
             className="flex flex-col gap-6 mt-6"
         >
           {isEditing && <input type="hidden" name="id" value={sitter.id} />}
+          {isEditing && sitter.avatar_url && <input type="hidden" name="current_avatar_url" value={sitter.avatar_url} />}
            <div className="space-y-2">
             <Label>Avatar</Label>
             <div className="flex items-center gap-4">
