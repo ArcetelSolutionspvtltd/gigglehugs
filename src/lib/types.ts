@@ -36,3 +36,9 @@ export type SocialLink = {
   url: string | null;
   icon_name: string | null;
 }
+
+export type FAQ = {
+  id: number;
+  question: string;
+  answer: string;
+}

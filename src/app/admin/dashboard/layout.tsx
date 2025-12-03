@@ -9,6 +9,7 @@ import {
   List,
   LogOut,
   Settings,
+  HelpCircle,
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -39,6 +40,7 @@ const navItems: NavItemProps[] = [
     { href: '/admin/dashboard/services', iconName: 'list', label: 'Services' },
     { href: '/admin/dashboard/sitters', iconName: 'users', label: 'Sitters' },
     { href: '/admin/dashboard/testimonials', iconName: 'star', label: 'Testimonials' },
+    { href: '/admin/dashboard/faqs', iconName: 'help-circle', label: 'FAQs'},
     { href: '/admin/dashboard/contact', iconName: 'phone', label: 'Contact Details' },
     { href: '/admin/dashboard/social', iconName: 'link2', label: 'Social Links' },
 ];

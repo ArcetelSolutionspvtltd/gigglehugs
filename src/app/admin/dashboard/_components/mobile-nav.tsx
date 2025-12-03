@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { Menu } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { Logo } from '@/components/icons/logo';
 import { NavItem, type NavItemProps } from './nav-item';
 
@@ -24,13 +24,16 @@ export function MobileNav({ navItems }: MobileNavProps) {
               </Button>
             </SheetTrigger>
             <SheetContent side="left" className="flex flex-col">
-              <nav className="grid gap-2 text-lg font-medium">
+              <SheetHeader>
+                <SheetTitle className="sr-only">Dashboard Menu</SheetTitle>
                 <Link
                   href="#"
                   className="flex items-center gap-2 text-lg font-semibold mb-4"
                 >
                   <Logo />
                 </Link>
+              </SheetHeader>
+              <nav className="grid gap-2 text-lg font-medium">
                 {navItems.map(item => <NavItem key={item.href} {...item} />)}
               </nav>
             </SheetContent>

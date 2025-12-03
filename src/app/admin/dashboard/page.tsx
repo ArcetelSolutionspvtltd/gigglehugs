@@ -1,28 +1,39 @@
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
 import { createClient } from '@/lib/supabase/server';
-import { Users, List, Star, Link2, Phone } from 'lucide-react';
+import { Users, List, Star, Link2, Phone, HelpCircle } from 'lucide-react';
 import { AnimatedCounter } from './_components/animated-counter';
 
 async function getStats() {
   const supabase = createClient();
-  const { count: sittersCount } = await supabase.from('sitters').select('*', { count: 'exact', head: true });
-  const { count: servicesCount } = await supabase.from('services').select('*', { count: 'exact', head: true });
-  const { count: testimonialsCount } = await supabase.from('testimonials').select('*', { count: 'exact', head: true });
-  const { count: socialLinksCount } = await supabase.from('social_links').select('*', { count: 'exact', head: true });
-  const { count: contactDetailsCount } = await supabase.from('contact_details').select('*', { count: 'exact', head: true });
+  
+  const [
+    sitters,
+    services,
+    testimonials,
+    socialLinks,
+    contactDetails,
+    faqs
+  ] = await Promise.all([
+    supabase.from('sitters').select('*', { count: 'exact', head: true }),
+    supabase.from('services').select('*', { count: 'exact', head: true }),
+    supabase.from('testimonials').select('*', { count: 'exact', head: true }),
+    supabase.from('social_links').select('*', { count: 'exact', head: true }),
+    supabase.from('contact_details').select('*', { count: 'exact', head: true }),
+    supabase.from('faqs').select('*', { count: 'exact', head: true })
+  ]);
 
   return {
-    sitters: sittersCount ?? 0,
-    services: servicesCount ?? 0,
-    testimonials: testimonialsCount ?? 0,
-    socialLinks: socialLinksCount ?? 0,
-    contactDetails: contactDetailsCount ?? 0,
+    sitters: sitters.count ?? 0,
+    services: services.count ?? 0,
+    testimonials: testimonials.count ?? 0,
+    socialLinks: socialLinks.count ?? 0,
+    contactDetails: contactDetails.count ?? 0,
+    faqs: faqs.count ?? 0,
   };
 }
 
@@ -33,6 +44,7 @@ export default async function DashboardPage() {
     { title: 'Sitters', count: stats.sitters, icon: Users },
     { title: 'Services', count: stats.services, icon: List },
     { title: 'Testimonials', count: stats.testimonials, icon: Star },
+    { title: 'FAQs', count: stats.faqs, icon: HelpCircle },
     { title: 'Social Links', count: stats.socialLinks, icon: Link2 },
     { title: 'Contact Details', count: stats.contactDetails, icon: Phone },
   ];
