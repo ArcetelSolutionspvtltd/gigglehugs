@@ -1,44 +1,25 @@
 'use client';
 
+import Image from 'next/image';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from '@/components/ui/carousel';
+import Autoplay from 'embla-carousel-autoplay';
 import type { Testimonial } from '@/lib/types';
-import NewCarousel from './new-carousel';
-import { Star } from 'lucide-react';
-import './new-carousel.css';
-import { useEffect, useState } from 'react';
+import { User, Star } from 'lucide-react';
 
 type TestimonialsSectionProps = {
   testimonials: Testimonial[];
 };
 
 export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) {
-  const [carouselWidth, setCarouselWidth] = useState(400);
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 1024) { // lg breakpoint
-        setCarouselWidth(600);
-      } else if (window.innerWidth >= 768) { // md breakpoint
-        setCarouselWidth(500);
-      } else {
-        setCarouselWidth(window.innerWidth - 80); // Full width with some padding
-      }
-    };
-
-    handleResize();
-    window.addEventListener('resize', handleResize);
-
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const carouselItems = testimonials.map(testimonial => ({
-    id: testimonial.id,
-    title: testimonial.name || 'Anonymous',
-    description: `"${testimonial.testimonial}" — ${testimonial.bio}`,
-    icon: <Star className="carousel-icon" />,
-  }));
-
   return (
-    <section className="py-16 sm:py-24 bg-background">
+    <section id="testimonials" className="py-16 sm:py-24 bg-background">
       <div className="container">
         <div className="text-center mb-16">
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tight">Words of Trust from Our Families</h2>
@@ -46,21 +27,58 @@ export function TestimonialsSection({ testimonials }: TestimonialsSectionProps) 
             See what parents are saying about their GiggleHugs experience.
           </p>
         </div>
-        <div className="flex justify-center">
-            {carouselItems.length > 0 && (
-                <div style={{ height: '400px', position: 'relative' }}>
-                    <NewCarousel
-                        items={carouselItems}
-                        baseWidth={carouselWidth}
-                        autoplay={true}
-                        autoplayDelay={5000}
-                        pauseOnHover={true}
-                        loop={true}
-                        round={false}
-                    />
+        <Carousel
+          opts={{
+            align: "start",
+            loop: true,
+          }}
+          plugins={[
+            Autoplay({
+              delay: 5000,
+              stopOnInteraction: true,
+            }),
+          ]}
+          className="w-full max-w-4xl mx-auto"
+        >
+          <CarouselContent>
+            {testimonials.map((testimonial) => (
+              <CarouselItem key={testimonial.id} className="md:basis-1/2 lg:basis-1/3">
+                <div className="p-1 h-full">
+                  <Card className="flex flex-col h-full">
+                    <CardHeader className="flex flex-row items-center gap-4">
+                        <div className="relative h-16 w-16 rounded-full overflow-hidden bg-muted flex items-center justify-center">
+                            {testimonial.avatar_url ? (
+                                <Image
+                                    src={testimonial.avatar_url}
+                                    alt={testimonial.name || 'Avatar'}
+                                    fill
+                                    className="object-cover"
+                                />
+                            ) : (
+                                <User className="h-8 w-8 text-muted-foreground" />
+                            )}
+                        </div>
+                        <div>
+                            <CardTitle className="text-lg">{testimonial.name}</CardTitle>
+                            <div className="flex items-center gap-1 mt-1">
+                                {[...Array(5)].map((_, i) => (
+                                <Star key={i} className={`h-4 w-4 text-primary ${i < (testimonial.rating ?? 0) ? 'fill-primary' : ''}`} />
+                                ))}
+                            </div>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="flex-grow">
+                      <p className="text-muted-foreground italic">&quot;{testimonial.testimonial}&quot;</p>
+                      <p className="text-sm font-semibold mt-4 text-foreground">- {testimonial.bio}</p>
+                    </CardContent>
+                  </Card>
                 </div>
-            )}
-        </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious />
+          <CarouselNext />
+        </Carousel>
       </div>
     </section>
   );
