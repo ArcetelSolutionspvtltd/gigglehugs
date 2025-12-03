@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useRef, useEffect, type ReactNode } from 'react';
+import { useState, useRef, useEffect, type ReactNode, useCallback } from 'react';
 import { useFormStatus } from 'react-dom';
 import Image from 'next/image';
-import ReactCrop, { centerCrop, makeAspectCrop, type Crop } from 'react-image-crop';
-import 'react-image-crop/dist/ReactCrop.css';
+import Cropper, { type Area } from 'react-easy-crop';
+
 import { Loader2, ImageIcon } from 'lucide-react';
 import {
   Dialog,
@@ -28,9 +28,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { upsertSitterAction, type FormState } from '../actions';
+import { upsertSitterAction } from '../actions';
 import type { Sitter } from '@/lib/types';
-import { dataURLtoFile } from '@/lib/utils';
+import { dataURLtoFile, getCroppedImg } from '@/lib/utils';
+import { Slider } from '@/components/ui/slider';
 
 function SubmitButton({ isEditing }: { isEditing: boolean }) {
   const { pending } = useFormStatus();
@@ -57,135 +58,60 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
   const isEditing = !!sitter;
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
-  const formRef = useRef<HTMLFormElement>(null);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(sitter?.avatar_url || null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [crop, setCrop] = useState<Crop>();
   const [imgSrc, setImgSrc] = useState('');
-  const imgRef = useRef<HTMLImageElement>(null);
   const [isCropModalOpen, setIsCropModalOpen] = useState(false);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [rotation, setRotation] = useState(0);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
 
   useEffect(() => {
     if (!isOpen) {
-        // Reset state when sheet closes
         setAvatarPreview(sitter?.avatar_url || null);
         setImgSrc('');
-        if (formRef.current) {
-          formRef.current.reset();
-        }
     }
   }, [isOpen, sitter]);
 
-  const handleAction = async (formData: FormData) => {
-    const result = await upsertSitterAction(formData);
-
-    if (result.success) {
-      toast({
-        title: isEditing ? 'Success!' : 'Sitter Added!',
-        description: result.message,
-      });
-      setIsOpen(false);
-    } else {
-      toast({
-        title: 'Oops!',
-        description: result.message,
-        variant: 'destructive',
-      });
-    }
-  };
+  const onCropComplete = useCallback((croppedArea: Area, croppedAreaPixels: Area) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  }, []);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      setCrop(undefined); // Reset crop on new image
       const reader = new FileReader();
       reader.addEventListener('load', () => {
         setImgSrc(reader.result?.toString() || '');
+        setZoom(1);
+        setRotation(0);
+        setCrop({ x: 0, y: 0 });
         setIsCropModalOpen(true);
       });
       reader.readAsDataURL(e.target.files[0]);
     }
   };
-
-  const handleImageLoad = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    const { width, height } = e.currentTarget;
-    const initialCrop = centerCrop(
-      makeAspectCrop(
-        {
-          unit: '%',
-          width: 90,
-        },
-        1,
-        width,
-        height,
-      ),
-      width,
-      height,
-    )
-    setCrop(initialCrop);
-  };
   
-  const getCroppedImg = () => {
-    const image = imgRef.current;
-    if (!image || !crop || !crop.width || !crop.height) {
-      return null;
-    }
-  
-    const canvas = document.createElement('canvas');
-    const scaleX = image.naturalWidth / image.width;
-    const scaleY = image.naturalHeight / image.height;
-    
-    canvas.width = Math.floor(crop.width * scaleX);
-    canvas.height = Math.floor(crop.height * scaleY);
-    
-    const ctx = canvas.getContext('2d');
-    if (!ctx) {
-      return null;
-    }
-
-    const cropX = crop.x * scaleX;
-    const cropY = crop.y * scaleY;
-  
-    ctx.imageSmoothingQuality = 'high';
-
-    ctx.drawImage(
-      image,
-      cropX,
-      cropY,
-      crop.width * scaleX,
-      crop.height * scaleY,
-      0,
-      0,
-      crop.width * scaleX,
-      crop.height * scaleY
-    );
-  
-    return new Promise<string | null>((resolve) => {
-      canvas.toBlob(blob => {
-        if (!blob) {
-          resolve(null);
-          return;
-        }
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          resolve(reader.result as string);
-        };
-        reader.readAsDataURL(blob);
-      }, 'image/png');
-    });
-  };
-
   const handleCropConfirm = async () => {
-    const croppedImageUrl = await getCroppedImg();
-    if (croppedImageUrl) {
-      setAvatarPreview(croppedImageUrl);
-      const file = dataURLtoFile(croppedImageUrl, 'avatar.png');
-      const dataTransfer = new DataTransfer();
-      dataTransfer.items.add(file);
-      if (fileInputRef.current) {
-        fileInputRef.current.files = dataTransfer.files;
-      }
-      setIsCropModalOpen(false);
+    if (!croppedAreaPixels || !imgSrc) {
+        return;
+    }
+    try {
+        const croppedImageUrl = await getCroppedImg(imgSrc, croppedAreaPixels, rotation);
+        if (croppedImageUrl) {
+            setAvatarPreview(croppedImageUrl);
+            const file = dataURLtoFile(croppedImageUrl, 'avatar.png');
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(file);
+            if (fileInputRef.current) {
+                fileInputRef.current.files = dataTransfer.files;
+            }
+        }
+        setIsCropModalOpen(false);
+    } catch (e) {
+        console.error(e);
+        toast({ title: 'Error', description: 'Could not crop image.', variant: 'destructive'});
     }
   };
 
@@ -203,8 +129,22 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
           </SheetDescription>
         </SheetHeader>
         <form
-            ref={formRef}
-            action={handleAction}
+            action={async (formData) => {
+                const result = await upsertSitterAction(formData);
+                if (result.success) {
+                    toast({
+                    title: isEditing ? 'Success!' : 'Sitter Added!',
+                    description: result.message,
+                    });
+                    setIsOpen(false);
+                } else {
+                    toast({
+                    title: 'Oops!',
+                    description: result.message,
+                    variant: 'destructive',
+                    });
+                }
+            }}
             className="flex flex-col gap-6 mt-6"
         >
           {isEditing && <input type="hidden" name="id" value={sitter.id} />}
@@ -267,23 +207,48 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
       </SheetContent>
     </Sheet>
     <Dialog open={isCropModalOpen} onOpenChange={setIsCropModalOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-3xl">
             <DialogHeader>
                 <DialogTitle>Crop Image</DialogTitle>
             </DialogHeader>
             {imgSrc && (
-                <div className='flex flex-col items-center'>
-                    <ReactCrop
+                <div className='relative w-full h-[50vh]'>
+                    <Cropper
+                        image={imgSrc}
                         crop={crop}
-                        onChange={(_, percentCrop) => setCrop(percentCrop)}
-                        circularCrop
+                        zoom={zoom}
+                        rotation={rotation}
                         aspect={1}
-                        className='max-h-[60vh]'
-                    >
-                        <img ref={imgRef} src={imgSrc} alt="Source" onLoad={handleImageLoad} />
-                    </ReactCrop>
+                        cropShape="round"
+                        onCropChange={setCrop}
+                        onZoomChange={setZoom}
+                        onRotationChange={setRotation}
+                        onCropComplete={onCropComplete}
+                    />
                 </div>
             )}
+            <div className="space-y-4 p-4">
+                <div className="space-y-2">
+                    <Label>Zoom</Label>
+                    <Slider
+                        value={[zoom]}
+                        min={1}
+                        max={3}
+                        step={0.1}
+                        onValueChange={(value) => setZoom(value[0])}
+                    />
+                </div>
+                <div className="space-y-2">
+                    <Label>Rotation</Label>
+                     <Slider
+                        value={[rotation]}
+                        min={0}
+                        max={360}
+                        step={1}
+                        onValueChange={(value) => setRotation(value[0])}
+                    />
+                </div>
+            </div>
              <DialogFooter>
                 <Button variant="outline" onClick={() => setIsCropModalOpen(false)}>Cancel</Button>
                 <Button onClick={handleCropConfirm}>Confirm Crop</Button>
