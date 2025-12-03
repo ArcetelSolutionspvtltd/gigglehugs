@@ -5,7 +5,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { List, Users, Star, HelpCircle, Phone, Link2, Settings, Home, BookOpen } from "lucide-react";
+import { List, Users, Star, HelpCircle, Phone, Link2, Settings, Home, BookOpen, Brush } from "lucide-react";
 
 const guideSections = [
   {
@@ -46,7 +46,7 @@ const guideSections = [
   {
     title: 'Settings',
     icon: Settings,
-    content: 'Customize your website\'s appearance using the AI Theme Customizer. Describe the look and feel you want (e.g., "warm and friendly," "professional and calm") and the AI will generate a new color palette (primary, background, and accent colors) for your site. You can apply the new theme or reset it to the default at any time.'
+    content: 'The settings page allows you to manage your admin account and customize the public website\'s appearance. It contains three main sections: Profile, Appearance, and Theme. The Profile section shows the email of the currently logged-in administrator. The Appearance section lets you change the primary font used across your public-facing website. The Theme section allows you to toggle the admin dashboard between light and dark modes.'
   },
   {
     title: 'Guide',

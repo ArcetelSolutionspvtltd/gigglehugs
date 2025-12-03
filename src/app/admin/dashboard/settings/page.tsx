@@ -1,8 +1,10 @@
 import { createClient } from '@/lib/supabase/server';
 import { ThemeSettingsForm } from './_components/theme-settings-form';
 import type { ColorTheme } from '@/lib/types';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { ThemeToggle } from '@/components/layout/theme-toggle';
+import { Label } from '@/components/ui/label';
 
 async function getTheme() {
     const supabase = createClient();
@@ -42,6 +44,18 @@ export default async function SettingsPage() {
       </Card>
       
       <ThemeSettingsForm currentTheme={currentTheme} />
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Dashboard Theme</CardTitle>
+          <CardDescription>
+            Switch between light and dark mode for this admin dashboard.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+            <ThemeToggle />
+        </CardContent>
+      </Card>
     </div>
   );
 }
