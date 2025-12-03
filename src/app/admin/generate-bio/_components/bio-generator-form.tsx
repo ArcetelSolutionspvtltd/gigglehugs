@@ -1,7 +1,8 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
-import { useEffect, useRef } from 'react';
+import { useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
+import { useEffect, useRef, useState } from 'react';
 import { Wand2, Copy, Check } from 'lucide-react';
 import { generateBioAction, type FormState } from '../actions';
 import { Button } from '@/components/ui/button';
@@ -9,7 +10,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { useState } from 'react';
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -32,7 +32,7 @@ function SubmitButton() {
 
 export function BioGeneratorForm() {
   const initialState: FormState = { message: '', bio: null };
-  const [state, formAction] = useFormState(generateBioAction, initialState);
+  const [state, formAction] = useActionState(generateBioAction, initialState);
   const { toast } = useToast();
   const formRef = useRef<HTMLFormElement>(null);
   const [copied, setCopied] = useState(false);

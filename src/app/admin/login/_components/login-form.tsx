@@ -1,6 +1,7 @@
 'use client';
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState, useEffect } from 'react';
+import { useFormStatus } from 'react-dom';
 import Link from 'next/link';
 
 import { Button } from '@/components/ui/button';
@@ -14,7 +15,6 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { login, type State } from '../actions';
-import { useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 
 function LoginButton() {
@@ -29,7 +29,7 @@ function LoginButton() {
 
 export function LoginForm() {
   const initialState: State = { message: '', errors: undefined };
-  const [state, dispatch] = useFormState(login, initialState);
+  const [state, dispatch] = useActionState(login, initialState);
   const { toast } = useToast();
 
   useEffect(() => {
