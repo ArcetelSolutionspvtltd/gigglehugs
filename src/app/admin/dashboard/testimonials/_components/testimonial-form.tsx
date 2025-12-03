@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, type ReactNode, useCallback } from 'react';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState, useState, useRef, useEffect, type ReactNode, useCallback } from 'react';
 import Image from 'next/image';
 import Cropper, { type Area } from 'react-easy-crop';
 
@@ -32,6 +31,7 @@ import { upsertTestimonialAction, type FormState } from '../actions';
 import type { Testimonial } from '@/lib/types';
 import { dataURLtoFile, getCroppedImg } from '@/lib/utils';
 import { Slider } from '@/components/ui/slider';
+import { useFormStatus } from 'react-dom';
 
 function SubmitButton({ isEditing }: { isEditing: boolean }) {
   const { pending } = useFormStatus();
@@ -57,7 +57,7 @@ type TestimonialFormProps = {
 export function TestimonialForm({ children, testimonial }: TestimonialFormProps) {
   const isEditing = !!testimonial;
   const initialState: FormState = { message: '', success: false };
-  const [state, formAction] = useFormState(upsertTestimonialAction, initialState);
+  const [state, formAction] = useActionState(upsertTestimonialAction, initialState);
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(testimonial?.avatar_url || null);
