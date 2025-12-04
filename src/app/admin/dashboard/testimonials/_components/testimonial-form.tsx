@@ -279,11 +279,11 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
         <SheetContent className="sm:max-w-lg overflow-y-auto max-h-screen">
             <SheetHeader>
                 <SheetTitle>{isEditing ? 'Edit Testimonial' : 'Add a New Testimonial'}</SheetTitle>
-                <SheetDescription>
+                <DialogDescription>
                     {isEditing
                     ? 'Update the details for this testimonial.'
                     : 'Fill out the form to add a new testimonial.'}
-                </SheetDescription>
+                </DialogDescription>
             </SheetHeader>
             {FormContent}
         </SheetContent>
@@ -294,14 +294,14 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
     <>
       {isDesktop ? MainSheet : MainDialog}
       <Dialog open={isCropModalOpen} onOpenChange={setIsCropModalOpen}>
-        <DialogContent className="max-w-[90vw] w-full rounded-lg">
+        <DialogContent className="max-w-lg w-[90vw] flex flex-col max-h-[90vh]">
             <DialogHeader>
                 <DialogTitle>Crop Image</DialogTitle>
                  <DialogDescription>
                   Adjust the image to fit perfectly in the circular avatar frame.
                 </DialogDescription>
             </DialogHeader>
-            <div className='relative w-full h-64 md:h-96 my-4'>
+            <div className='flex-grow relative my-4'>
                 <Cropper
                     image={imgSrc}
                     crop={crop}
@@ -315,7 +315,7 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
                     onCropComplete={onCropComplete}
                 />
             </div>
-            <div className="space-y-4 p-4">
+            <div className="space-y-4">
                 <div className="space-y-2">
                     <Label>Zoom</Label>
                     <Slider

@@ -289,14 +289,14 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
     <>
       {isDesktop ? MainSheet : MainDialog}
       <Dialog open={isCropModalOpen} onOpenChange={setIsCropModalOpen}>
-        <DialogContent className="max-w-[90vw] w-full rounded-lg">
+        <DialogContent className="max-w-lg w-[90vw] flex flex-col max-h-[90vh]">
             <DialogHeader>
                 <DialogTitle>Crop Image</DialogTitle>
                 <DialogDescription>
                   Adjust the image to fit perfectly in the circular avatar frame.
                 </DialogDescription>
             </DialogHeader>
-            <div className='relative w-full h-64 md:h-96 my-4'>
+            <div className="flex-grow relative my-4">
                 <Cropper
                     image={imgSrc}
                     crop={crop}
@@ -310,7 +310,7 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
                     onCropComplete={onCropComplete}
                 />
             </div>
-            <div className="space-y-4 p-4">
+            <div className="space-y-4">
                 <div className="space-y-2">
                     <Label>Zoom</Label>
                     <Slider
