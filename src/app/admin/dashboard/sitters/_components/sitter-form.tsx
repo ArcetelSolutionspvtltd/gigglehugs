@@ -250,47 +250,45 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
     </form>
   );
 
-  const FormContainer = ({ children }: { children: ReactNode }) => {
-    if (isDesktop) {
-        return (
-            <Sheet open={isOpen} onOpenChange={setIsOpen}>
-                <SheetTrigger asChild>{children}</SheetTrigger>
-                <SheetContent className="sm:max-w-lg overflow-y-auto max-h-screen">
-                    <SheetHeader>
-                    <SheetTitle>{isEditing ? 'Edit Sitter' : 'Add a New Sitter'}</SheetTitle>
-                    <SheetDescription>
-                        {isEditing
-                        ? 'Update the details for this sitter.'
-                        : 'Fill out the form to add a new sitter to your website.'}
-                    </SheetDescription>
-                    </SheetHeader>
-                    {FormContent}
-                </SheetContent>
-            </Sheet>
-        );
-    }
-    return (
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild>{children}</DialogTrigger>
-            <DialogContent className="max-w-[90vw] w-full rounded-lg">
-                <DialogHeader>
-                <DialogTitle>{isEditing ? 'Edit Sitter' : 'Add a New Sitter'}</DialogTitle>
-                <DialogDescription>
-                    {isEditing
-                    ? 'Update the details for this sitter.'
-                    : 'Fill out the form to add a new sitter to your website.'}
-                </DialogDescription>
-                </DialogHeader>
-                {FormContent}
-            </DialogContent>
-        </Dialog>
-    );
-  };
+  const MainDialog = (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogTrigger asChild>{children}</DialogTrigger>
+        <DialogContent className="max-w-[90vw] w-full rounded-lg">
+            <DialogHeader>
+            <DialogTitle>{isEditing ? 'Edit Sitter' : 'Add a New Sitter'}</DialogTitle>
+            <DialogDescription>
+                {isEditing
+                ? 'Update the details for this sitter.'
+                : 'Fill out the form to add a new sitter to your website.'}
+            </DialogDescription>
+            </DialogHeader>
+            {FormContent}
+        </DialogContent>
+    </Dialog>
+  );
+
+  const MainSheet = (
+     <Sheet open={isOpen} onOpenChange={setIsOpen}>
+        <SheetTrigger asChild>{children}</SheetTrigger>
+        <SheetContent className="sm:max-w-lg overflow-y-auto max-h-screen">
+            <SheetHeader>
+            <SheetTitle>{isEditing ? 'Edit Sitter' : 'Add a New Sitter'}</SheetTitle>
+            <SheetDescription>
+                {isEditing
+                ? 'Update the details for this sitter.'
+                : 'Fill out the form to add a new sitter to your website.'}
+            </SheetDescription>
+            </SheetHeader>
+            {FormContent}
+        </SheetContent>
+    </Sheet>
+  );
+
 
   return (
     <>
-    <FormContainer>{children}</FormContainer>
-    <Dialog open={isCropModalOpen} onOpenChange={setIsCropModalOpen}>
+      {isDesktop ? MainSheet : MainDialog}
+      <Dialog open={isCropModalOpen} onOpenChange={setIsCropModalOpen}>
         <DialogContent className="max-w-[90vw] w-full rounded-lg">
             <DialogHeader>
                 <DialogTitle>Crop Image</DialogTitle>

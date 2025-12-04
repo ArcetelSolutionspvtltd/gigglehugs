@@ -256,47 +256,44 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
     </form>
   );
 
-  const FormContainer = ({ children }: { children: ReactNode }) => {
-    if (isDesktop) {
-        return (
-            <Sheet open={isOpen} onOpenChange={setIsOpen}>
-                <SheetTrigger asChild>{children}</SheetTrigger>
-                <SheetContent className="sm:max-w-lg overflow-y-auto max-h-screen">
-                    <SheetHeader>
-                        <SheetTitle>{isEditing ? 'Edit Testimonial' : 'Add a New Testimonial'}</SheetTitle>
-                        <SheetDescription>
-                            {isEditing
-                            ? 'Update the details for this testimonial.'
-                            : 'Fill out the form to add a new testimonial.'}
-                        </SheetDescription>
-                    </SheetHeader>
-                    {FormContent}
-                </SheetContent>
-            </Sheet>
-        );
-    }
-    return (
-        <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild>{children}</DialogTrigger>
-            <DialogContent className="max-w-[90vw] w-full rounded-lg">
-                <DialogHeader>
-                    <DialogTitle>{isEditing ? 'Edit Testimonial' : 'Add a New Testimonial'}</DialogTitle>
-                    <DialogDescription>
-                        {isEditing
-                        ? 'Update the details for this testimonial.'
-                        : 'Fill out the form to add a new testimonial.'}
-                    </DialogDescription>
-                </DialogHeader>
-                {FormContent}
-            </DialogContent>
-        </Dialog>
-    );
-  };
+  const MainDialog = (
+     <Dialog open={isOpen} onOpenChange={setIsOpen}>
+        <DialogTrigger asChild>{children}</DialogTrigger>
+        <DialogContent className="max-w-[90vw] w-full rounded-lg">
+            <DialogHeader>
+                <DialogTitle>{isEditing ? 'Edit Testimonial' : 'Add a New Testimonial'}</DialogTitle>
+                <DialogDescription>
+                    {isEditing
+                    ? 'Update the details for this testimonial.'
+                    : 'Fill out the form to add a new testimonial.'}
+                </DialogDescription>
+            </DialogHeader>
+            {FormContent}
+        </DialogContent>
+    </Dialog>
+  );
+
+  const MainSheet = (
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+        <SheetTrigger asChild>{children}</SheetTrigger>
+        <SheetContent className="sm:max-w-lg overflow-y-auto max-h-screen">
+            <SheetHeader>
+                <SheetTitle>{isEditing ? 'Edit Testimonial' : 'Add a New Testimonial'}</SheetTitle>
+                <SheetDescription>
+                    {isEditing
+                    ? 'Update the details for this testimonial.'
+                    : 'Fill out the form to add a new testimonial.'}
+                </SheetDescription>
+            </SheetHeader>
+            {FormContent}
+        </SheetContent>
+    </Sheet>
+  );
 
   return (
     <>
-    <FormContainer>{children}</FormContainer>
-    <Dialog open={isCropModalOpen} onOpenChange={setIsCropModalOpen}>
+      {isDesktop ? MainSheet : MainDialog}
+      <Dialog open={isCropModalOpen} onOpenChange={setIsCropModalOpen}>
         <DialogContent className="max-w-[90vw] w-full rounded-lg">
             <DialogHeader>
                 <DialogTitle>Crop Image</DialogTitle>
