@@ -95,6 +95,10 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
           title: isEditing ? 'Success!' : 'Testimonial Added!',
           description: state.message,
         });
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+        setAvatarPreview(testimonial?.avatar_url || null);
         setIsOpen(false);
       } else {
         toast({
@@ -104,7 +108,7 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
         });
       }
     }
-  }, [state, toast, isEditing]);
+  }, [state, toast, isEditing, testimonial]);
 
   const onCropComplete = useCallback((croppedArea: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);
@@ -117,6 +121,7 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
         setImgSrc(reader.result?.toString() || '');
         setZoom(1);
         setCrop({ x: 0, y: 0 });
+        setCroppedAreaPixels(null);
         setIsCropModalOpen(true);
       });
       reader.readAsDataURL(e.target.files[0]);

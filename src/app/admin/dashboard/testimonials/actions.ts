@@ -3,6 +3,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
+import { v4 as uuidv4 } from 'uuid';
 
 const MAX_FILE_SIZE = 5000000; // 5MB
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
@@ -65,7 +66,7 @@ export async function upsertTestimonialAction(prevState: FormState, formData: Fo
 
     if (validatedAvatarFile) {
       const fileExtension = validatedAvatarFile.name.split('.').pop();
-      const fileName = `${name.toLowerCase().replace(/\s+/g, '_')}_${Date.now()}.${fileExtension}`;
+      const fileName = `${uuidv4()}.${fileExtension}`;
       const filePath = `testimonials/${fileName}`;
       
       const { data: uploadData, error: uploadError } = await supabase.storage
@@ -88,6 +89,8 @@ export async function upsertTestimonialAction(prevState: FormState, formData: Fo
     }
     if (avatarPath) {
       dataToUpsert.avatar_url = avatarPath;
+    } else if (id) {
+      dataToUpsert.avatar_url = current_avatar_url;
     }
 
     const { error: dbError } = await supabase.from('testimonials').upsert(dataToUpsert).select().single();

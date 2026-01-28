@@ -98,6 +98,10 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
           title: isEditing ? 'Success!' : 'Sitter Added!',
           description: state.message,
         });
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
+        setAvatarPreview(sitter?.avatar_url || null);
         setIsOpen(false);
       } else {
         toast({
@@ -107,7 +111,7 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
         });
       }
     }
-  }, [state, isEditing, toast]);
+  }, [state, isEditing, toast, sitter]);
 
   const onCropComplete = useCallback((croppedArea: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);
@@ -120,6 +124,7 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
         setImgSrc(reader.result?.toString() || '');
         setZoom(1);
         setCrop({ x: 0, y: 0 });
+        setCroppedAreaPixels(null);
         setIsCropModalOpen(true);
       });
       reader.readAsDataURL(e.target.files[0]);
