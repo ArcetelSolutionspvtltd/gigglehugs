@@ -50,9 +50,18 @@ export async function upsertSitterAction(prevState: FormState, formData: FormDat
 
     const email = email_name ? `${email_name}@gigglehugs.co.zw` : null;
     
-    if (avatar_data_uri) {
+    const validAvatarDataUri = avatar_data_uri && avatar_data_uri.startsWith('data:image/');
+
+    if (validAvatarDataUri) {
       const base64Data = avatar_data_uri.replace(/^data:image\/\w+;base64,/, "");
-      const fileBuffer = Buffer.from(base64Data, 'base64');
+
+      // Use web-standard `atob` and `Uint8Array` instead of Node's `Buffer`
+      const binary = atob(base64Data);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+
       const contentType = avatar_data_uri.substring(avatar_data_uri.indexOf(':') + 1, avatar_data_uri.indexOf(';'));
       const fileExtension = contentType.split('/')[1] || 'png';
       const fileName = `${uuidv4()}.${fileExtension}`;
@@ -60,7 +69,7 @@ export async function upsertSitterAction(prevState: FormState, formData: FormDat
       
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(filePath, fileBuffer, { contentType, upsert: false });
+        .upload(filePath, bytes, { contentType, upsert: false });
 
       if (uploadError) throw uploadError;
       if (!uploadData) throw new Error("Supabase upload returned no data and no error.");
