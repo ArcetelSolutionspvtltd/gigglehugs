@@ -75,10 +75,10 @@ export async function getCroppedImg(
   // croppedAreaPixels values are bounding box relative
   // extract the cropped image using these values
   const data = ctx.getImageData(
-    pixelCrop.x,
-    pixelCrop.y,
-    pixelCrop.width,
-    pixelCrop.height
+    Math.round(pixelCrop.x),
+    Math.round(pixelCrop.y),
+    Math.round(pixelCrop.width),
+    Math.round(pixelCrop.height)
   );
 
   // set canvas width to final desired crop size - this will clear existing context

@@ -301,7 +301,7 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
                   Adjust the image to fit perfectly in the circular avatar frame.
                 </DialogDescription>
             </DialogHeader>
-            <div className='flex-grow relative my-4'>
+            <div className='flex-grow relative my-4 min-h-0'>
                 <Cropper
                     image={imgSrc}
                     crop={crop}

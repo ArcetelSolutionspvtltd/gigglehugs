@@ -46,7 +46,7 @@ export async function upsertSitterAction(formData: FormData): Promise<FormState>
   const { id, name, bio, email_name, avatar_url: avatarFile, current_avatar_url } = validatedFields.data;
   let avatarPath: string | undefined = undefined;
 
-  const email = email_name ? `${email_name}@gigglehugs.org` : null;
+  const email = email_name ? `${email_name}@gigglehugs.co.zw` : null;
 
   try {
     if (avatarFile && avatarFile.size > 0) {

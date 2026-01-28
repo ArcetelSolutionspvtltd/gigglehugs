@@ -209,7 +209,7 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
             className="rounded-r-none focus-visible:ring-0 focus-visible:ring-offset-0"
           />
           <span className="inline-flex h-10 items-center rounded-r-md border border-l-0 border-input bg-muted px-3 text-sm text-muted-foreground">
-            @gigglehugs.org
+            @gigglehugs.co.zw
           </span>
         </div>
       </div>
@@ -296,7 +296,7 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
                   Adjust the image to fit perfectly in the circular avatar frame.
                 </DialogDescription>
             </DialogHeader>
-            <div className="flex-grow relative my-4">
+            <div className="flex-grow relative my-4 min-h-0">
                 <Cropper
                     image={imgSrc}
                     crop={crop}
