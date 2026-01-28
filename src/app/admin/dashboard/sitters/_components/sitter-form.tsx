@@ -33,7 +33,6 @@ import { useToast } from '@/hooks/use-toast';
 import { upsertSitterAction, type FormState } from '../actions';
 import type { Sitter } from '@/lib/types';
 import { getCroppedImg } from '@/lib/utils';
-import { Slider } from '@/components/ui/slider';
 import { useFormStatus } from 'react-dom';
 import { useMediaQuery } from '@/hooks/use-media-query';
 
@@ -68,7 +67,6 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(sitter?.avatar_url || null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const [emailName, setEmailName] = useState(sitter?.email?.split('@')[0] || '');
   const [bioCharCount, setBioCharCount] = useState(sitter?.bio?.length || 0);
@@ -83,13 +81,12 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
   const resetFormState = useCallback(() => {
+    formRef.current?.reset();
     setAvatarPreview(sitter?.avatar_url || null);
-    setImgSrc('');
     setEmailName(sitter?.email?.split('@')[0] || '');
     setBioCharCount(sitter?.bio?.length || 0);
     setCroppedAvatarData(null);
-    if(fileInputRef.current) fileInputRef.current.value = "";
-    formRef.current?.reset();
+    setImgSrc('');
   }, [sitter]);
 
   useEffect(() => {
@@ -181,11 +178,11 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
               <ImageIcon className="h-8 w-8 text-muted-foreground" />
             )}
           </div>
-          <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
+          <Button type="button" variant="outline" onClick={() => document.getElementById('avatar-upload')?.click()}>
             {avatarPreview ? 'Change' : 'Upload'}
           </Button>
           <Input
-            ref={fileInputRef}
+            id="avatar-upload"
             type="file"
             className="hidden"
             accept="image/*"
@@ -306,7 +303,7 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
                   Adjust the image to fit perfectly in the circular avatar frame.
                 </DialogDescription>
             </DialogHeader>
-            <div className="relative my-4 w-full aspect-square bg-muted rounded-md overflow-hidden">
+            <div className="relative my-4 w-full aspect-square bg-black rounded-md overflow-hidden">
                 <Cropper
                     image={imgSrc}
                     crop={crop}

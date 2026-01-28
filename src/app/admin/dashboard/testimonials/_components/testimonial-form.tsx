@@ -67,7 +67,6 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(testimonial?.avatar_url || null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
   const formRef = useRef<HTMLFormElement>(null);
   const [charCount, setCharCount] = useState(testimonial?.testimonial?.length || 0);
 
@@ -82,12 +81,11 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
   const resetFormState = useCallback(() => {
+    formRef.current?.reset();
     setAvatarPreview(testimonial?.avatar_url || null);
     setImgSrc('');
     setCharCount(testimonial?.testimonial?.length || 0);
     setCroppedAvatarData(null);
-    if(fileInputRef.current) fileInputRef.current.value = "";
-    formRef.current?.reset();
   }, [testimonial]);
 
   useEffect(() => {
@@ -178,11 +176,11 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
               <ImageIcon className="h-8 w-8 text-muted-foreground" />
             )}
           </div>
-          <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
+          <Button type="button" variant="outline" onClick={() => document.getElementById('testimonial-avatar-upload')?.click()}>
             {avatarPreview ? 'Change' : 'Upload'}
           </Button>
           <Input
-            ref={fileInputRef}
+            id="testimonial-avatar-upload"
             type="file"
             className="hidden"
             accept="image/*"
@@ -311,7 +309,7 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
                   Adjust the image to fit perfectly in the circular avatar frame.
                 </DialogDescription>
             </DialogHeader>
-            <div className='relative my-4 w-full aspect-square bg-muted rounded-md overflow-hidden'>
+            <div className='relative my-4 w-full aspect-square bg-black rounded-md overflow-hidden'>
                 <Cropper
                     image={imgSrc}
                     crop={crop}
