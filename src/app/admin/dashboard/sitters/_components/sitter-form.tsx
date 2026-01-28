@@ -32,7 +32,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { upsertSitterAction, type FormState } from '../actions';
 import type { Sitter } from '@/lib/types';
-import { dataURLtoFile, getCroppedImg } from '@/lib/utils';
+import { getCroppedImg } from '@/lib/utils';
 import { Slider } from '@/components/ui/slider';
 import { useFormStatus } from 'react-dom';
 import { useMediaQuery } from '@/hooks/use-media-query';
@@ -78,18 +78,26 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+  const [croppedAvatarData, setCroppedAvatarData] = useState<string | null>(null);
 
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
+  const resetFormState = useCallback(() => {
+    setAvatarPreview(sitter?.avatar_url || null);
+    setImgSrc('');
+    setEmailName(sitter?.email?.split('@')[0] || '');
+    setBioCharCount(sitter?.bio?.length || 0);
+    setCroppedAvatarData(null);
+    if(fileInputRef.current) fileInputRef.current.value = "";
+    formRef.current?.reset();
+  }, [sitter]);
+
   useEffect(() => {
     if (!isOpen) {
-        setAvatarPreview(sitter?.avatar_url || null);
-        setImgSrc('');
-        setEmailName(sitter?.email?.split('@')[0] || '');
-        setBioCharCount(sitter?.bio?.length || 0);
-        formRef.current?.reset();
+      resetFormState();
     }
-  }, [isOpen, sitter]);
+  }, [isOpen, resetFormState]);
+
 
   useEffect(() => {
     if (state.message) {
@@ -98,10 +106,6 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
           title: isEditing ? 'Success!' : 'Sitter Added!',
           description: state.message,
         });
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
-        setAvatarPreview(sitter?.avatar_url || null);
         setIsOpen(false);
       } else {
         toast({
@@ -111,7 +115,7 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
         });
       }
     }
-  }, [state, isEditing, toast, sitter]);
+  }, [state, isEditing, toast]);
 
   const onCropComplete = useCallback((croppedArea: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);
@@ -144,12 +148,7 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
         const croppedImageUrl = await getCroppedImg(imgSrc, croppedAreaPixels);
         if (croppedImageUrl) {
             setAvatarPreview(croppedImageUrl);
-            const file = dataURLtoFile(croppedImageUrl, 'avatar.png');
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(file);
-            if (fileInputRef.current) {
-                fileInputRef.current.files = dataTransfer.files;
-            }
+            setCroppedAvatarData(croppedImageUrl);
         }
         setIsCropModalOpen(false);
     } catch (e) {
@@ -168,8 +167,10 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
         action={formAction}
         className="flex flex-col gap-6 mt-6"
     >
-      {isEditing && <input type="hidden" name="id" value={sitter.id} />}
-      {isEditing && sitter.avatar_url && <input type="hidden" name="current_avatar_url" value={sitter.avatar_url} />}
+      <input type="hidden" name="id" value={sitter?.id} />
+      <input type="hidden" name="current_avatar_url" value={sitter?.avatar_url || ''} />
+      <input type="hidden" name="avatar_data_uri" value={croppedAvatarData || ''} />
+
         <div className="space-y-2">
         <Label>Avatar</Label>
         <div className="flex items-center gap-4">
@@ -185,8 +186,6 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
           </Button>
           <Input
             ref={fileInputRef}
-            id="avatar_url"
-            name="avatar_url"
             type="file"
             className="hidden"
             accept="image/*"
@@ -204,6 +203,7 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
           defaultValue={sitter?.name ?? ''}
           required
         />
+        {state?.errors?.name && <p className="text-sm font-medium text-destructive">{state.errors.name[0]}</p>}
       </div>
 
       <div className="space-y-2">
@@ -221,6 +221,7 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
             @gigglehugs.co.zw
           </span>
         </div>
+         {state?.errors?.email_name && <p className="text-sm font-medium text-destructive">{state.errors.email_name[0]}</p>}
       </div>
 
       <div className="space-y-2">

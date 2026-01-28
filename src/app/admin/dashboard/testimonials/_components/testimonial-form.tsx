@@ -32,7 +32,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { upsertTestimonialAction, type FormState } from '../actions';
 import type { Testimonial } from '@/lib/types';
-import { dataURLtoFile, getCroppedImg } from '@/lib/utils';
+import { getCroppedImg } from '@/lib/utils';
 import { Slider } from '@/components/ui/slider';
 import { useFormStatus } from 'react-dom';
 import { useMediaQuery } from '@/hooks/use-media-query';
@@ -76,17 +76,25 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
+  const [croppedAvatarData, setCroppedAvatarData] = useState<string | null>(null);
+
 
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
+  const resetFormState = useCallback(() => {
+    setAvatarPreview(testimonial?.avatar_url || null);
+    setImgSrc('');
+    setCharCount(testimonial?.testimonial?.length || 0);
+    setCroppedAvatarData(null);
+    if(fileInputRef.current) fileInputRef.current.value = "";
+    formRef.current?.reset();
+  }, [testimonial]);
+
   useEffect(() => {
     if (!isOpen) {
-        setAvatarPreview(testimonial?.avatar_url || null);
-        setImgSrc('');
-        setCharCount(testimonial?.testimonial?.length || 0);
-        formRef.current?.reset();
+      resetFormState();
     }
-  }, [isOpen, testimonial]);
+  }, [isOpen, resetFormState]);
 
   useEffect(() => {
     if (state.message) {
@@ -95,10 +103,6 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
           title: isEditing ? 'Success!' : 'Testimonial Added!',
           description: state.message,
         });
-        if (fileInputRef.current) {
-          fileInputRef.current.value = "";
-        }
-        setAvatarPreview(testimonial?.avatar_url || null);
         setIsOpen(false);
       } else {
         toast({
@@ -108,7 +112,7 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
         });
       }
     }
-  }, [state, toast, isEditing, testimonial]);
+  }, [state, toast, isEditing]);
 
   const onCropComplete = useCallback((croppedArea: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);
@@ -141,12 +145,7 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
         const croppedImageUrl = await getCroppedImg(imgSrc, croppedAreaPixels);
         if (croppedImageUrl) {
             setAvatarPreview(croppedImageUrl);
-            const file = dataURLtoFile(croppedImageUrl, 'avatar.png');
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(file);
-            if (fileInputRef.current) {
-                fileInputRef.current.files = dataTransfer.files;
-            }
+            setCroppedAvatarData(croppedImageUrl);
         }
         setIsCropModalOpen(false);
     } catch (e) {
@@ -165,9 +164,11 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
         action={formAction}
         className="flex flex-col gap-6 mt-6"
     >
-      {isEditing && <input type="hidden" name="id" value={testimonial.id} />}
-      {isEditing && testimonial.avatar_url && <input type="hidden" name="current_avatar_url" value={testimonial.avatar_url} />}
-        <div className="space-y-2">
+      <input type="hidden" name="id" value={testimonial?.id} />
+      <input type="hidden" name="current_avatar_url" value={testimonial?.avatar_url || ''} />
+      <input type="hidden" name="avatar_data_uri" value={croppedAvatarData || ''} />
+      
+      <div className="space-y-2">
         <Label>Avatar</Label>
         <div className="flex items-center gap-4">
           <div className="relative h-20 w-20 rounded-full overflow-hidden bg-muted flex items-center justify-center">
@@ -182,8 +183,6 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
           </Button>
           <Input
             ref={fileInputRef}
-            id="avatar_url"
-            name="avatar_url"
             type="file"
             className="hidden"
             accept="image/*"
@@ -201,6 +200,7 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
           defaultValue={testimonial?.name ?? ''}
           required
         />
+        {state?.errors?.name && <p className="text-sm font-medium text-destructive">{state.errors.name[0]}</p>}
       </div>
 
       <div className="space-y-2">
@@ -212,6 +212,7 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
           defaultValue={testimonial?.bio ?? ''}
           required
         />
+        {state?.errors?.bio && <p className="text-sm font-medium text-destructive">{state.errors.bio[0]}</p>}
       </div>
 
       <div className="space-y-2">
@@ -226,6 +227,7 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
           defaultValue={testimonial?.rating ?? 5}
           required
         />
+        {state?.errors?.rating && <p className="text-sm font-medium text-destructive">{state.errors.rating[0]}</p>}
       </div>
 
       <div className="space-y-2">
