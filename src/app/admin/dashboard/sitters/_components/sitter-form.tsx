@@ -3,6 +3,7 @@
 import { useActionState, useState, useRef, useEffect, type ReactNode, useCallback, ChangeEvent } from 'react';
 import Image from 'next/image';
 import Cropper, { type Area } from 'react-easy-crop';
+import { useFormStatus } from 'react-dom';
 
 import { Loader2, ImageIcon } from 'lucide-react';
 import {
@@ -29,11 +30,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Slider } from '@/components/ui/slider';
 import { useToast } from '@/hooks/use-toast';
 import { upsertSitterAction, type FormState } from '../actions';
 import type { Sitter } from '@/lib/types';
 import { getCroppedImg } from '@/lib/utils';
-import { useFormStatus } from 'react-dom';
 import { useMediaQuery } from '@/hooks/use-media-query';
 
 const MAX_BIO_LENGTH = 150;
