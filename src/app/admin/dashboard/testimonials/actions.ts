@@ -13,7 +13,14 @@ const testimonialSchema = z.object({
   bio: z.string().min(3, 'Bio must be at least 3 characters.'),
   testimonial: z.string().min(10, 'Testimonial must be at least 10 characters.').max(150, 'Testimonial cannot exceed 150 characters.'),
   rating: z.coerce.number().min(1).max(5),
-  avatar_url: z.any().optional(),
+  avatar_url: z
+    .instanceof(File, { message: "Please upload a file." })
+    .refine((file) => file.size <= MAX_FILE_SIZE, `Max image size is 5MB.`)
+    .refine(
+      (file) => ACCEPTED_IMAGE_TYPES.includes(file.type),
+      "Only .jpg, .jpeg, .png and .webp formats are supported."
+    )
+    .optional(),
   current_avatar_url: z.string().optional(),
 });
 
@@ -31,12 +38,16 @@ export type FormState = {
 
 export async function upsertTestimonialAction(prevState: FormState, formData: FormData): Promise<FormState> {
   try {
-    const rawData = Object.fromEntries(formData.entries());
     const avatarFile = formData.get('avatar_url');
 
     const validatedFields = testimonialSchema.safeParse({
-      ...rawData,
-      avatar_url: avatarFile instanceof File ? avatarFile : undefined,
+        id: formData.get('id'),
+        name: formData.get('name'),
+        bio: formData.get('bio'),
+        testimonial: formData.get('testimonial'),
+        rating: formData.get('rating'),
+        current_avatar_url: formData.get('current_avatar_url'),
+        avatar_url: (avatarFile instanceof File && avatarFile.size > 0) ? avatarFile : undefined,
     });
 
     if (!validatedFields.success) {
@@ -52,21 +63,18 @@ export async function upsertTestimonialAction(prevState: FormState, formData: Fo
     const { id, name, bio, testimonial, rating, avatar_url: validatedAvatarFile, current_avatar_url } = validatedFields.data;
     let avatarPath: string | undefined = undefined;
 
-    if (validatedAvatarFile && validatedAvatarFile.size > 0) {
-      if(validatedAvatarFile.size > MAX_FILE_SIZE) {
-        return { message: `Max image size is 5MB.`, success: false };
-      }
-      if(!ACCEPTED_IMAGE_TYPES.includes(validatedAvatarFile.type)) {
-        return { message: "Only .jpg, .jpeg, .png and .webp formats are supported.", success: false };
-      }
-
+    if (validatedAvatarFile) {
       let fileName: string;
       const fileExtension = validatedAvatarFile.name.split('.').pop();
       
-      // If editing and an avatar exists, use its filename to overwrite
-      if (id && current_avatar_url) {
-        const urlWithoutQuery = current_avatar_url.split('?')[0];
-        fileName = urlWithoutQuery.split('/').pop()!;
+      if (id && current_avatar_url && current_avatar_url.includes('/')) {
+        const urlParts = current_avatar_url.split('?')[0].split('/');
+        const existingFileName = urlParts.pop();
+        if (existingFileName) {
+          fileName = existingFileName;
+        } else {
+           fileName = `${name.toLowerCase().replace(/\s+/g, '_')}_${Date.now()}.${fileExtension}`;
+        }
       } else {
         fileName = `${name.toLowerCase().replace(/\s+/g, '_')}_${Date.now()}.${fileExtension}`;
       }
@@ -77,9 +85,8 @@ export async function upsertTestimonialAction(prevState: FormState, formData: Fo
         .from('avatars')
         .upload(filePath, validatedAvatarFile, { upsert: true });
 
-      if (uploadError) {
-        throw uploadError;
-      }
+      if (uploadError) throw uploadError;
+      if (!uploadData) throw new Error("Supabase upload returned no data and no error.");
       
       const { data: publicUrlData } = supabase.storage
         .from('avatars')

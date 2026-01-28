@@ -13,12 +13,13 @@ const sitterSchema = z.object({
   bio: z.string().min(10, 'Bio must be at least 10 characters.').max(150, 'Bio cannot exceed 150 characters.'),
   email_name: z.string().min(2, "Please enter a valid email name.").optional().or(z.literal('')),
   avatar_url: z
-    .any()
-    .refine((file) => !file || file.size === 0 || file.size <= MAX_FILE_SIZE, `Max image size is 5MB.`)
+    .instanceof(File, { message: "Please upload a file." })
+    .refine((file) => file.size <= MAX_FILE_SIZE, `Max image size is 5MB.`)
     .refine(
-      (file) => !file || file.size === 0 || ACCEPTED_IMAGE_TYPES.includes(file.type),
+      (file) => ACCEPTED_IMAGE_TYPES.includes(file.type),
       "Only .jpg, .jpeg, .png and .webp formats are supported."
-    ).optional(),
+    )
+    .optional(),
   current_avatar_url: z.string().optional(),
 });
 
@@ -35,14 +36,17 @@ export type FormState = {
 
 export async function upsertSitterAction(prevState: FormState, formData: FormData): Promise<FormState> {
   try {
-    const rawData = Object.fromEntries(formData.entries());
     const avatarFile = formData.get('avatar_url');
-
+    
     const validatedFields = sitterSchema.safeParse({
-      ...rawData,
-      avatar_url: avatarFile instanceof File ? avatarFile : undefined,
+      id: formData.get('id'),
+      name: formData.get('name'),
+      bio: formData.get('bio'),
+      email_name: formData.get('email_name'),
+      current_avatar_url: formData.get('current_avatar_url'),
+      avatar_url: (avatarFile instanceof File && avatarFile.size > 0) ? avatarFile : undefined,
     });
-
+    
     if (!validatedFields.success) {
       console.error('Validation failed:', validatedFields.error.flatten().fieldErrors);
       return {
@@ -58,14 +62,19 @@ export async function upsertSitterAction(prevState: FormState, formData: FormDat
 
     const email = email_name ? `${email_name}@gigglehugs.co.zw` : null;
     
-    if (validatedAvatarFile && validatedAvatarFile.size > 0) {
+    if (validatedAvatarFile) {
       let fileName: string;
+      const fileExtension = validatedAvatarFile.name.split('.').pop();
       
-      if (id && current_avatar_url) {
-        const urlWithoutQuery = current_avatar_url.split('?')[0];
-        fileName = urlWithoutQuery.split('/').pop()!;
+      if (id && current_avatar_url && current_avatar_url.includes('/')) {
+        const urlParts = current_avatar_url.split('?')[0].split('/');
+        const existingFileName = urlParts.pop();
+        if (existingFileName) {
+          fileName = existingFileName;
+        } else {
+          fileName = `${name.toLowerCase().replace(/\s+/g, '_')}_${Date.now()}.${fileExtension}`;
+        }
       } else {
-        const fileExtension = validatedAvatarFile.name.split('.').pop();
         fileName = `${name.toLowerCase().replace(/\s+/g, '_')}_${Date.now()}.${fileExtension}`;
       }
 
@@ -75,9 +84,8 @@ export async function upsertSitterAction(prevState: FormState, formData: FormDat
         .from('avatars')
         .upload(filePath, validatedAvatarFile, { upsert: true });
 
-      if (uploadError) {
-        throw uploadError;
-      }
+      if (uploadError) throw uploadError;
+      if (!uploadData) throw new Error("Supabase upload returned no data and no error.");
       
       const { data: publicUrlData } = supabase.storage
         .from('avatars')
