@@ -21,37 +21,47 @@ export type FormState = {
   message: string;
   success: boolean;
   errors?: {
+    name?: string[];
+    bio?: string[];
     testimonial?: string[];
+    rating?: string[];
+    avatar_url?: string[];
   };
 };
 
 export async function upsertTestimonialAction(prevState: FormState, formData: FormData): Promise<FormState> {
-  const validatedFields = testimonialSchema.safeParse(Object.fromEntries(formData.entries()));
-
-  if (!validatedFields.success) {
-    console.error('Validation failed:', validatedFields.error.flatten().fieldErrors);
-    return {
-      message: 'Validation failed. Please check your inputs.',
-      success: false,
-      errors: validatedFields.error.flatten().fieldErrors,
-    };
-  }
-
-  const supabase = createClient();
-  const { id, name, bio, testimonial, rating, avatar_url: avatarFile, current_avatar_url } = validatedFields.data;
-  let avatarPath: string | undefined = undefined;
-
   try {
-    if (avatarFile && avatarFile.size > 0) {
-      if(avatarFile.size > MAX_FILE_SIZE) {
+    const rawData = Object.fromEntries(formData.entries());
+    const avatarFile = formData.get('avatar_url');
+
+    const validatedFields = testimonialSchema.safeParse({
+      ...rawData,
+      avatar_url: avatarFile instanceof File ? avatarFile : undefined,
+    });
+
+    if (!validatedFields.success) {
+      console.error('Validation failed:', validatedFields.error.flatten().fieldErrors);
+      return {
+        message: 'Validation failed. Please check your inputs.',
+        success: false,
+        errors: validatedFields.error.flatten().fieldErrors,
+      };
+    }
+    
+    const supabase = createClient();
+    const { id, name, bio, testimonial, rating, avatar_url: validatedAvatarFile, current_avatar_url } = validatedFields.data;
+    let avatarPath: string | undefined = undefined;
+
+    if (validatedAvatarFile && validatedAvatarFile.size > 0) {
+      if(validatedAvatarFile.size > MAX_FILE_SIZE) {
         return { message: `Max image size is 5MB.`, success: false };
       }
-      if(!ACCEPTED_IMAGE_TYPES.includes(avatarFile.type)) {
+      if(!ACCEPTED_IMAGE_TYPES.includes(validatedAvatarFile.type)) {
         return { message: "Only .jpg, .jpeg, .png and .webp formats are supported.", success: false };
       }
 
       let fileName: string;
-      const fileExtension = avatarFile.name.split('.').pop();
+      const fileExtension = validatedAvatarFile.name.split('.').pop();
       
       // If editing and an avatar exists, use its filename to overwrite
       if (id && current_avatar_url) {
@@ -65,7 +75,7 @@ export async function upsertTestimonialAction(prevState: FormState, formData: Fo
       
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(filePath, avatarFile, { upsert: true });
+        .upload(filePath, validatedAvatarFile, { upsert: true });
 
       if (uploadError) {
         throw uploadError;
@@ -92,22 +102,20 @@ export async function upsertTestimonialAction(prevState: FormState, formData: Fo
       throw dbError;
     }
 
+    revalidatePath('/admin/dashboard/testimonials');
+    revalidatePath('/');
+
+    return {
+      message: `Testimonial ${id ? 'updated' : 'added'} successfully.`,
+      success: true,
+    };
   } catch (error: any) {
-    console.error('Storage/DB error:', error);
+    console.error('Testimonial Action Error:', error);
     if (error.message.includes('Bucket not found')) {
       return { message: "Failed to upload avatar: The 'avatars' bucket was not found. Please create it in your Supabase project.", success: false };
     }
-    return { message: `Operation failed: ${error.message}`, success: false };
+    return { message: `An unexpected server error occurred. Please try again.`, success: false };
   }
-
-
-  revalidatePath('/admin/dashboard/testimonials');
-  revalidatePath('/');
-
-  return {
-    message: `Testimonial ${id ? 'updated' : 'added'} successfully.`,
-    success: true,
-  };
 }
 
 export async function deleteTestimonialAction(testimonialId: number) {

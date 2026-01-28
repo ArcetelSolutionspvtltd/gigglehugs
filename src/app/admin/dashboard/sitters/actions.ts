@@ -26,37 +26,46 @@ export type FormState = {
   message: string;
   success: boolean;
   errors?: {
+    name?: string[];
     bio?: string[];
+    email_name?: string[];
+    avatar_url?: string[];
   };
 };
 
-export async function upsertSitterAction(formData: FormData): Promise<FormState> {
-  const validatedFields = sitterSchema.safeParse(Object.fromEntries(formData.entries()));
-
-  if (!validatedFields.success) {
-    console.error('Validation failed:', validatedFields.error.flatten().fieldErrors);
-    return {
-      message: 'Validation failed. Please check your inputs.',
-      success: false,
-      errors: validatedFields.error.flatten().fieldErrors,
-    };
-  }
-
-  const supabase = createClient();
-  const { id, name, bio, email_name, avatar_url: avatarFile, current_avatar_url } = validatedFields.data;
-  let avatarPath: string | undefined = undefined;
-
-  const email = email_name ? `${email_name}@gigglehugs.co.zw` : null;
-
+export async function upsertSitterAction(prevState: FormState, formData: FormData): Promise<FormState> {
   try {
-    if (avatarFile && avatarFile.size > 0) {
+    const rawData = Object.fromEntries(formData.entries());
+    const avatarFile = formData.get('avatar_url');
+
+    const validatedFields = sitterSchema.safeParse({
+      ...rawData,
+      avatar_url: avatarFile instanceof File ? avatarFile : undefined,
+    });
+
+    if (!validatedFields.success) {
+      console.error('Validation failed:', validatedFields.error.flatten().fieldErrors);
+      return {
+        message: 'Validation failed. Please check your inputs.',
+        success: false,
+        errors: validatedFields.error.flatten().fieldErrors,
+      };
+    }
+
+    const supabase = createClient();
+    const { id, name, bio, email_name, avatar_url: validatedAvatarFile, current_avatar_url } = validatedFields.data;
+    let avatarPath: string | undefined = undefined;
+
+    const email = email_name ? `${email_name}@gigglehugs.co.zw` : null;
+    
+    if (validatedAvatarFile && validatedAvatarFile.size > 0) {
       let fileName: string;
       
       if (id && current_avatar_url) {
         const urlWithoutQuery = current_avatar_url.split('?')[0];
         fileName = urlWithoutQuery.split('/').pop()!;
       } else {
-        const fileExtension = avatarFile.name.split('.').pop();
+        const fileExtension = validatedAvatarFile.name.split('.').pop();
         fileName = `${name.toLowerCase().replace(/\s+/g, '_')}_${Date.now()}.${fileExtension}`;
       }
 
@@ -64,7 +73,7 @@ export async function upsertSitterAction(formData: FormData): Promise<FormState>
       
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(filePath, avatarFile, { upsert: true });
+        .upload(filePath, validatedAvatarFile, { upsert: true });
 
       if (uploadError) {
         throw uploadError;
@@ -91,22 +100,21 @@ export async function upsertSitterAction(formData: FormData): Promise<FormState>
       throw dbError;
     }
 
+    revalidatePath('/admin/dashboard/sitters');
+    revalidatePath('/');
+
+    return {
+      message: `Sitter ${id ? 'updated' : 'added'} successfully.`,
+      success: true,
+    };
+
   } catch (error: any) {
-    console.error('Storage/DB error:', error);
+    console.error('Sitter Action Error:', error);
     if (error.message.includes('Bucket not found')) {
       return { message: "Failed to upload avatar: The 'avatars' bucket was not found. Please create it in your Supabase project.", success: false };
     }
-    return { message: `Operation failed: ${error.message}`, success: false };
+    return { message: `An unexpected server error occurred. Please try again.`, success: false };
   }
-
-
-  revalidatePath('/admin/dashboard/sitters');
-  revalidatePath('/');
-
-  return {
-    message: `Sitter ${id ? 'updated' : 'added'} successfully.`,
-    success: true,
-  };
 }
 
 export async function deleteSitterAction(sitterId: number) {

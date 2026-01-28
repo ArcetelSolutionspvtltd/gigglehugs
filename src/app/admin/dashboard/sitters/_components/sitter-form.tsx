@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, type ReactNode, useCallback, ChangeEvent } from 'react';
+import { useActionState, useState, useRef, useEffect, type ReactNode, useCallback, ChangeEvent } from 'react';
 import Image from 'next/image';
 import Cropper, { type Area } from 'react-easy-crop';
 
@@ -63,7 +63,8 @@ type SitterFormProps = {
 export function SitterForm({ children, sitter }: SitterFormProps) {
   const isEditing = !!sitter;
   const initialState: FormState = { message: '', success: false, errors: undefined };
-  const [state, setState] = useState(initialState);
+  const [state, formAction] = useActionState(upsertSitterAction, initialState);
+
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(sitter?.avatar_url || null);
@@ -89,6 +90,24 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
         formRef.current?.reset();
     }
   }, [isOpen, sitter]);
+
+  useEffect(() => {
+    if (state.message) {
+      if (state.success) {
+        toast({
+          title: isEditing ? 'Success!' : 'Sitter Added!',
+          description: state.message,
+        });
+        setIsOpen(false);
+      } else {
+        toast({
+          title: 'Oops!',
+          description: state.message,
+          variant: 'destructive',
+        });
+      }
+    }
+  }, [state, isEditing, toast]);
 
   const onCropComplete = useCallback((croppedArea: Area, croppedAreaPixels: Area) => {
     setCroppedAreaPixels(croppedAreaPixels);
@@ -133,24 +152,6 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
         toast({ title: 'Cropping failed', description: 'Please try a different image.', variant: 'destructive'});
     }
   };
-  
-  const handleFormAction = async (formData: FormData) => {
-    const result = await upsertSitterAction(formData);
-    setState(result);
-    if (result.success) {
-      toast({
-        title: isEditing ? 'Success!' : 'Sitter Added!',
-        description: result.message,
-      });
-      setIsOpen(false);
-    } else {
-      toast({
-        title: 'Oops!',
-        description: result.message,
-        variant: 'destructive',
-      });
-    }
-  };
 
   const handleBioChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setBioCharCount(e.target.value.length);
@@ -159,7 +160,7 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
   const FormContent = (
     <form
         ref={formRef}
-        action={handleFormAction}
+        action={formAction}
         className="flex flex-col gap-6 mt-6"
     >
       {isEditing && <input type="hidden" name="id" value={sitter.id} />}
