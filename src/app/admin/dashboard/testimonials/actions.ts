@@ -64,26 +64,13 @@ export async function upsertTestimonialAction(prevState: FormState, formData: Fo
     let avatarPath: string | undefined = undefined;
 
     if (validatedAvatarFile) {
-      let fileName: string;
       const fileExtension = validatedAvatarFile.name.split('.').pop();
-      
-      if (id && current_avatar_url && current_avatar_url.includes('/')) {
-        const urlParts = current_avatar_url.split('?')[0].split('/');
-        const existingFileName = urlParts.pop();
-        if (existingFileName) {
-          fileName = existingFileName;
-        } else {
-           fileName = `${name.toLowerCase().replace(/\s+/g, '_')}_${Date.now()}.${fileExtension}`;
-        }
-      } else {
-        fileName = `${name.toLowerCase().replace(/\s+/g, '_')}_${Date.now()}.${fileExtension}`;
-      }
-
+      const fileName = `${name.toLowerCase().replace(/\s+/g, '_')}_${Date.now()}.${fileExtension}`;
       const filePath = `testimonials/${fileName}`;
       
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(filePath, validatedAvatarFile, { upsert: true });
+        .upload(filePath, validatedAvatarFile, { upsert: false });
 
       if (uploadError) throw uploadError;
       if (!uploadData) throw new Error("Supabase upload returned no data and no error.");
