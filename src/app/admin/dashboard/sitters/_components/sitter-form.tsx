@@ -76,7 +76,6 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
   const [isCropModalOpen, setIsCropModalOpen] = useState(false);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
-  const [rotation, setRotation] = useState(0);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
 
   const isDesktop = useMediaQuery("(min-width: 768px)");
@@ -101,7 +100,6 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
       reader.addEventListener('load', () => {
         setImgSrc(reader.result?.toString() || '');
         setZoom(1);
-        setRotation(0);
         setCrop({ x: 0, y: 0 });
         setIsCropModalOpen(true);
       });
@@ -111,10 +109,15 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
   
   const handleCropConfirm = async () => {
     if (!croppedAreaPixels || !imgSrc) {
+        toast({
+            title: 'Image not ready',
+            description: 'Please wait for the image to load before cropping.',
+            variant: 'destructive',
+        });
         return;
     }
     try {
-        const croppedImageUrl = await getCroppedImg(imgSrc, croppedAreaPixels, rotation);
+        const croppedImageUrl = await getCroppedImg(imgSrc, croppedAreaPixels);
         if (croppedImageUrl) {
             setAvatarPreview(croppedImageUrl);
             const file = dataURLtoFile(croppedImageUrl, 'avatar.png');
@@ -127,7 +130,7 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
         setIsCropModalOpen(false);
     } catch (e) {
         console.error(e);
-        toast({ title: 'Error', description: 'Could not crop image.', variant: 'destructive'});
+        toast({ title: 'Cropping failed', description: 'Please try a different image.', variant: 'destructive'});
     }
   };
   
@@ -296,17 +299,15 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
                   Adjust the image to fit perfectly in the circular avatar frame.
                 </DialogDescription>
             </DialogHeader>
-            <div className="flex-grow relative my-4 min-h-0">
+            <div className="relative my-4 w-full aspect-square bg-muted rounded-md overflow-hidden">
                 <Cropper
                     image={imgSrc}
                     crop={crop}
                     zoom={zoom}
-                    rotation={rotation}
                     aspect={1}
                     cropShape="round"
                     onCropChange={setCrop}
                     onZoomChange={setZoom}
-                    onRotationChange={setRotation}
                     onCropComplete={onCropComplete}
                 />
             </div>
@@ -321,20 +322,10 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
                         onValueChange={(value) => setZoom(value[0])}
                     />
                 </div>
-                <div className="space-y-2">
-                    <Label>Rotation</Label>
-                     <Slider
-                        value={[rotation]}
-                        min={0}
-                        max={360}
-                        step={1}
-                        onValueChange={(value) => setRotation(value[0])}
-                    />
-                </div>
             </div>
              <DialogFooter>
                 <Button variant="outline" onClick={() => setIsCropModalOpen(false)}>Cancel</Button>
-                <Button onClick={handleCropConfirm}>Confirm Crop</Button>
+                <Button onClick={handleCropConfirm} disabled={!croppedAreaPixels}>Confirm Crop</Button>
              </DialogFooter>
         </DialogContent>
     </Dialog>
