@@ -34,7 +34,7 @@ import { useToast } from '@/hooks/use-toast';
 import { upsertTestimonialAction, type FormState } from '../actions';
 import type { Testimonial } from '@/lib/types';
 import { useMediaQuery } from '@/hooks/use-media-query';
-import { getCroppedImg } from '@/lib/utils';
+import { getCroppedImg, dataURLtoFile } from '@/lib/utils';
 import { Slider } from '@/components/ui/slider';
 
 const MAX_TESTIMONIAL_LENGTH = 150;
@@ -155,16 +155,26 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
   const handleTextareaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setCharCount(e.target.value.length);
   };
+  
+  const handleAction = (formData: FormData) => {
+    if (croppedAvatarData) {
+        const file = dataURLtoFile(croppedAvatarData, 'avatar.png');
+        if (file) {
+            formData.set('avatar_file', file);
+        }
+    }
+    formAction(formData);
+  };
+
 
   const FormContent = (
     <form
         ref={formRef}
-        action={formAction}
+        action={handleAction}
         className="flex flex-col gap-6 mt-6"
     >
       <input type="hidden" name="id" value={testimonial?.id} />
       <input type="hidden" name="current_avatar_url" value={testimonial?.avatar_url || ''} />
-      <input type="hidden" name="avatar_data_uri" value={croppedAvatarData || ''} />
       
       <div className="space-y-2">
         <Label>Avatar</Label>
@@ -185,7 +195,6 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
             className="hidden"
             accept="image/*"
             onChange={handleAvatarChange}
-            name="avatar_file"
           />
         </div>
       </div>

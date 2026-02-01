@@ -34,7 +34,7 @@ import { useToast } from '@/hooks/use-toast';
 import { upsertSitterAction, type FormState } from '../actions';
 import type { Sitter } from '@/lib/types';
 import { useMediaQuery } from '@/hooks/use-media-query';
-import { getCroppedImg } from '@/lib/utils';
+import { getCroppedImg, dataURLtoFile } from '@/lib/utils';
 import { Slider } from '@/components/ui/slider';
 
 
@@ -160,16 +160,25 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
   const handleBioChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setBioCharCount(e.target.value.length);
   };
+  
+  const handleAction = (formData: FormData) => {
+    if (croppedAvatarData) {
+        const file = dataURLtoFile(croppedAvatarData, 'avatar.png');
+        if (file) {
+            formData.set('avatar_file', file);
+        }
+    }
+    formAction(formData);
+  };
 
   const FormContent = (
     <form
         ref={formRef}
-        action={formAction}
+        action={handleAction}
         className="flex flex-col gap-6 mt-6"
     >
       <input type="hidden" name="id" value={sitter?.id} />
       <input type="hidden" name="current_avatar_url" value={sitter?.avatar_url || ''} />
-      <input type="hidden" name="avatar_data_uri" value={croppedAvatarData || ''} />
 
       <div className="space-y-2">
         <Label>Avatar</Label>
@@ -190,7 +199,6 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
             className="hidden"
             accept="image/*"
             onChange={handleAvatarChange}
-            name="avatar_file"
           />
         </div>
       </div>
