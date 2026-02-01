@@ -112,7 +112,6 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
           description: state.message,
         });
         setIsOpen(false);
-        resetFormState();
       } else {
         toast({
           title: 'Oops!',
@@ -121,7 +120,7 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
         });
       }
     }
-  }, [state, isEditing, toast, resetFormState]);
+  }, [state, isEditing, toast]);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -191,6 +190,7 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
             className="hidden"
             accept="image/*"
             onChange={handleAvatarChange}
+            name="avatar_file"
           />
         </div>
       </div>
@@ -288,7 +288,7 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
                 {isEditing
                 ? 'Update the details for this sitter.'
                 : 'Fill out the form to add a new sitter to your website.'}
-            </DialogDescription>
+            </SheetDescription>
             </SheetHeader>
             {FormContent}
         </SheetContent>

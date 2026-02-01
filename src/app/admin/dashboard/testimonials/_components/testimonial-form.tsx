@@ -107,7 +107,6 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
           description: state.message,
         });
         setIsOpen(false);
-        resetFormState();
       } else {
         toast({
           title: 'Oops!',
@@ -116,7 +115,7 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
         });
       }
     }
-  }, [state, toast, isEditing, resetFormState]);
+  }, [state, toast, isEditing]);
 
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -186,6 +185,7 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
             className="hidden"
             accept="image/*"
             onChange={handleAvatarChange}
+            name="avatar_file"
           />
         </div>
       </div>
