@@ -10,7 +10,7 @@ const sitterSchema = z.object({
   name: z.string().min(3, 'Name must be at least 3 characters.'),
   bio: z.string().min(10, 'Bio must be at least 10 characters.').max(150, 'Bio cannot exceed 150 characters.'),
   email_name: z.string().min(2, "Please enter a valid email name.").optional().or(z.literal('')),
-  avatar_data_uri: z.string().optional(),
+  avatar_file: z.instanceof(File).optional(),
   current_avatar_url: z.string().optional(),
 });
 
@@ -21,7 +21,7 @@ export type FormState = {
     name?: string[];
     bio?: string[];
     email_name?: string[];
-    avatar_data_uri?: string[];
+    avatar_file?: string[];
   };
 };
 
@@ -32,8 +32,8 @@ export async function upsertSitterAction(prevState: FormState, formData: FormDat
       name: formData.get('name'),
       bio: formData.get('bio'),
       email_name: formData.get('email_name'),
+      avatar_file: formData.get('avatar_file'),
       current_avatar_url: formData.get('current_avatar_url'),
-      avatar_data_uri: formData.get('avatar_data_uri'),
     });
     
     if (!validatedFields.success) {
@@ -45,31 +45,19 @@ export async function upsertSitterAction(prevState: FormState, formData: FormDat
     }
 
     const supabase = createClient();
-    const { id, name, bio, email_name, avatar_data_uri, current_avatar_url } = validatedFields.data;
-    let avatarPath: string | undefined = undefined;
+    const { id, name, bio, email_name, avatar_file, current_avatar_url } = validatedFields.data;
+    let avatarPath: string | undefined | null = current_avatar_url;
 
     const email = email_name ? `${email_name}@gigglehugs.co.zw` : null;
     
-    const validAvatarDataUri = avatar_data_uri && avatar_data_uri.startsWith('data:image/');
-
-    if (validAvatarDataUri) {
-      const base64Data = avatar_data_uri.replace(/^data:image\/\w+;base64,/, "");
-
-      // Use web-standard `atob` and `Uint8Array` instead of Node's `Buffer`
-      const binary = atob(base64Data);
-      const bytes = new Uint8Array(binary.length);
-      for (let i = 0; i < binary.length; i++) {
-        bytes[i] = binary.charCodeAt(i);
-      }
-
-      const contentType = avatar_data_uri.substring(avatar_data_uri.indexOf(':') + 1, avatar_data_uri.indexOf(';'));
-      const fileExtension = contentType.split('/')[1] || 'png';
+    if (avatar_file && avatar_file.size > 0) {
+      const fileExtension = avatar_file.name.split('.').pop() || 'png';
       const fileName = `${uuidv4()}.${fileExtension}`;
       const filePath = `sitters/${fileName}`;
       
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(filePath, bytes, { contentType, upsert: false });
+        .upload(filePath, avatar_file);
 
       if (uploadError) throw uploadError;
       if (!uploadData) throw new Error("Supabase upload returned no data and no error.");
@@ -81,17 +69,9 @@ export async function upsertSitterAction(prevState: FormState, formData: FormDat
       avatarPath = `${publicUrlData.publicUrl}?t=${new Date().getTime()}`;
     }
     
-    const dataToUpsert: any = { name, bio, email };
+    const dataToUpsert: any = { name, bio, email, avatar_url: avatarPath };
     if (id) {
       dataToUpsert.id = id;
-    }
-
-    if (avatarPath) {
-      dataToUpsert.avatar_url = avatarPath;
-    } else if (id) {
-      dataToUpsert.avatar_url = current_avatar_url;
-    } else {
-      dataToUpsert.avatar_url = null;
     }
 
     const { error: dbError } = await supabase.from('sitters').upsert(dataToUpsert).select().single();

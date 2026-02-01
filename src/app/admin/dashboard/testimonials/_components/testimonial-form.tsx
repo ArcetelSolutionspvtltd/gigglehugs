@@ -2,7 +2,6 @@
 
 import { useActionState, useState, useRef, useEffect, type ReactNode, useCallback, ChangeEvent } from 'react';
 import Image from 'next/image';
-import Cropper, { type Area } from 'react-easy-crop';
 import { useFormStatus } from 'react-dom';
 
 import { Loader2, ImageIcon } from 'lucide-react';
@@ -33,8 +32,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { upsertTestimonialAction, type FormState } from '../actions';
 import type { Testimonial } from '@/lib/types';
-import { getCroppedImg } from '@/lib/utils';
-import { Slider } from '@/components/ui/slider';
 import { useMediaQuery } from '@/hooks/use-media-query';
 
 const MAX_TESTIMONIAL_LENGTH = 150;
@@ -68,24 +65,18 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
   const [isOpen, setIsOpen] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(testimonial?.avatar_url || null);
   const formRef = useRef<HTMLFormElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [charCount, setCharCount] = useState(testimonial?.testimonial?.length || 0);
-
-  const [imgSrc, setImgSrc] = useState('');
-  const [isCropModalOpen, setIsCropModalOpen] = useState(false);
-  const [crop, setCrop] = useState({ x: 0, y: 0 });
-  const [zoom, setZoom] = useState(1);
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
-  const [croppedAvatarData, setCroppedAvatarData] = useState<string | null>(null);
-
 
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
   const resetFormState = useCallback(() => {
     formRef.current?.reset();
+    if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+    }
     setAvatarPreview(testimonial?.avatar_url || null);
-    setImgSrc('');
     setCharCount(testimonial?.testimonial?.length || 0);
-    setCroppedAvatarData(null);
   }, [testimonial]);
 
   useEffect(() => {
@@ -112,46 +103,16 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
     }
   }, [state, toast, isEditing]);
 
-  const onCropComplete = useCallback((croppedArea: Area, croppedAreaPixels: Area) => {
-    setCroppedAreaPixels(croppedAreaPixels);
-  }, []);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      const reader = new FileReader();
-      reader.addEventListener('load', () => {
-        setImgSrc(reader.result?.toString() || '');
-        setZoom(1);
-        setCrop({ x: 0, y: 0 });
-        setCroppedAreaPixels(null);
-        setIsCropModalOpen(true);
-      });
-      reader.readAsDataURL(e.target.files[0]);
+      const file = e.target.files[0];
+      setAvatarPreview(URL.createObjectURL(file));
+    } else {
+      setAvatarPreview(testimonial?.avatar_url || null);
     }
   };
   
-  const handleCropConfirm = async () => {
-    if (!croppedAreaPixels || !imgSrc) {
-        toast({
-            title: 'Image not ready',
-            description: 'Please wait for the image to load before cropping.',
-            variant: 'destructive',
-        });
-        return;
-    }
-    try {
-        const croppedImageUrl = await getCroppedImg(imgSrc, croppedAreaPixels);
-        if (croppedImageUrl) {
-            setAvatarPreview(croppedImageUrl);
-            setCroppedAvatarData(croppedImageUrl);
-        }
-        setIsCropModalOpen(false);
-    } catch (e) {
-        console.error(e);
-        toast({ title: 'Cropping failed', description: 'Please try a different image.', variant: 'destructive'});
-    }
-  };
-
   const handleTextareaChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setCharCount(e.target.value.length);
   };
@@ -164,7 +125,6 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
     >
       <input type="hidden" name="id" value={testimonial?.id} />
       <input type="hidden" name="current_avatar_url" value={testimonial?.avatar_url || ''} />
-      <input type="hidden" name="avatar_data_uri" value={croppedAvatarData || ''} />
       
       <div className="space-y-2">
         <Label>Avatar</Label>
@@ -176,17 +136,20 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
               <ImageIcon className="h-8 w-8 text-muted-foreground" />
             )}
           </div>
-          <Button type="button" variant="outline" onClick={() => document.getElementById('testimonial-avatar-upload')?.click()}>
+          <Button type="button" variant="outline" onClick={() => fileInputRef.current?.click()}>
             {avatarPreview ? 'Change' : 'Upload'}
           </Button>
           <Input
             id="testimonial-avatar-upload"
+            name="avatar_file"
+            ref={fileInputRef}
             type="file"
             className="hidden"
             accept="image/*"
             onChange={handleAvatarChange}
           />
         </div>
+        {state?.errors?.avatar_file && <p className="text-sm font-medium text-destructive">{state.errors.avatar_file[0]}</p>}
       </div>
 
       <div className="space-y-2">
@@ -301,44 +264,6 @@ export function TestimonialForm({ children, testimonial }: TestimonialFormProps)
   return (
     <>
       {isDesktop ? MainSheet : MainDialog}
-      <Dialog open={isCropModalOpen} onOpenChange={setIsCropModalOpen}>
-        <DialogContent className="max-w-lg w-[90vw] flex flex-col max-h-[90vh]">
-            <DialogHeader>
-                <DialogTitle>Crop Image</DialogTitle>
-                 <DialogDescription>
-                  Adjust the image to fit perfectly in the circular avatar frame.
-                </DialogDescription>
-            </DialogHeader>
-            <div className='relative my-4 w-full aspect-square bg-black rounded-md overflow-hidden'>
-                <Cropper
-                    image={imgSrc}
-                    crop={crop}
-                    zoom={zoom}
-                    aspect={1}
-                    cropShape="round"
-                    onCropChange={setCrop}
-                    onZoomChange={setZoom}
-                    onCropComplete={onCropComplete}
-                />
-            </div>
-            <div className="space-y-4">
-                <div className="space-y-2">
-                    <Label>Zoom</Label>
-                    <Slider
-                        value={[zoom]}
-                        min={1}
-                        max={3}
-                        step={0.1}
-                        onValueChange={(value) => setZoom(value[0])}
-                    />
-                </div>
-            </div>
-             <DialogFooter>
-                <Button variant="outline" onClick={() => setIsCropModalOpen(false)}>Cancel</Button>
-                <Button onClick={handleCropConfirm} disabled={!croppedAreaPixels}>Confirm Crop</Button>
-             </DialogFooter>
-        </DialogContent>
-    </Dialog>
     </>
   );
 }

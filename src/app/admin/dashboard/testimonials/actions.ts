@@ -11,7 +11,7 @@ const testimonialSchema = z.object({
   bio: z.string().min(3, 'Bio must be at least 3 characters.'),
   testimonial: z.string().min(10, 'Testimonial must be at least 10 characters.').max(150, 'Testimonial cannot exceed 150 characters.'),
   rating: z.coerce.number().min(1).max(5),
-  avatar_data_uri: z.string().optional(),
+  avatar_file: z.instanceof(File).optional(),
   current_avatar_url: z.string().optional(),
 });
 
@@ -23,7 +23,7 @@ export type FormState = {
     bio?: string[];
     testimonial?: string[];
     rating?: string[];
-    avatar_data_uri?: string[];
+    avatar_file?: string[];
   };
 };
 
@@ -35,8 +35,8 @@ export async function upsertTestimonialAction(prevState: FormState, formData: Fo
         bio: formData.get('bio'),
         testimonial: formData.get('testimonial'),
         rating: formData.get('rating'),
+        avatar_file: formData.get('avatar_file'),
         current_avatar_url: formData.get('current_avatar_url'),
-        avatar_data_uri: formData.get('avatar_data_uri'),
     });
 
     if (!validatedFields.success) {
@@ -48,29 +48,17 @@ export async function upsertTestimonialAction(prevState: FormState, formData: Fo
     }
     
     const supabase = createClient();
-    const { id, name, bio, testimonial, rating, avatar_data_uri, current_avatar_url } = validatedFields.data;
-    let avatarPath: string | undefined = undefined;
+    const { id, name, bio, testimonial, rating, avatar_file, current_avatar_url } = validatedFields.data;
+    let avatarPath: string | undefined | null = current_avatar_url;
 
-    const validAvatarDataUri = avatar_data_uri && avatar_data_uri.startsWith('data:image/');
-
-    if (validAvatarDataUri) {
-      const base64Data = avatar_data_uri.replace(/^data:image\/\w+;base64,/, "");
-
-      // Use web-standard `atob` and `Uint8Array` instead of Node's `Buffer`
-      const binary = atob(base64Data);
-      const bytes = new Uint8Array(binary.length);
-      for (let i = 0; i < binary.length; i++) {
-        bytes[i] = binary.charCodeAt(i);
-      }
-      
-      const contentType = avatar_data_uri.substring(avatar_data_uri.indexOf(':') + 1, avatar_data_uri.indexOf(';'));
-      const fileExtension = contentType.split('/')[1] || 'png';
+    if (avatar_file && avatar_file.size > 0) {
+      const fileExtension = avatar_file.name.split('.').pop() || 'png';
       const fileName = `${uuidv4()}.${fileExtension}`;
       const filePath = `testimonials/${fileName}`;
       
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(filePath, bytes, { contentType, upsert: false });
+        .upload(filePath, avatar_file);
 
       if (uploadError) throw uploadError;
       if (!uploadData) throw new Error("Supabase upload returned no data and no error.");
@@ -82,17 +70,9 @@ export async function upsertTestimonialAction(prevState: FormState, formData: Fo
       avatarPath = `${publicUrlData.publicUrl}?t=${new Date().getTime()}`;
     }
     
-    const dataToUpsert: any = { name, bio, testimonial, rating };
+    const dataToUpsert: any = { name, bio, testimonial, rating, avatar_url: avatarPath };
     if (id) {
       dataToUpsert.id = id;
-    }
-    
-    if (avatarPath) {
-      dataToUpsert.avatar_url = avatarPath;
-    } else if (id) {
-      dataToUpsert.avatar_url = current_avatar_url;
-    } else {
-       dataToUpsert.avatar_url = null;
     }
 
     const { error: dbError } = await supabase.from('testimonials').upsert(dataToUpsert).select().single();
