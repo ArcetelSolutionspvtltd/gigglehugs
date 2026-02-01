@@ -3,8 +3,9 @@
 import { useActionState, useState, useRef, useEffect, type ReactNode, useCallback, ChangeEvent } from 'react';
 import Image from 'next/image';
 import { useFormStatus } from 'react-dom';
+import Cropper, { type Area } from 'react-easy-crop';
 
-import { Loader2, ImageIcon } from 'lucide-react';
+import { Loader2, ImageIcon, ZoomIn, ZoomOut } from 'lucide-react';
 import {
   Dialog,
   DialogContent,
@@ -33,6 +34,9 @@ import { useToast } from '@/hooks/use-toast';
 import { upsertSitterAction, type FormState } from '../actions';
 import type { Sitter } from '@/lib/types';
 import { useMediaQuery } from '@/hooks/use-media-query';
+import { getCroppedImg } from '@/lib/utils';
+import { Slider } from '@/components/ui/slider';
+
 
 const MAX_BIO_LENGTH = 150;
 
@@ -65,10 +69,20 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
   const { toast } = useToast();
   const [isOpen, setIsOpen] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState<string | null>(sitter?.avatar_url || null);
+  const [croppedAvatarData, setCroppedAvatarData] = useState<string | null>(null);
+  
   const formRef = useRef<HTMLFormElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  
   const [emailName, setEmailName] = useState(sitter?.email?.split('@')[0] || '');
   const [bioCharCount, setBioCharCount] = useState(sitter?.bio?.length || 0);
+
+  // Cropper state
+  const [isCropModalOpen, setIsCropModalOpen] = useState(false);
+  const [imgSrc, setImgSrc] = useState<string | null>(null);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null);
 
   const isDesktop = useMediaQuery("(min-width: 768px)");
 
@@ -78,6 +92,7 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
         fileInputRef.current.value = '';
     }
     setAvatarPreview(sitter?.avatar_url || null);
+    setCroppedAvatarData(null);
     setEmailName(sitter?.email?.split('@')[0] || '');
     setBioCharCount(sitter?.bio?.length || 0);
   }, [sitter]);
@@ -97,6 +112,7 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
           description: state.message,
         });
         setIsOpen(false);
+        resetFormState();
       } else {
         toast({
           title: 'Oops!',
@@ -105,16 +121,42 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
         });
       }
     }
-  }, [state, isEditing, toast]);
+  }, [state, isEditing, toast, resetFormState]);
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
-      setAvatarPreview(URL.createObjectURL(file));
-    } else {
-      setAvatarPreview(sitter?.avatar_url || null);
+      const reader = new FileReader();
+      reader.addEventListener('load', () => {
+        setImgSrc(reader.result as string);
+        setIsCropModalOpen(true);
+      });
+      reader.readAsDataURL(file);
     }
   };
+
+  const onCropComplete = useCallback((_croppedArea: Area, croppedAreaPixels: Area) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  }, []);
+
+  const handleCropConfirm = async () => {
+    if (!croppedAreaPixels || !imgSrc) {
+      toast({ title: 'Error', description: 'Could not crop image.', variant: 'destructive'});
+      return;
+    }
+    try {
+      const croppedImageUrl = await getCroppedImg(imgSrc, croppedAreaPixels);
+      if (croppedImageUrl) {
+        setAvatarPreview(croppedImageUrl);
+        setCroppedAvatarData(croppedImageUrl);
+      }
+      setIsCropModalOpen(false);
+    } catch (e) {
+      console.error(e);
+      toast({ title: 'Cropping Failed', description: 'An error occurred while cropping the image.', variant: 'destructive'});
+    }
+  };
+
 
   const handleBioChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setBioCharCount(e.target.value.length);
@@ -128,6 +170,7 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
     >
       <input type="hidden" name="id" value={sitter?.id} />
       <input type="hidden" name="current_avatar_url" value={sitter?.avatar_url || ''} />
+      <input type="hidden" name="avatar_data_uri" value={croppedAvatarData || ''} />
 
       <div className="space-y-2">
         <Label>Avatar</Label>
@@ -143,8 +186,6 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
             {avatarPreview ? 'Change' : 'Upload'}
           </Button>
           <Input
-            id="avatar-upload"
-            name="avatar_file"
             ref={fileInputRef}
             type="file"
             className="hidden"
@@ -152,7 +193,6 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
             onChange={handleAvatarChange}
           />
         </div>
-        {state?.errors?.avatar_file && <p className="text-sm font-medium text-destructive">{state.errors.avatar_file[0]}</p>}
       </div>
 
       <div className="space-y-2">
@@ -248,17 +288,59 @@ export function SitterForm({ children, sitter }: SitterFormProps) {
                 {isEditing
                 ? 'Update the details for this sitter.'
                 : 'Fill out the form to add a new sitter to your website.'}
-            </SheetDescription>
+            </DialogDescription>
             </SheetHeader>
             {FormContent}
         </SheetContent>
     </Sheet>
   );
 
-
   return (
     <>
       {isDesktop ? MainSheet : MainDialog}
+
+      <Dialog open={isCropModalOpen} onOpenChange={setIsCropModalOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Crop Avatar</DialogTitle>
+            <DialogDescription>Adjust the image to get the perfect crop.</DialogDescription>
+          </DialogHeader>
+          <div className="relative my-4 h-[300px] w-full bg-muted rounded-md overflow-hidden">
+            {imgSrc && (
+              <Cropper
+                image={imgSrc}
+                crop={crop}
+                zoom={zoom}
+                aspect={1}
+                onCropChange={setCrop}
+                onZoomChange={setZoom}
+                onCropComplete={onCropComplete}
+                cropShape="round"
+                showGrid={false}
+              />
+            )}
+          </div>
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <ZoomOut />
+              <Slider
+                id="zoom"
+                min={1}
+                max={3}
+                step={0.1}
+                value={[zoom]}
+                onValueChange={(value) => setZoom(value[0])}
+                className="flex-1"
+              />
+              <ZoomIn />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsCropModalOpen(false)}>Cancel</Button>
+            <Button onClick={handleCropConfirm}>Confirm Crop</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

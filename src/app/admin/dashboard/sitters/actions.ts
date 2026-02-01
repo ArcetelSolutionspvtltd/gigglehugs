@@ -10,7 +10,7 @@ const sitterSchema = z.object({
   name: z.string().min(3, 'Name must be at least 3 characters.'),
   bio: z.string().min(10, 'Bio must be at least 10 characters.').max(150, 'Bio cannot exceed 150 characters.'),
   email_name: z.string().min(2, "Please enter a valid email name.").optional().or(z.literal('')),
-  avatar_file: z.instanceof(File).optional(),
+  avatar_data_uri: z.string().optional(),
   current_avatar_url: z.string().optional(),
 });
 
@@ -21,20 +21,12 @@ export type FormState = {
     name?: string[];
     bio?: string[];
     email_name?: string[];
-    avatar_file?: string[];
   };
 };
 
 export async function upsertSitterAction(prevState: FormState, formData: FormData): Promise<FormState> {
   try {
-    const validatedFields = sitterSchema.safeParse({
-      id: formData.get('id'),
-      name: formData.get('name'),
-      bio: formData.get('bio'),
-      email_name: formData.get('email_name'),
-      avatar_file: formData.get('avatar_file'),
-      current_avatar_url: formData.get('current_avatar_url'),
-    });
+    const validatedFields = sitterSchema.safeParse(Object.fromEntries(formData.entries()));
     
     if (!validatedFields.success) {
       return {
@@ -45,19 +37,31 @@ export async function upsertSitterAction(prevState: FormState, formData: FormDat
     }
 
     const supabase = createClient();
-    const { id, name, bio, email_name, avatar_file, current_avatar_url } = validatedFields.data;
+    const { id, name, bio, email_name, avatar_data_uri, current_avatar_url } = validatedFields.data;
     let avatarPath: string | undefined | null = current_avatar_url;
 
     const email = email_name ? `${email_name}@gigglehugs.co.zw` : null;
-    
-    if (avatar_file && avatar_file.size > 0) {
-      const fileExtension = avatar_file.name.split('.').pop() || 'png';
-      const fileName = `${uuidv4()}.${fileExtension}`;
+
+    const avatarData = avatar_data_uri && avatar_data_uri.startsWith('data:image/')
+        ? avatar_data_uri
+        : null;
+
+    if (avatarData) {
+      const base64Data = avatarData.replace(/^data:image\/\w+;base64,/, "");
+      const contentType = avatarData.match(/^data:(image\/\w+);base64,/)?.[1] || 'image/png';
+      
+      const binary = atob(base64Data);
+      const bytes = new Uint8Array(binary.length);
+      for (let i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      
+      const fileName = `${uuidv4()}.png`;
       const filePath = `sitters/${fileName}`;
       
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(filePath, avatar_file);
+        .upload(filePath, bytes, { contentType: contentType, upsert: true });
 
       if (uploadError) throw uploadError;
       if (!uploadData) throw new Error("Supabase upload returned no data and no error.");
