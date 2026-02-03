@@ -18,7 +18,7 @@ export async function POST(request: Request) {
     }
 
     // This is the email address the form will send messages to.
-    const recipientEmail = 'xybernest60@gmail.com';
+    const recipientEmail = 'shaynesebmuzah@gmail.com';
     
     // NOTE: This "from" email address must be a "Verified Sender" in your SendGrid account.
     const verifiedSender = 'gigglehugs@gigglehugs.org';
