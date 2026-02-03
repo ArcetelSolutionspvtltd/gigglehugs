@@ -7,8 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Phone, Mail, Users, Loader2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import type { ContactDetail, Sitter } from '@/lib/types';
-import { useRef, useState } from 'react';
-import emailjs from '@emailjs/browser';
+import { useState } from 'react';
 
 type ContactSectionProps = {
   emails: ContactDetail[];
@@ -19,47 +18,50 @@ type ContactSectionProps = {
 export function ContactSection({ emails, phones, sitters }: ContactSectionProps) {
     const { toast } = useToast()
     const teamEmails = sitters.filter(s => s.email);
-    const form = useRef<HTMLFormElement>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-
-        const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
-        const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
-        const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
-
-        if (!serviceId || !templateId || !publicKey || serviceId === 'your_service_id') {
-            toast({
-                title: "Configuration Error",
-                description: "Email service is not configured correctly. Please check your environment variables.",
-                variant: "destructive",
-            });
-            return;
-        }
-        
-        if (!form.current) return;
-
         setIsSubmitting(true);
 
-        emailjs.sendForm(serviceId, templateId, form.current, publicKey)
-            .then(() => {
+        const formData = new FormData(e.currentTarget);
+        const data = {
+            user_name: formData.get('user_name'),
+            subject: formData.get('subject'),
+            user_email: formData.get('user_email'),
+            message: formData.get('message'),
+        };
+
+        try {
+            const response = await fetch('/api/send-email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            });
+
+            const result = await response.json();
+
+            if (response.ok) {
                 toast({
                     title: "Message Sent!",
-                    description: "Your message has been sent to xybernest60@gmail.com. We'll get back to you soon!",
+                    description: "Your message has been sent. We'll get back to you soon!",
                 });
-                form.current?.reset();
-            }, (error) => {
-                console.error('FAILED...', error.text);
-                toast({
-                    title: "Uh oh! Something went wrong.",
-                    description: "Could not send your message. Please try again later.",
-                    variant: "destructive",
-                });
-            })
-            .finally(() => {
-                setIsSubmitting(false);
+                (e.target as HTMLFormElement).reset();
+            } else {
+                throw new Error(result.message || 'Something went wrong.');
+            }
+        } catch (error: any) {
+            console.error('FAILED...', error);
+            toast({
+                title: "Uh oh! Something went wrong.",
+                description: error.message || "Could not send your message. Please try again later.",
+                variant: "destructive",
             });
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
   return (
@@ -79,7 +81,7 @@ export function ContactSection({ emails, phones, sitters }: ContactSectionProps)
                   <CardDescription>Fill out the form and we'll be in touch.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <form ref={form} className="space-y-6" onSubmit={handleSubmit}>
+                  <form className="space-y-6" onSubmit={handleSubmit}>
                     <div className="space-y-2">
                       <Label htmlFor="name">Your Name</Label>
                       <Input id="name" name="user_name" placeholder="Your Name" required />
