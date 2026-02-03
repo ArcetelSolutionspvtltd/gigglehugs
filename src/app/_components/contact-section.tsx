@@ -4,9 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Phone, Mail, Users } from 'lucide-react';
+import { Phone, Mail, Users, Loader2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import type { ContactDetail, Sitter } from '@/lib/types';
+import { useRef, useState } from 'react';
+import emailjs from '@emailjs/browser';
 
 type ContactSectionProps = {
   emails: ContactDetail[];
@@ -17,15 +19,47 @@ type ContactSectionProps = {
 export function ContactSection({ emails, phones, sitters }: ContactSectionProps) {
     const { toast } = useToast()
     const teamEmails = sitters.filter(s => s.email);
+    const form = useRef<HTMLFormElement>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        // In a real app, you'd handle form submission here (e.g., send to an API)
-        toast({
-            title: "Message Sent!",
-            description: "Thanks for reaching out. We'll get back to you soon!",
-        });
-        (e.target as HTMLFormElement).reset();
+
+        const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
+        const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
+        const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
+
+        if (!serviceId || !templateId || !publicKey || serviceId === 'your_service_id') {
+            toast({
+                title: "Configuration Error",
+                description: "Email service is not configured correctly. Please check your environment variables.",
+                variant: "destructive",
+            });
+            return;
+        }
+        
+        if (!form.current) return;
+
+        setIsSubmitting(true);
+
+        emailjs.sendForm(serviceId, templateId, form.current, publicKey)
+            .then(() => {
+                toast({
+                    title: "Message Sent!",
+                    description: "Thanks for reaching out. We'll get back to you soon!",
+                });
+                form.current?.reset();
+            }, (error) => {
+                console.error('FAILED...', error.text);
+                toast({
+                    title: "Uh oh! Something went wrong.",
+                    description: "Could not send your message. Please try again later.",
+                    variant: "destructive",
+                });
+            })
+            .finally(() => {
+                setIsSubmitting(false);
+            });
     };
 
   return (
@@ -45,24 +79,27 @@ export function ContactSection({ emails, phones, sitters }: ContactSectionProps)
                   <CardDescription>Fill out the form and we'll be in touch.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <form className="space-y-6" onSubmit={handleSubmit}>
+                  <form ref={form} className="space-y-6" onSubmit={handleSubmit}>
                     <div className="space-y-2">
                       <Label htmlFor="name">Your Name</Label>
-                      <Input id="name" placeholder="Sunshine Giggle" required />
+                      <Input id="name" name="user_name" placeholder="Sunshine Giggle" required />
                     </div>
                      <div className="space-y-2">
                       <Label htmlFor="subject">Subject</Label>
-                      <Input id="subject" placeholder="Question about services" required />
+                      <Input id="subject" name="subject" placeholder="Question about services" required />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="email">Your Email</Label>
-                      <Input id="email" type="email" placeholder="sunshine@gigglehugs.com" required />
+                      <Input id="email" type="email" name="user_email" placeholder="sunshine@gigglehugs.com" required />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="message">Your Message</Label>
-                      <Textarea id="message" placeholder="Tell us how we can help..." required rows={6}/>
+                      <Textarea id="message" name="message" placeholder="Tell us how we can help..." required rows={6}/>
                     </div>
-                    <Button type="submit" className="w-full">Send Message</Button>
+                    <Button type="submit" className="w-full" disabled={isSubmitting}>
+                        {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        {isSubmitting ? 'Sending...' : 'Send Message'}
+                    </Button>
                   </form>
                 </CardContent>
               </Card>
