@@ -46,7 +46,7 @@ export function ContactSection({ emails, phones, sitters }: ContactSectionProps)
             .then(() => {
                 toast({
                     title: "Message Sent!",
-                    description: "Thanks for reaching out. We'll get back to you soon!",
+                    description: "Your message has been sent to xybernest60@gmail.com. We'll get back to you soon!",
                 });
                 form.current?.reset();
             }, (error) => {
@@ -82,7 +82,7 @@ export function ContactSection({ emails, phones, sitters }: ContactSectionProps)
                   <form ref={form} className="space-y-6" onSubmit={handleSubmit}>
                     <div className="space-y-2">
                       <Label htmlFor="name">Your Name</Label>
-                      <Input id="name" name="user_name" placeholder="Sunshine Giggle" required />
+                      <Input id="name" name="user_name" placeholder="Your Name" required />
                     </div>
                      <div className="space-y-2">
                       <Label htmlFor="subject">Subject</Label>
@@ -90,7 +90,7 @@ export function ContactSection({ emails, phones, sitters }: ContactSectionProps)
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="email">Your Email</Label>
-                      <Input id="email" type="email" name="user_email" placeholder="sunshine@gigglehugs.com" required />
+                      <Input id="email" type="email" name="user_email" placeholder="your-email@example.com" required />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="message">Your Message</Label>
