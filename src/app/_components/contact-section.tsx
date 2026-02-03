@@ -70,7 +70,7 @@ export function ContactSection({ emails, phones, sitters }: ContactSectionProps)
             <div className="text-center mb-16">
                 <h2 className="text-4xl sm:text-5xl font-bold tracking-tight">Get in Touch</h2>
                 <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
-                We're here to answer any questions you may have. Messages will be sent to xybernest60@gmail.com.
+                We're here to answer any questions you may have. Messages will be sent to shaynesebmuzah@gmail.com.
                 </p>
             </div>
 
