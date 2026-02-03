@@ -7,7 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Phone, Mail, Users, Loader2 } from 'lucide-react';
 import { useToast } from "@/hooks/use-toast";
 import type { ContactDetail, Sitter } from '@/lib/types';
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import emailjs from '@emailjs/browser';
 
 type ContactSectionProps = {
   emails: ContactDetail[];
@@ -19,44 +20,43 @@ export function ContactSection({ emails, phones, sitters }: ContactSectionProps)
     const { toast } = useToast()
     const teamEmails = sitters.filter(s => s.email);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const form = useRef<HTMLFormElement>(null);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsSubmitting(true);
 
-        const formData = new FormData(e.currentTarget);
-        const data = {
-            user_name: formData.get('user_name'),
-            subject: formData.get('subject'),
-            user_email: formData.get('user_email'),
-            message: formData.get('message'),
-        };
+        const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID;
+        const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID;
+        const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY;
+
+        if (!serviceId || !templateId || !publicKey) {
+            toast({
+                title: "Configuration Error",
+                description: "The email service is not configured correctly. Please contact the site administrator.",
+                variant: "destructive",
+            });
+            setIsSubmitting(false);
+            return;
+        }
+
+        if (!form.current) {
+            setIsSubmitting(false);
+            return;
+        }
 
         try {
-            const response = await fetch('/api/send-email', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(data),
+            await emailjs.sendForm(serviceId, templateId, form.current, publicKey);
+            toast({
+                title: "Message Sent!",
+                description: "Your message has been sent. We'll get back to you soon!",
             });
-
-            const result = await response.json();
-
-            if (response.ok) {
-                toast({
-                    title: "Message Sent!",
-                    description: "Your message has been sent. We'll get back to you soon!",
-                });
-                (e.target as HTMLFormElement).reset();
-            } else {
-                throw new Error(result.message || 'Something went wrong.');
-            }
+            form.current.reset();
         } catch (error: any) {
             console.error('FAILED...', error);
             toast({
                 title: "Uh oh! Something went wrong.",
-                description: error.message || "Could not send your message. Please try again later.",
+                description: "Could not send your message. Please try again later.",
                 variant: "destructive",
             });
         } finally {
@@ -70,7 +70,7 @@ export function ContactSection({ emails, phones, sitters }: ContactSectionProps)
             <div className="text-center mb-16">
                 <h2 className="text-4xl sm:text-5xl font-bold tracking-tight">Get in Touch</h2>
                 <p className="mt-4 max-w-3xl mx-auto text-lg text-muted-foreground">
-                We're here to answer any questions you may have. Reach out to us and we'll respond as soon as we can.
+                We're here to answer any questions you may have. Messages will be sent to xybernest60@gmail.com.
                 </p>
             </div>
 
@@ -81,14 +81,14 @@ export function ContactSection({ emails, phones, sitters }: ContactSectionProps)
                   <CardDescription>Fill out the form and we'll be in touch.</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <form className="space-y-6" onSubmit={handleSubmit}>
+                  <form ref={form} className="space-y-6" onSubmit={handleSubmit}>
                     <div className="space-y-2">
                       <Label htmlFor="name">Your Name</Label>
-                      <Input id="name" name="user_name" placeholder="Your Name" required />
+                      <Input id="name" name="user_name" placeholder="e.g., John Doe" required />
                     </div>
                      <div className="space-y-2">
                       <Label htmlFor="subject">Subject</Label>
-                      <Input id="subject" name="subject" placeholder="Question about services" required />
+                      <Input id="subject" name="subject" placeholder="e.g., Question about weekend care" required />
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="email">Your Email</Label>
