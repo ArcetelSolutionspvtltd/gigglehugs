@@ -15,14 +15,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { createClient } from '@/lib/supabase/server';
-import type { FAQ } from '@/lib/types';
+import { getFaqs } from '@/lib/queries';
 import { FaqForm } from './_components/faq-form';
 import { DeleteFaqButton } from './_components/delete-faq-button';
 
 export default async function FaqsPage() {
-  const supabase = createClient();
-  const { data: faqs } = await supabase.from('faqs').select('*').order('id').returns<FAQ[]>();
+  const faqs = await getFaqs();
 
   return (
     <div className="flex flex-col gap-4">

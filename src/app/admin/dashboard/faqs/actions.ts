@@ -1,11 +1,12 @@
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
+import { query } from '@/lib/db';
+import { optionalId } from '@/lib/validation';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 
 const faqSchema = z.object({
-  id: z.coerce.number().optional(),
+  id: optionalId,
   question: z.string().min(10, 'Question must be at least 10 characters.'),
   answer: z.string().min(10, 'Answer must be at least 10 characters.'),
 });
@@ -34,13 +35,25 @@ export async function upsertFaqAction(prevState: FormState, formData: FormData):
     };
   }
 
-  const supabase = createClient();
-  const { id } = validatedFields.data;
+  const { id, question, answer } = validatedFields.data;
 
-  const { error } = await supabase.from('faqs').upsert(validatedFields.data);
-
-  if (error) {
-    console.error('Supabase error:', error);
+  try {
+    if (id !== undefined) {
+      await query(
+        `insert into public.faqs (id, question, answer)
+         values ($1, $2, $3)
+         on conflict (id) do update
+         set question = excluded.question, answer = excluded.answer`,
+        [id, question, answer]
+      );
+    } else {
+      await query(
+        'insert into public.faqs (question, answer) values ($1, $2)',
+        [question, answer]
+      );
+    }
+  } catch (error: any) {
+    console.error('Database error:', error);
     return {
       message: error.message,
       success: false,
@@ -57,11 +70,10 @@ export async function upsertFaqAction(prevState: FormState, formData: FormData):
 }
 
 export async function deleteFaqAction(faqId: number) {
-    const supabase = createClient();
-    const { error } = await supabase.from('faqs').delete().match({ id: faqId });
-
-    if (error) {
-        console.error('Supabase delete error:', error);
+    try {
+        await query('delete from public.faqs where id = $1', [faqId]);
+    } catch (error: any) {
+        console.error('Database delete error:', error);
         return {
             message: error.message,
             success: false,

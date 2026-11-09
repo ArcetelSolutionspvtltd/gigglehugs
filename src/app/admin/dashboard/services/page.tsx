@@ -15,15 +15,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { createClient } from '@/lib/supabase/server';
-import type { Service } from '@/lib/types';
+import { getServices } from '@/lib/queries';
 import { getIcon } from '@/lib/icons';
 import { ServiceForm } from './_components/service-form';
 import { DeleteServiceButton } from './_components/delete-service-button';
 
 export default async function ServicesPage() {
-  const supabase = createClient();
-  const { data: services } = await supabase.from('services').select('*').order('id').returns<Service[]>();
+  const services = await getServices();
 
   return (
     <div className="flex flex-col gap-4">

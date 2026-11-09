@@ -1,29 +1,17 @@
 import { createClient } from '@/lib/supabase/server';
 import { ThemeSettingsForm } from './_components/theme-settings-form';
-import type { ColorTheme, Font } from '@/lib/types';
+import { getFonts, getTheme } from '@/lib/queries';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { ThemeToggle } from '@/components/layout/theme-toggle';
 
-async function getThemeSettings() {
-    const supabase = createClient();
-    const { data } = await supabase.from('settings').select('value').eq('key', 'theme').single();
-    return data?.value as ColorTheme | null;
-}
-
-async function getAvailableFonts(): Promise<Font[]> {
-    const supabase = createClient();
-    const { data: fonts } = await supabase.from('fonts').select('*').order('name');
-    return fonts ?? [];
-}
-
 export default async function SettingsPage() {
-  const supabase = createClient();
+  const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
   const [currentTheme, availableFonts] = await Promise.all([
-    getThemeSettings(),
-    getAvailableFonts()
+    getTheme(),
+    getFonts()
   ]);
 
   const googleFontsUrl = availableFonts.length > 0

@@ -15,16 +15,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { createClient } from '@/lib/supabase/server';
-import type { SocialLink } from '@/lib/types';
+import { getSocialLinks } from '@/lib/queries';
 import { getIcon } from '@/lib/icons';
 import { SocialLinkForm } from './_components/social-link-form';
 import { DeleteSocialLinkButton } from './_components/delete-social-link-button';
 import { Badge } from '@/components/ui/badge';
 
 export default async function SocialLinksPage() {
-  const supabase = createClient();
-  const { data: links } = await supabase.from('social_links').select('*').order('id').returns<SocialLink[]>();
+  const links = await getSocialLinks();
 
   return (
     <div className="flex flex-col gap-4">

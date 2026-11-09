@@ -7,20 +7,30 @@ import { SittersSection } from './_components/sitters-section';
 import { TestimonialsSection } from './_components/testimonials-section';
 import { ContactSection } from './_components/contact-section';
 import { FaqSection } from './_components/faq-section';
-import { createClient } from '@/lib/supabase/server';
-import type { Service, Sitter, Testimonial, ContactDetail, SocialLink, FAQ } from '@/lib/types';
+import {
+  getContactDetails,
+  getFaqs,
+  getServices,
+  getSitters,
+  getSocialLinks,
+  getTestimonials,
+} from '@/lib/queries';
+
+export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  const supabase = createClient();
-  const { data: services } = await supabase.from('services').select('*').returns<Service[]>();
-  const { data: sitters } = await supabase.from('sitters').select('*').order('name').returns<Sitter[]>();
-  const { data: testimonials } = await supabase.from('testimonials').select('*').returns<Testimonial[]>();
-  const { data: contactDetails } = await supabase.from('contact_details').select('*').returns<ContactDetail[]>();
-  const { data: socialLinks } = await supabase.from('social_links').select('*').returns<SocialLink[]>();
-  const { data: faqs } = await supabase.from('faqs').select('*').order('id').returns<FAQ[]>();
+  const [services, sitters, testimonials, contactDetails, socialLinks, faqs] =
+    await Promise.all([
+      getServices(),
+      getSitters(),
+      getTestimonials(),
+      getContactDetails(),
+      getSocialLinks(),
+      getFaqs(),
+    ]);
 
-  const emails = contactDetails?.filter(d => d.type === 2) ?? [];
-  const phones = contactDetails?.filter(d => d.type === 1) ?? [];
+  const emails = contactDetails.filter(d => d.type === 2);
+  const phones = contactDetails.filter(d => d.type === 1);
 
   return (
     <div className="flex min-h-screen flex-col">

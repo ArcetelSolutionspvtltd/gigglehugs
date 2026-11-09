@@ -16,14 +16,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { createClient } from '@/lib/supabase/server';
-import type { Sitter } from '@/lib/types';
+import { getSittersByAdmin } from '@/lib/queries';
 import { SitterForm } from './_components/sitter-form';
 import { DeleteSitterButton } from './_components/delete-sitter-button';
 
 export default async function SittersPage() {
-  const supabase = createClient();
-  const { data: sitters } = await supabase.from('sitters').select('*').order('id').returns<Sitter[]>();
+  const sitters = await getSittersByAdmin();
 
   return (
     <div className="flex flex-col gap-4">

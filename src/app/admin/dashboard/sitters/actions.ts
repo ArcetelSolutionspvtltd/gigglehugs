@@ -1,12 +1,14 @@
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
+import { query, queryOne } from '@/lib/db';
+import { deleteObjectByUrl, uploadObject } from '@/lib/r2';
+import { optionalId } from '@/lib/validation';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { v4 as uuidv4 } from 'uuid';
 
 const sitterSchema = z.object({
-  id: z.coerce.number().optional(),
+  id: optionalId,
   name: z.string().min(3, 'Name must be at least 3 characters.'),
   bio: z.string().min(10, 'Bio must be at least 10 characters.').max(150, 'Bio cannot exceed 150 characters.'),
   email_name: z.string().min(2, "Please enter a valid email name.").optional().or(z.literal('')),
@@ -44,40 +46,51 @@ export async function upsertSitterAction(prevState: FormState, formData: FormDat
       };
     }
 
-    const supabase = createClient();
     const { id, name, bio, email_name, avatar_file, current_avatar_url } = validatedFields.data;
     let avatarPath: string | undefined | null = current_avatar_url;
 
     const email = email_name ? `${email_name}@gigglehugs.co.zw` : null;
+    let uploadedNewAvatar = false;
 
     if (avatar_file && avatar_file.size > 0) {
-      const fileBuffer = await avatar_file.arrayBuffer();
+      const fileBuffer = Buffer.from(await avatar_file.arrayBuffer());
       const fileName = `${uuidv4()}.${avatar_file.name.split('.').pop() || 'png'}`;
-      const filePath = `sitters/${fileName}`;
-      
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('avatars')
-        .upload(filePath, fileBuffer, { contentType: avatar_file.type, upsert: true });
+      const objectKey = `avatars/sitters/${fileName}`;
+      const publicUrl = await uploadObject(
+        objectKey,
+        fileBuffer,
+        avatar_file.type || 'application/octet-stream'
+      );
 
-      if (uploadError) throw uploadError;
-      if (!uploadData) throw new Error("Supabase upload returned no data and no error.");
-      
-      const { data: publicUrlData } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(uploadData.path);
-      
-      avatarPath = `${publicUrlData.publicUrl}?t=${new Date().getTime()}`;
-    }
-    
-    const dataToUpsert: any = { name, bio, email, avatar_url: avatarPath };
-    if (id) {
-      dataToUpsert.id = id;
+      avatarPath = `${publicUrl}?t=${new Date().getTime()}`;
+      uploadedNewAvatar = true;
     }
 
-    const { error: dbError } = await supabase.from('sitters').upsert(dataToUpsert).select().single();
+    if (id !== undefined) {
+      await query(
+        `insert into public.sitters (id, name, bio, email, avatar_url)
+         values ($1, $2, $3, $4, $5)
+         on conflict (id) do update
+         set name = excluded.name,
+             bio = excluded.bio,
+             email = excluded.email,
+             avatar_url = excluded.avatar_url`,
+        [id, name, bio, email, avatarPath ?? null]
+      );
+    } else {
+      await query(
+        `insert into public.sitters (name, bio, email, avatar_url)
+         values ($1, $2, $3, $4)`,
+        [name, bio, email, avatarPath ?? null]
+      );
+    }
 
-    if (dbError) {
-      throw dbError;
+    if (uploadedNewAvatar && current_avatar_url) {
+      try {
+        await deleteObjectByUrl(current_avatar_url);
+      } catch (error) {
+        console.error('Failed to delete replaced sitter avatar:', error);
+      }
     }
 
     revalidatePath('/admin/dashboard/sitters');
@@ -90,23 +103,26 @@ export async function upsertSitterAction(prevState: FormState, formData: FormDat
 
   } catch (error: any) {
     console.error('Sitter Action Error:', error);
-    if (error.message.includes('Bucket not found')) {
-      return { message: "Failed to upload avatar: The 'avatars' bucket was not found. Please create it in your Supabase project.", success: false };
-    }
     return { message: `An unexpected server error occurred. Please try again.`, success: false };
   }
 }
 
 export async function deleteSitterAction(sitterId: number) {
-    const supabase = createClient();
-    
-    // Optionally, delete the avatar from storage first
-    // You would need to fetch the sitter's avatar_url before deleting the record
-    
-    const { error } = await supabase.from('sitters').delete().match({ id: sitterId });
+    try {
+        const sitter = await queryOne<{ avatar_url: string | null }>(
+          'select avatar_url from public.sitters where id = $1',
+          [sitterId]
+        );
 
-    if (error) {
-        console.error('Supabase delete error:', error);
+        await query('delete from public.sitters where id = $1', [sitterId]);
+
+        try {
+          await deleteObjectByUrl(sitter?.avatar_url);
+        } catch (error) {
+          console.error('Failed to delete sitter avatar from R2:', error);
+        }
+    } catch (error: any) {
+        console.error('Database delete error:', error);
         return {
             message: error.message,
             success: false,

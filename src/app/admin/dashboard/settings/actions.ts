@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import { createClient } from '@/lib/supabase/server';
+import { query, queryOne } from '@/lib/db';
 import type { ColorTheme } from '@/lib/types';
 
 const themeSchema = z.object({
@@ -33,22 +33,20 @@ export async function generateThemeAction(prevState: FormState, formData: FormDa
 
   try {
     const newSettings: Partial<ColorTheme> = { font: validatedFields.data.font };
-    
-    const supabase = createClient();
-    const { data: currentSettings } = await supabase
-      .from('settings')
-      .select('value')
-      .eq('key', 'theme')
-      .single();
+
+    const currentSettings = await queryOne<{ value: ColorTheme }>(
+      "select value from public.settings where key = 'theme' limit 1"
+    );
 
     const updatedValue = { ...currentSettings?.value, ...newSettings };
-    
-    const { error } = await supabase
-      .from('settings')
-      .upsert({ key: 'theme', value: updatedValue }, { onConflict: 'key' });
 
-    if (error) throw error;
-    
+    await query(
+      `insert into public.settings (key, value)
+       values ('theme', $1::jsonb)
+       on conflict (key) do update set value = excluded.value`,
+      [JSON.stringify(updatedValue)]
+    );
+
     revalidatePath('/', 'layout');
 
     return {
@@ -66,9 +64,7 @@ export async function generateThemeAction(prevState: FormState, formData: FormDa
 
 export async function resetThemeAction() {
     try {
-        const supabase = createClient();
-        const { error } = await supabase.from('settings').delete().eq('key', 'theme');
-        if (error) throw error;
+        await query("delete from public.settings where key = 'theme'");
 
         revalidatePath('/', 'layout');
 

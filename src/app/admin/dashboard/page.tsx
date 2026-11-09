@@ -4,35 +4,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { admin } from '@/lib/supabase/admin';
+import { getDashboardCounts } from '@/lib/queries';
 import { Users, List, Star, Link2, Phone, HelpCircle } from 'lucide-react';
 import { AnimatedCounter } from './_components/animated-counter';
 
 async function getStats() {
-  const [
-    sitters,
-    services,
-    testimonials,
-    socialLinks,
-    contactDetails,
-    faqs
-  ] = await Promise.all([
-    admin.from('sitters').select('*', { count: 'exact', head: true }),
-    admin.from('services').select('*', { count: 'exact', head: true }),
-    admin.from('testimonials').select('*', { count: 'exact', head: true }),
-    admin.from('social_links').select('*', { count: 'exact', head: true }),
-    admin.from('contact_details').select('*', { count: 'exact', head: true }),
-    admin.from('faqs').select('*', { count: 'exact', head: true })
-  ]);
-
-  return {
-    sitters: sitters.count ?? 0,
-    services: services.count ?? 0,
-    testimonials: testimonials.count ?? 0,
-    socialLinks: socialLinks.count ?? 0,
-    contactDetails: contactDetails.count ?? 0,
-    faqs: faqs.count ?? 0,
-  };
+  return getDashboardCounts();
 }
 
 export default async function DashboardPage() {

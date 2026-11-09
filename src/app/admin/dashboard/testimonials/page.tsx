@@ -16,14 +16,12 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { createClient } from '@/lib/supabase/server';
-import type { Testimonial } from '@/lib/types';
+import { getTestimonials } from '@/lib/queries';
 import { TestimonialForm } from './_components/testimonial-form';
 import { DeleteTestimonialButton } from './_components/delete-testimonial-button';
 
 export default async function TestimonialsPage() {
-  const supabase = createClient();
-  const { data: testimonials } = await supabase.from('testimonials').select('*').order('id').returns<Testimonial[]>();
+  const testimonials = await getTestimonials();
 
   return (
     <div className="flex flex-col gap-4">

@@ -57,10 +57,10 @@ export function HeroSection() {
   const [charIndex, setCharIndex] = useState(0);
 
   useEffect(() => {
-    animate(
+    (animate as any)(
       '.hero-title-word',
       { y: [20, 0], opacity: [0, 1] },
-      { duration: 0.5, delay: stagger(0.1), easing: 'ease-out' }
+      { duration: 0.5, delay: stagger(0.1), ease: 'ease-out' }
     );
   }, []);
 

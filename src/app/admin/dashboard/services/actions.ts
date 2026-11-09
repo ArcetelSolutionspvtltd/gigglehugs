@@ -1,12 +1,13 @@
 'use server';
 
-import { createClient } from '@/lib/supabase/server';
+import { query } from '@/lib/db';
+import { optionalId } from '@/lib/validation';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
 import { iconMap } from '@/lib/icons';
 
 const serviceSchema = z.object({
-  id: z.coerce.number().optional(),
+  id: optionalId,
   title: z.string().min(3, 'Title must be at least 3 characters.'),
   description: z.string().min(10, 'Description must be at least 10 characters.'),
   icon_name: z.string().refine(val => Object.keys(iconMap).includes(val), {
@@ -40,13 +41,27 @@ export async function upsertServiceAction(prevState: FormState, formData: FormDa
     };
   }
 
-  const supabase = createClient();
-  const { id, ...serviceData } = validatedFields.data;
+  const { id, title, description, icon_name } = validatedFields.data;
 
-  const { error } = await supabase.from('services').upsert(validatedFields.data);
-
-  if (error) {
-    console.error('Supabase error:', error);
+  try {
+    if (id !== undefined) {
+      await query(
+        `insert into public.services (id, title, description, icon_name)
+         values ($1, $2, $3, $4)
+         on conflict (id) do update
+         set title = excluded.title,
+             description = excluded.description,
+             icon_name = excluded.icon_name`,
+        [id, title, description, icon_name]
+      );
+    } else {
+      await query(
+        'insert into public.services (title, description, icon_name) values ($1, $2, $3)',
+        [title, description, icon_name]
+      );
+    }
+  } catch (error: any) {
+    console.error('Database error:', error);
     return {
       message: error.message,
       success: false,
@@ -63,11 +78,10 @@ export async function upsertServiceAction(prevState: FormState, formData: FormDa
 }
 
 export async function deleteServiceAction(serviceId: number) {
-    const supabase = createClient();
-    const { error } = await supabase.from('services').delete().match({ id: serviceId });
-
-    if (error) {
-        console.error('Supabase delete error:', error);
+    try {
+        await query('delete from public.services where id = $1', [serviceId]);
+    } catch (error: any) {
+        console.error('Database delete error:', error);
         return {
             message: error.message,
             success: false,

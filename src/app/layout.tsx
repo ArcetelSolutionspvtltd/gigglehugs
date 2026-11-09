@@ -3,9 +3,11 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from '@/lib/utils';
 import { ThemeProvider } from '@/components/layout/theme-provider';
-import { createClient } from '@/lib/supabase/server';
+import { getFontByName, getTheme } from '@/lib/queries';
 import type { ColorTheme, Font } from '@/lib/types';
 import { PT_Sans } from 'next/font/google';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'GiggleHugs | Sunshine Giggles and Hugs',
@@ -25,24 +27,13 @@ type ThemeSettings = {
 }
 
 async function getThemeSettings(): Promise<ThemeSettings> {
-  const supabase = createClient();
-  const { data: themeSetting } = await supabase
-    .from('settings')
-    .select('value')
-    .eq('key', 'theme')
-    .single();
-
-  const fontName = (themeSetting?.value as ColorTheme)?.font || 'PT Sans';
-
-  const { data: fontData } = await supabase
-    .from('fonts')
-    .select('*')
-    .eq('name', fontName)
-    .single();
+  const theme = await getTheme();
+  const fontName = theme?.font || 'PT Sans';
+  const font = await getFontByName(fontName);
 
   return {
-    theme: themeSetting?.value as ColorTheme | null,
-    font: fontData as Font | null,
+    theme,
+    font,
   }
 }
 

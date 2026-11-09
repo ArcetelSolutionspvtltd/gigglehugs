@@ -33,7 +33,7 @@ export function Header({ socialLinks = [] }: HeaderProps) {
   const pathname = usePathname();
 
   useEffect(() => {
-    setWhatsAppLink(socialLinks.find(link => link.platform === 'whatsapp')?.url);
+    setWhatsAppLink(socialLinks.find(link => link.platform === 'whatsapp')?.url ?? undefined);
   }, [socialLinks]);
   
   useEffect(() => {

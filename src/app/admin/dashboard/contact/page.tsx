@@ -15,16 +15,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { createClient } from '@/lib/supabase/server';
-import type { ContactDetail } from '@/lib/types';
+import { getContactDetails } from '@/lib/queries';
 import { getIcon } from '@/lib/icons';
 import { ContactForm } from './_components/contact-form';
 import { DeleteContactButton } from './_components/delete-contact-button';
 import { Badge } from '@/components/ui/badge';
 
 export default async function ContactPage() {
-  const supabase = createClient();
-  const { data: contacts } = await supabase.from('contact_details').select('*').order('id').returns<ContactDetail[]>();
+  const contacts = await getContactDetails();
 
   const getTypeLabel = (type: 1 | 2) => {
     return type === 1 ? 'phone' : 'email';
