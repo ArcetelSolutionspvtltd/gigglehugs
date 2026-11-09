@@ -10,6 +10,10 @@ const nextConfig: NextConfig = {
   },
   serverExternalPackages: ['pg'],
   images: {
+    // Vercel's on-demand image optimizer is not available on the current plan
+    // (requests fail with 402 OPTIMIZED_IMAGE_REQUEST_PAYMENT_REQUIRED), and
+    // R2 objects are already served from Cloudflare's CDN, so serve originals.
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
